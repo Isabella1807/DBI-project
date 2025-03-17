@@ -1,0 +1,9 @@
+site_name: Team Dokumentation
+site_description: Vores herre seje dokumentation
+site_author: Os
+
+theme:
+  name: material #Eller readthedocs som navn
+
+nav:
+  - Home: index.md
