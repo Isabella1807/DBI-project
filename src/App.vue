@@ -6,7 +6,7 @@
   <div>
     HEJSA
   </div>
-<!--  <RouterView />-->
+<!--<RouterView-->
 </template>
 
 <style scoped>
