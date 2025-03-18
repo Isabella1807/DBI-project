@@ -4,7 +4,7 @@
 
 <template>
   <div>
-    HEJSA
+    HEJSA med dig
   </div>
 <!--<RouterView-->
 </template>
