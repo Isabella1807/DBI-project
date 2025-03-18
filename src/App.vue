@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import Monk from './components/MonK.vue'
 //import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
   <div>
-    HEJSA med dig
+    <Monk/>
+    <h1>HEJSA med dig</h1>
   </div>
 <!--<RouterView-->
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+
+
 
 </style>
