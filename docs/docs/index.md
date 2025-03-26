@@ -1,4 +1,17 @@
-# Welcome to Team Documentation
-This site contains guidelines, processes, and resources for our team.
+# Velkommen til projektet
 
-## Test text
+## Introduktion
+Mega sej intro
+
+## Installation & opsætning
+Some process
+
+## Arkitektur & teknologivalg
+componet tree
+uml diagram
+
+
+## Navigation
+
+- [Git](git.md)
+- [Clean Code](cleanCode.md)

@@ -7,3 +7,5 @@ theme:
 
 nav:
   - Home: index.md
+  - Git: git.md
+  - Clean Code: cleanCode.md
