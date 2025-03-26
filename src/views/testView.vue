@@ -1,13 +1,11 @@
 <script setup lang="ts">
-
-
+import TestComp from "@/components/TestComp.vue";
 </script>
 
 <template>
-  <main>
-    <RouterView/>
-  </main>
-
+<div>
+<TestComp/>
+</div>
 </template>
 
 <style scoped lang="scss">
