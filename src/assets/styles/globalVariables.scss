@@ -1,1 +1,58 @@
-$ba: pink;
+$black: #1a1a1a;
+$darkGrey: #707070;
+$mediumGrey: #d1d3d4;
+$background: #f2f2f2;
+$lightGrey: #f7f7f7;
+$lightestGrey: #fbfbfb;
+$white: #fff;
+$darkGreen: #36735f;
+$mediumGreen: #9Dbfb4;
+$lightGreen: #e2ebe8;
+$blue: #A4cbed;
+$red: #e00;
+
+
+@mixin heading1 {
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 120%;
+}
+
+@mixin heading2 {
+    font-size: 1rem;
+    font-family: "Source Sans 3", sans-serif;
+    font-weight: 500;
+    line-height: 120%;
+}
+
+@mixin bodyText {
+    font-size: 1rem;
+    font-family: "Source Sans 3", sans-serif;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+@mixin fatBodyText {
+    font-size: 1rem;
+    font-family: "Source Sans 3", sans-serif;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+@mixin buttonText {
+    font-size: 1rem;
+    font-family: "Source Sans 3", sans-serif;
+    font-weight: 700;
+    letter-spacing: 16%;
+    line-height: 100%;
+}
+
+@mixin breadCrumb {
+    font-style: italic;
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 120%;
+}
+

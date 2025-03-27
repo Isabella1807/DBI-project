@@ -8,6 +8,8 @@
 
 <style scoped lang="scss">
 h1{
-  color: $ba;
+  
+  @include heading1;
+
 }
 </style>
