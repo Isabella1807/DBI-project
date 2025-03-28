@@ -6,7 +6,10 @@ import BasicButton from "@/components/BasicButton.vue";
 <template>
     <div>
         <TestComp />
-        <BasicButton />
+        <BasicButton label="Opret" type="default" />
+        <BasicButton label="Eksporter" type="secondary" :showIcon="false" />
+        <BasicButton label="Slet" type="annuller" :showIcon="false" />
+        <BasicButton label="nejtak" type="lukNed" :showIcon="false" />
     </div>
 </template>
 
