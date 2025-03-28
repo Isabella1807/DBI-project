@@ -8,8 +8,8 @@ import BasicButton from "@/components/BasicButton.vue";
         <TestComp />
         <BasicButton label="Opret" type="default" />
         <BasicButton label="Eksporter" type="secondary" :showIcon="false" />
-        <BasicButton label="Slet" type="annuller" :showIcon="false" />
-        <BasicButton label="nejtak" type="lukNed" :showIcon="false" />
+        <BasicButton label="Annuller" type="annuller" :showIcon="false" />
+        <BasicButton label="Ja - afslut og luk ned" type="lukNed" :showIcon="false" />
     </div>
 </template>
 

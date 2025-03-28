@@ -43,6 +43,7 @@ p {
 button {
     display: flex;
     align-items: center;
+    padding: 20px 32px;
     gap: 8px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
@@ -52,7 +53,6 @@ button {
     background-color: $black;
     color: $white;
     border: none;
-    padding: 20px 32px;
     
     &:hover {
         background-color: $mediumGreen;
@@ -67,40 +67,20 @@ button {
     background-color: $white;
     color: $black;
     border-radius: 2px;
-    padding: 20px 32px;
-
-    &:hover {
-        background-color: darken($mediumGrey, 10%);
-    }
-
-    &:active {
-        background-color: $darkGrey;
-    }
 }
 
 .annullerButton {
-    background-color: $red;
-    color: $white;
-
-    &:hover {
-        background-color: darken($red, 10%);
-    }
-
-    &:active {
-        background-color: darken($red, 20%);
-    }
+    background-color: $white;
+    color: $black;
 }
 
 .lukNedButton {
-    background-color: $red;
+    background-color: $black;
     color: $white;
+    border: none;
 
     &:hover {
-        background-color: darken($red, 10%);
-    }
-
-    &:active {
-        background-color: darken($red, 20%);
+        background-color: $mediumGreen;
     }
 }
 
