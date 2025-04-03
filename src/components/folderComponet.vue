@@ -30,23 +30,19 @@
   aspect-ratio: 1/1;
   box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.10);
   border-radius: 16px;
+  background: $white;
+
 svg {
   flex-shrink: 0;
-}
-p {
-  color: #1B1B1B;
+  }
 
-text-align: center;
-/* Overskrift 2 */
-font-family: "Source Sans 3";
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: 120%; /* 19.2px */
-width: 96px;
-height: 39px;
-flex-shrink: 0;
-}
+p {
+  @include bodyText;
+  text-align: center;
+  width: 96px;
+  height: 39px;
+  flex-shrink: 0;
+  }
 }
 
 </style>
