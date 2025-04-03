@@ -1,11 +1,4 @@
-<template>
-    <button :class="difftentButton">
-        <p>{{ label }}</p>
-        <span class="plusIcon" v-if="showIcon">+</span>
-    </button>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -32,6 +25,13 @@ const difftentButton = computed(() => {
     };
 });
 </script>
+
+<template>
+    <button :class="difftentButton">
+        <p>{{ label }}</p>
+        <span class="plusIcon" v-if="showIcon">+</span>
+    </button>
+</template>
 
 <style scoped lang="scss">
 
