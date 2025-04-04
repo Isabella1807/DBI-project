@@ -25,9 +25,24 @@ const props = defineProps<Props>();
   @include noLinkDeco;
   &.router-link-active {
     .tabItem {
-      padding: 8px 12px 16px 12px;
       background-color: $white;
       border-radius: 10px 10px 0 0;
+      position: relative;
+      &::before, &::after{
+        content:'';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        bottom: 0;
+      }
+      &::before{
+        left: -16px;
+        background-image: radial-gradient(circle at 0 0, transparent 16px, $white 16px);
+      }
+      &::after{
+        right: -16px;
+        background-image: radial-gradient(circle at 100% 0, transparent 16px, $white 16px);
+      }
     }
   }
 }
