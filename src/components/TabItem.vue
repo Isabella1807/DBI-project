@@ -21,6 +21,7 @@ const props = defineProps<Props>();
 .tabItem{
   display: flex;
   align-items: center;
+  gap: 8px;
   p{
     @include heading2;
     &.selected{

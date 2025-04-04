@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import TabNav from '@/components/TabNav.vue';
 </script>
 
 <template>
   <div class="body_container">
+    <p>Egenkontrollen</p>
     <div class="main_container">
       <main>
+        <TabNav/>
         <RouterView />
       </main>
     </div>
@@ -16,7 +19,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
+  p{
+    position: absolute;
+    line-height: 56px;
+    margin-left: 24px;
+    color: hsla(200, 3%, 83%, 1);
+  }
   .main_container {
     flex: 1;
     display: flex;
@@ -25,7 +33,6 @@
     main {
       max-width: min(1280px, calc(100% - 3rem));
       flex: 1;
-      padding: 4rem 0;
     }
   }
 }
