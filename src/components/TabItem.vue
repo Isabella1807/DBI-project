@@ -4,27 +4,44 @@ import BasicIcon from '@/components/BasicIcon.vue';
 interface Props {
   iconName: string,
   label: string,
-  selected?: boolean,
+  link: string,
 }
+
 const props = defineProps<Props>();
 
 </script>
 
 <template>
-<div class="tabItem">
-  <BasicIcon :name="props.iconName" :selected="props.selected" />
-  <p :class="{'selected': props.selected}">{{props.label}}</p>
-</div>
+  <RouterLink :to="props.link" class="link" v-slot="{isActive}">
+    <div class="tabItem">
+      <BasicIcon :name="props.iconName" :selected="isActive"/>
+      <p :class="{'selected': isActive}">{{ props.label }}</p>
+    </div>
+  </RouterLink>
 </template>
 
 <style scoped lang="scss">
-.tabItem{
+.link {
+  @include noLinkDeco;
+  &.router-link-active {
+    .tabItem {
+      padding: 8px 12px 16px 12px;
+      background-color: $white;
+      border-radius: 10px 10px 0 0;
+    }
+  }
+}
+
+.tabItem {
+  padding: 8px 12px 16px 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  p{
+
+  p {
     @include heading2;
-    &.selected{
+
+    &.selected {
       @include fatBodyText;
     }
   }

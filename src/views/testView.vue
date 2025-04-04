@@ -13,6 +13,11 @@ import FolderComponet from '@/components/folderComponet.vue';*/
         <BasicButton label="Ja - afslut og luk ned" type="lukNed" :showIcon="false" />
         <FolderComponet />
     </div>-->
+  <div>
+    <H1>
+      TESTER VIEW 1
+    </H1>
+  </div>
 </template>
 
 <style scoped lang="scss">

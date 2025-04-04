@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import TabNav from '@/components/TabNav.vue';
+import WaterMark from '@/components/WaterMark.vue';
 </script>
 
 <template>
   <div class="body_container">
-    <p>Egenkontrollen</p>
+    <WaterMark/>
     <div class="main_container">
       <main>
         <TabNav/>
@@ -19,12 +20,6 @@ import TabNav from '@/components/TabNav.vue';
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  p{
-    position: absolute;
-    line-height: 56px;
-    margin-left: 24px;
-    color: hsla(200, 3%, 83%, 1);
-  }
   .main_container {
     flex: 1;
     display: flex;

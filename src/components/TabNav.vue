@@ -1,35 +1,22 @@
 <script setup lang="ts">
 import BasicIcon from '@/components/BasicIcon.vue';
 import TabItem from '@/components/TabItem.vue';
+import AvatarIcon from '@/components/AvatarIcon.vue';
 </script>
 
 <template>
   <div class="navContainer">
     <div class="tabsContainer">
-      <RouterLink to="" class="link">
-        <TabItem icon-name="Monitor" label="Dashboard"/>
-      </RouterLink>
-      <RouterLink to="" class="link">
-        <TabItem icon-name="File_document" label="Rapporter"/>
-      </RouterLink>
-      <RouterLink to="" class="link">
-        <TabItem icon-name="Notebook" label="Skemaer"/>
-      </RouterLink>
-      <RouterLink to="" class="link">
-        <TabItem icon-name="Users_Group" label="Brugere"/>
-      </RouterLink>
-      <RouterLink to="" class="link">
-        <TabItem icon-name="Qr_Code" label="Enheder"/>
-      </RouterLink>
-      <RouterLink to="" class="link">
-        <TabItem icon-name="Files" label="Dokumenter"/>
-      </RouterLink>
-      <RouterLink to="" class="link">
-        <TabItem icon-name="Calendar_Days" label="Kalender"/>
-      </RouterLink>
+      <TabItem icon-name="Monitor" label="Dashboard" link="/"/>
+      <TabItem icon-name="File_document" label="Rapporter" link="/test"/>
+      <TabItem icon-name="Notebook" label="Skemaer" link="/womp"/>
+      <TabItem icon-name="Users_Group" label="Brugere" link="/whoo"/>
+      <TabItem icon-name="Qr_Code" label="Enheder" link="/wo"/>
+      <TabItem icon-name="Files" label="Dokumenter" link="/wom"/>
+      <TabItem icon-name="Calendar_Days" label="Kalender" link="/waa"/>
     </div>
     <div class="userContainer">
-      <BasicIcon name="User_02"/>
+      <AvatarIcon/>
     </div>
   </div>
 </template>
@@ -40,11 +27,10 @@ import TabItem from '@/components/TabItem.vue';
   position: relative;
   align-items: center;
   width: 100%;
-  height: 56px;
+  padding-top: 8px;
 
   .tabsContainer {
     display: flex;
-    gap: 24px;
     position: relative;
     justify-content: center;
     width: 100%;
@@ -56,11 +42,5 @@ import TabItem from '@/components/TabItem.vue';
     align-items: center;
     right: 0;
   }
-}
-
-.link {
-  text-decoration: none;
-  text-underline: none;
-  color: $black;
 }
 </style>
