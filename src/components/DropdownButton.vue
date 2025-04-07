@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import BasicButton from './BasicButton.vue'
+import { ref } from 'vue';
+import BasicButton from './BasicButton.vue';
+import BasicIcon from './BasicIcon.vue';
 
 const props = defineProps({
     label: String,
     type: String,
     iconName: String,
     options: {
-        type: Array as () => string[],
+        type: Array as () => { label: string; icon: string }[],
         required: true
     }
 })
+
 
 const showDropdown = ref(false)
 
@@ -26,15 +28,17 @@ function handleOptionClick(option: string) {
 
 <template>
     <div class="dropdown-wrapper">
-        <BasicButton :label="label" :type="type" :iconName="iconName" @click="toggleDropdown" />
+        <BasicButton :label="label" :type="type" :iconName="iconName" :active="showDropdown" @click="toggleDropdown" />
 
         <ul v-if="showDropdown" class="dropdown-menu">
-            <li v-for="(option, index) in options" :key="index" @click="handleOptionClick(option)">
-                {{ option }}
+            <li v-for="(option, index) in options" :key="index" @click="handleOptionClick(option.label)">
+                <BasicIcon :name="option.icon" class="dropdown-icon" />
+                {{ option.label }}
             </li>
         </ul>
     </div>
 </template>
+
 
 <style scoped lang="scss">
 .dropdown-wrapper {
@@ -56,12 +60,16 @@ function handleOptionClick(option: string) {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 
     li {
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
         padding: 10px;
         cursor: pointer;
 
         &:hover {
             background: $lightGreen;
         }
+
     }
 }
 </style>

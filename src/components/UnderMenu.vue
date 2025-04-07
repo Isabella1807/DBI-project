@@ -6,11 +6,18 @@ import SearchBar from "@/components/SearchBar.vue";
 <template>
     <div class="toolbar-wrapper">
         <div class="toolbar-container">
-            <DropdownButton label="Opret" type="default" iconName="PlusIcon"
-                :options="['Mappe', 'Enhed']" />
+            <DropdownButton label="Opret" type="default" iconName="PlusIcon" :options="[
+                { label: 'Mappe', icon: 'Folder' },
+                { label: 'Enhed', icon: 'Qr_code' }
+            ]" />
+
             <SearchBar />
-            <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport"
-                :options="['Hent som', 'Hent som CSV', 'Send til printer kø']" />
+            <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport" :options="[
+                { label: 'Hent som PDF', icon: 'File' },
+                { label: 'Hent som CSV', icon: 'Table' },
+                { label: 'Send til printer kø', icon: 'Printer' }
+            ]" />
+
         </div>
     </div>
 </template>

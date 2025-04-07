@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BasicIcon from '@/components/BasicIcon.vue';
 
-import { computed, ref } from 'vue';
+import { computed} from 'vue';
 
 const props = defineProps({
     label: {
@@ -19,34 +19,50 @@ const props = defineProps({
     iconName: {
         type: String,
         default: ''
+    },
+
+    active: {
+        type: Boolean,
+        default: false
     }
 });
 
-const isActive = ref(false);
-
 const difftentButton = computed(() => {
-    return {
-        basicButton: props.type === 'default',
-        secondaryButton: props.type === 'secondary',
-        annullerButton: props.type === 'annuller',
-        lukNedButton: props.type === 'lukNed',
-        activeButton: isActive.value
-    };
+  return {
+    basicButton: props.type === 'default' && !props.active,
+    secondaryButton: props.type === 'secondary' && !props.active,
+    annullerButton: props.type === 'annuller',
+    lukNedButton: props.type === 'lukNed',
+    activeButton: props.type === 'default' && props.active,
+    activeSecondaryButton: props.type === 'secondary' && props.active,
+  };
 });
 
-function toggleActive() {
-    isActive.value = !isActive.value; 
-}
+
 </script>
 
 <template>
-    <button :class="difftentButton" @click="toggleActive">
-      <p>{{ label }}</p>
-      <BasicIcon v-if="showIcon && iconName" :name="iconName" />
+    <button :class="difftentButton">
+        <p>{{ label }}</p>
+        <BasicIcon v-if="showIcon && iconName" :name="iconName" />
     </button>
-  </template>
-  
+</template>
+
 <style scoped lang="scss">
+.activeSecondaryButton {
+    background-color: $darkGreen !important;
+    color: $white !important;
+
+    svg {
+        color: $white !important;
+    }
+}
+
+.activeButton {
+    background-color: $darkGreen !important;
+    color: $white;
+    border: none;
+}
 
 svg {
     color: $white
@@ -73,10 +89,6 @@ button {
 
     &:hover {
         background-color: $mediumGreen;
-    }
-
-    &:active {
-        background-color: $darkGreen;
     }
 }
 
