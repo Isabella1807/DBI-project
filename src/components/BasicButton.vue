@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BasicIcon from '@/components/BasicIcon.vue';
 
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
     label: {
@@ -22,18 +22,25 @@ const props = defineProps({
     }
 });
 
+const isActive = ref(false);
+
 const difftentButton = computed(() => {
     return {
         basicButton: props.type === 'default',
         secondaryButton: props.type === 'secondary',
         annullerButton: props.type === 'annuller',
         lukNedButton: props.type === 'lukNed',
+        activeButton: isActive.value
     };
 });
+
+function toggleActive() {
+    isActive.value = !isActive.value; 
+}
 </script>
 
 <template>
-    <button :class="difftentButton">
+    <button :class="difftentButton" @click="toggleActive">
       <p>{{ label }}</p>
       <BasicIcon v-if="showIcon && iconName" :name="iconName" />
     </button>
