@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import TabNav from '@/components/TabNav.vue';
 import WaterMark from '@/components/WaterMark.vue';
+import UnderMenu from "@/components/UnderMenu.vue";
 </script>
 
 <template>
   <div class="body_container">
-    <WaterMark/>
+    <WaterMark />
     <div class="main_container">
       <main>
-        <TabNav/>
+        <TabNav />
+        <UnderMenu />
         <RouterView />
       </main>
     </div>
@@ -20,6 +22,7 @@ import WaterMark from '@/components/WaterMark.vue';
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
   .main_container {
     flex: 1;
     display: flex;

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BasicIcon from '@/components/BasicIcon.vue';
+
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -13,6 +15,10 @@ const props = defineProps({
     showIcon: {
         type: Boolean,
         default: true
+    },
+    iconName: {
+        type: String,
+        default: ''
     }
 });
 
@@ -28,12 +34,16 @@ const difftentButton = computed(() => {
 
 <template>
     <button :class="difftentButton">
-        <p>{{ label }}</p>
-        <span class="plusIcon" v-if="showIcon">+</span>
+      <p>{{ label }}</p>
+      <BasicIcon v-if="showIcon && iconName" :name="iconName" />
     </button>
-</template>
-
+  </template>
+  
 <style scoped lang="scss">
+
+svg {
+    color: $white
+}
 
 p {
     @include buttonText;
@@ -53,7 +63,7 @@ button {
     background-color: $black;
     color: $white;
     border: none;
-    
+
     &:hover {
         background-color: $mediumGreen;
     }
@@ -82,9 +92,5 @@ button {
     &:hover {
         background-color: $mediumGreen;
     }
-}
-
-.plusIcon {
-    font-size: 16px;
 }
 </style>
