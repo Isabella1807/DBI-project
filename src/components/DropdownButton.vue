@@ -4,9 +4,9 @@ import BasicButton from './BasicButton.vue';
 import BasicIcon from './BasicIcon.vue';
 
 const props = defineProps({
-    label: String,
-    type: String,
-    iconName: String,
+    label: { type: String, required: true },
+    type: { type: String, required: true },
+    iconName: { type: String, required: true },
     options: {
         type: Array as () => { label: string; icon: string }[],
         required: true
