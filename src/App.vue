@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TabNav from '@/components/TabNav.vue';
-import WaterMark from '@/components/WaterMark.vue';
-import UnderMenu from "@/components/UnderMenu.vue";
+import TabNav from '@/components/organisms/TabNav.vue';
+import WaterMark from '@/components/atoms/WaterMark.vue';
+import UnderMenu from "@/components/organisms/UnderMenu.vue";
 </script>
 
 <template>

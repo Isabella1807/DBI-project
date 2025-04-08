@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DropdownButton from '@/components/DropdownButton.vue';
-import SearchBar from "@/components/SearchBar.vue";
+import DropdownButton from '@/components/molecules/DropdownButton.vue';
+import SearchBar from "@/components/molecules/SearchBar.vue";
 </script>
 
 <template>

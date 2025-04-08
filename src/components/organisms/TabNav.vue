@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import BasicIcon from '@/components/BasicIcon.vue';
-import TabItem from '@/components/TabItem.vue';
-import AvatarIcon from '@/components/AvatarIcon.vue';
+import BasicIcon from '@/components/atoms/BasicIcon.vue';
+import TabItem from '@/components/molecules/TabItem.vue';
+import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
 </script>
 
 <template>

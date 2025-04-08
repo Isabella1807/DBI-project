@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import BasicButton from './BasicButton.vue';
-import BasicIcon from './BasicIcon.vue';
+import BasicButton from '../atoms/BasicButton.vue';
+import BasicIcon from '../atoms/BasicIcon.vue';
 
 const props = defineProps({
     label: { type: String, required: true },
@@ -60,9 +60,9 @@ function handleOptionClick(option: string) {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 
     li {
-        display: flex; 
-        align-items: center; 
-        gap: 10px; 
+        display: flex;
+        align-items: center;
+        gap: 10px;
         padding: 10px;
         cursor: pointer;
 

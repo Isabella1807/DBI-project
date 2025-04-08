@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import FolderComponet from '@/components/folderComponet.vue';
-import FolderSection from "@/components/FolderSection.vue";
+import FolderComponet from '@/components/atoms/folderComponet.vue';
+import FolderSection from "@/components/atoms/FolderSection.vue";
 </script>
 
 <template>
