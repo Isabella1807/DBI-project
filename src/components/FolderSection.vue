@@ -49,7 +49,7 @@
 .folder-container.list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  
 }
 
 /* Detailed view styles for individual folder card */
