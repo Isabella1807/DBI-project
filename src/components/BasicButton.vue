@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import BasicIcon from '@/components/BasicIcon.vue';
+
+import { computed} from 'vue';
 
 const props = defineProps({
     label: {
@@ -13,27 +15,58 @@ const props = defineProps({
     showIcon: {
         type: Boolean,
         default: true
+    },
+    iconName: {
+        type: String,
+        default: ''
+    },
+
+    active: {
+        type: Boolean,
+        default: false
     }
 });
 
 const difftentButton = computed(() => {
-    return {
-        basicButton: props.type === 'default',
-        secondaryButton: props.type === 'secondary',
-        annullerButton: props.type === 'annuller',
-        lukNedButton: props.type === 'lukNed',
-    };
+  return {
+    basicButton: props.type === 'default' && !props.active,
+    secondaryButton: props.type === 'secondary' && !props.active,
+    annullerButton: props.type === 'annuller',
+    lukNedButton: props.type === 'lukNed',
+    activeButton: props.type === 'default' && props.active,
+    activeSecondaryButton: props.type === 'secondary' && props.active,
+  };
 });
+
+
 </script>
 
 <template>
     <button :class="difftentButton">
         <p>{{ label }}</p>
-        <span class="plusIcon" v-if="showIcon">+</span>
+        <BasicIcon v-if="showIcon && iconName" :name="iconName" />
     </button>
 </template>
 
 <style scoped lang="scss">
+.activeSecondaryButton {
+    background-color: $darkGreen !important;
+    color: $white !important;
+
+    svg {
+        color: $white !important;
+    }
+}
+
+.activeButton {
+    background-color: $darkGreen !important;
+    color: $white;
+    border: none;
+}
+
+svg {
+    color: $white
+}
 
 p {
     @include buttonText;
@@ -53,13 +86,9 @@ button {
     background-color: $black;
     color: $white;
     border: none;
-    
+
     &:hover {
         background-color: $mediumGreen;
-    }
-
-    &:active {
-        background-color: $darkGreen;
     }
 }
 
@@ -82,9 +111,5 @@ button {
     &:hover {
         background-color: $mediumGreen;
     }
-}
-
-.plusIcon {
-    font-size: 16px;
 }
 </style>

@@ -33,6 +33,7 @@ const filePath = computed(() => {
 svg {
   display: inline-block;
   stroke-width: 2;
+  color: $black;
   &.selected{
     stroke-width: 2.5;
   }
