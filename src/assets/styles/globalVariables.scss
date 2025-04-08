@@ -56,3 +56,9 @@ $red: #e00;
   line-height: 120%;
 }
 
+@mixin noLinkDeco {
+  text-decoration: none;
+  text-underline: none;
+  color: $black;
+}
+

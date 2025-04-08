@@ -1,10 +1,16 @@
 <script setup lang="ts">
+import TabNav from '@/components/TabNav.vue';
+import WaterMark from '@/components/WaterMark.vue';
+import UnderMenu from "@/components/UnderMenu.vue";
 </script>
 
 <template>
   <div class="body_container">
+    <WaterMark />
     <div class="main_container">
       <main>
+        <TabNav />
+        <UnderMenu />
         <RouterView />
       </main>
     </div>
@@ -25,7 +31,6 @@
     main {
       max-width: min(1280px, calc(100% - 3rem));
       flex: 1;
-      padding: 4rem 0;
     }
   }
 }
