@@ -7,7 +7,7 @@
     }
   });
 
-  // Dummy folder data for demonstration
+  // Dummy folder data
   const folders = [
     { id: 1, name: "Mappe A" },
     { id: 2, name: "Mappe B" },
