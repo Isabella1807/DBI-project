@@ -4,6 +4,12 @@
 
 <template>
 <div class="card">
+  <button>
+    Annuller
+  </button>
+  <button>
+    Videre
+  </button>
 </div>
 </template>
 

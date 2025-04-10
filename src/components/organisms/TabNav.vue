@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import TabItem from '@/components/molecules/TabItem.vue';
 import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
 </script>
@@ -9,11 +8,11 @@ import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
     <div class="tabsContainer">
       <TabItem icon-name="Monitor" label="Dashboard" link="/"/>
       <TabItem icon-name="File_document" label="Rapporter" link="/test"/>
-      <TabItem icon-name="Notebook" label="Skemaer" link="/womp"/>
-      <TabItem icon-name="Users_Group" label="Brugere" link="/whoo"/>
-      <TabItem icon-name="Qr_Code" label="Enheder" link="/wo"/>
-      <TabItem icon-name="Files" label="Dokumenter" link="/wom"/>
-      <TabItem icon-name="Calendar_Days" label="Kalender" link="/waa"/>
+      <TabItem icon-name="Notebook" label="Skemaer" link="#"/>
+      <TabItem icon-name="Users_Group" label="Brugere" link="#"/>
+      <TabItem icon-name="Qr_Code" label="Enheder" link="#"/>
+      <TabItem icon-name="Files" label="Dokumenter" link="#"/>
+      <TabItem icon-name="Calendar_Days" label="Kalender" link="#"/>
     </div>
     <div class="userContainer">
       <AvatarIcon/>
