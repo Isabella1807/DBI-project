@@ -2,6 +2,7 @@ import {defineStore} from 'pinia';
 import {ref} from 'vue';
 
 export const useWizardStore = defineStore('wizardStore', () => {
+  const isOpen = ref(false);
   const currentPage = ref(0);
   const totalPages = ref(0);
   const next = () => {
@@ -15,8 +16,12 @@ export const useWizardStore = defineStore('wizardStore', () => {
       currentPage.value -= 1;
     }
   };
+  const open = () => {
+    reset();
+    isOpen.value = true;
+  };
   const close = () => {
-    console.log('CLOSE WIZARD');
+    isOpen.value = false;
   };
   const submit = () => {
     console.log('SUBMIT WIZARD');
@@ -28,10 +33,12 @@ export const useWizardStore = defineStore('wizardStore', () => {
     totalPages.value = amountOfPages;
   };
   return {
+    isOpen,
     currentPage,
     totalPages,
     next,
     previous,
+    open,
     close,
     submit,
     reset,

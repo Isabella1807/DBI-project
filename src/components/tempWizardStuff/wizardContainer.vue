@@ -26,7 +26,7 @@ const ghostsAfterWizard = computed(() => {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="wrapper" @click="wizardStore.close()" v-if="wizardStore.isOpen">
     <div class="container" ref="containerRef">
       <TransitionGroup name="slide" mode="out-in" :duration="1000">
         <template v-if="ghostsBeforeWizard">
@@ -51,6 +51,8 @@ const ghostsAfterWizard = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background-color: rgba(0,0,0,0.5);
+  transition: background-color 0.2s;
 }
 
 .container {

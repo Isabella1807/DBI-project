@@ -18,7 +18,7 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
 </script>
 
 <template>
-  <div class="card" :class="{inBackground: !isCurrentPage}">
+  <div class="card" :class="{inBackground: !isCurrentPage}" @click.prevent.stop="() => {}">
     <h1>{{ props.title }}</h1>
     <slot>
       <h2>DEFAULT CARD {{ props.page }}</h2>
