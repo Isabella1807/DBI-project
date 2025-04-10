@@ -2,6 +2,7 @@
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import UnderMenu from "@/components/organisms/UnderMenu.vue";
+import CreateEntityWizard from '@/components/tempWizardStuff/CreateEntityWizard.vue';
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import UnderMenu from "@/components/organisms/UnderMenu.vue";
         <RouterView />
       </main>
     </div>
+    <CreateEntityWizard/>
   </div>
 </template>
 

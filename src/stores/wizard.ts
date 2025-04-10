@@ -2,7 +2,22 @@ import {defineStore} from 'pinia';
 import {ref} from 'vue';
 
 export const useWizardStore = defineStore('wizardStore', () => {
+  // reset
+  const reset = () => {
+    currentPage.value = 0;
+    entityName.value = '';
+    entityDescription.value = '';
+  };
+  // open close
   const isOpen = ref(false);
+  const open = () => {
+    reset();
+    isOpen.value = true;
+  };
+  const close = () => {
+    isOpen.value = false;
+  };
+  // page handling
   const currentPage = ref(0);
   const totalPages = ref(0);
   const next = () => {
@@ -11,27 +26,22 @@ export const useWizardStore = defineStore('wizardStore', () => {
     }
   };
   const previous = () => {
-    console.log('PREV PAGE');
     if (currentPage.value > 0) {
       currentPage.value -= 1;
     }
   };
-  const open = () => {
-    reset();
-    isOpen.value = true;
-  };
-  const close = () => {
-    isOpen.value = false;
-  };
-  const submit = () => {
-    console.log('SUBMIT WIZARD');
-  };
-  const reset = () => {
-    currentPage.value = 0;
-  };
   const setLength = (amountOfPages: number) => {
     totalPages.value = amountOfPages;
   };
+  // form handling
+  const entityName = ref('');
+  const entityDescription = ref('');
+  const entitySyncId = ref('');
+  const submit = () => {
+    console.log('SUBMIT', entityName.value, entityDescription.value, entitySyncId.value);
+    close();
+  };
+  // exports
   return {
     isOpen,
     currentPage,
@@ -43,5 +53,8 @@ export const useWizardStore = defineStore('wizardStore', () => {
     submit,
     reset,
     setLength,
+    entityName,
+    entityDescription,
+    entitySyncId,
   };
 });

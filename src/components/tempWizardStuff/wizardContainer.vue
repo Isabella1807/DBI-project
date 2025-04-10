@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import WizardGhostCard from '@/components/tempWizardStuff/wizardGhostCard.vue';
+import WizardCard from '@/components/tempWizardStuff/wizardCard.vue';
 
 import {useWizardStore} from '@/stores/wizard.ts';
 
@@ -26,9 +27,9 @@ const ghostsAfterWizard = computed(() => {
 </script>
 
 <template>
-  <div class="wrapper" @click="wizardStore.close()" v-if="wizardStore.isOpen">
+  <div class="wrapper" @click="wizardStore.close()">
     <div class="container" ref="containerRef">
-      <TransitionGroup name="slide" mode="out-in" :duration="1000">
+      <TransitionGroup name="slide">
         <template v-if="ghostsBeforeWizard">
           <wizard-ghost-card v-for="i in ghostsBeforeWizard" :key="`${i}_before`"/>
         </template>
@@ -37,6 +38,11 @@ const ghostsAfterWizard = computed(() => {
           <wizard-ghost-card v-for="i in ghostsAfterWizard" :key="`${i}_after`"/>
         </template>
       </TransitionGroup>
+    </div>
+    <div class="container forCloseButton">
+      <wizard-card title="" class="closeButtonAnchor">
+        <div class="closeButton" @click="wizardStore.close()">x</div>
+      </wizard-card>
     </div>
   </div>
 </template>
@@ -53,6 +59,37 @@ const ghostsAfterWizard = computed(() => {
   justify-content: center;
   background-color: rgba(0,0,0,0.5);
   transition: background-color 0.2s;
+  cursor: pointer;
+
+  .container.forCloseButton {
+    pointer-events: none;
+    .closeButtonAnchor {
+      visibility: hidden;
+
+      .closeButton {
+        pointer-events: all;
+        width: 40px;
+        height: 40px;
+        background-color: #222222;
+        position: absolute;
+        top: -3rem;
+        right: -0.5rem;
+        visibility: visible;
+        font-size: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 100%;
+        color: white;
+        transition: transform 0.2s;
+        padding-bottom: 4px;
+        cursor: pointer;
+        &:hover {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
 }
 
 .container {

@@ -7,6 +7,7 @@ const wizardStore = useWizardStore();
 interface Props {
   page?: number,
   title: string,
+  canContinue?: boolean,
 }
 
 const props = defineProps<Props>();
@@ -19,15 +20,18 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
 
 <template>
   <div class="card" :class="{inBackground: !isCurrentPage}" @click.prevent.stop="() => {}">
-    <h1>{{ props.title }}</h1>
-    <slot>
-      <h2>DEFAULT CARD {{ props.page }}</h2>
-    </slot>
+    <div class="content">
+      <h1>{{ props.title }}</h1>
+      <slot>
+        <h2>DEFAULT CARD {{ props.page }}</h2>
+      </slot>
+    </div>
     <div class="buttons">
       <button v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()">CANCEL</button>
       <button v-else :disabled="!isCurrentPage" @click="wizardStore.previous()">BACK</button>
-      <button v-if="hasSubmitButton" :disabled="!isCurrentPage" @click="wizardStore.submit()">SUBMIT</button>
-      <button v-else :disabled="!isCurrentPage" @click="wizardStore.next()">NEXT</button>
+      <button v-if="hasSubmitButton" :disabled="!isCurrentPage || !canContinue" @click="wizardStore.submit()">SUBMIT
+      </button>
+      <button v-else :disabled="!isCurrentPage || !canContinue" @click="wizardStore.next()">NEXT</button>
     </div>
   </div>
 </template>
@@ -40,10 +44,28 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
   overflow: hidden;
   margin: 0 2.5rem;
   transition: all 0.2s linear;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4rem 3rem 3rem 3rem;
+  cursor: default;
+
+  .buttons {
+    cursor: pointer;
+  }
 
   &.inBackground {
     background-color: #00b0ff;
     //transform: scale(0.85);
+    cursor: not-allowed;
+
+    .buttons {
+      cursor: not-allowed;
+    }
+
+    .content {
+      pointer-events: none;
+    }
   }
 }
 

@@ -10,5 +10,6 @@ import WizardCard from '@/components/tempWizardStuff/wizardCard.vue';
 <style scoped lang="scss">
 .card.ghost {
   opacity: 0;
+  pointer-events: none;
 }
 </style>
