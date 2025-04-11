@@ -31,18 +31,18 @@ const ghostsAfterWizard = computed(() => {
     <div class="container" ref="containerRef">
       <TransitionGroup name="slide">
         <template v-if="ghostsBeforeWizard">
-          <wizard-ghost-card v-for="i in ghostsBeforeWizard" :key="`${i}_before`"/>
+          <wizardGhostCard v-for="i in ghostsBeforeWizard" :key="`${i}_before`"/>
         </template>
         <slot/>
         <template v-if="ghostsAfterWizard">
-          <wizard-ghost-card v-for="i in ghostsAfterWizard" :key="`${i}_after`"/>
+          <wizardGhostCard v-for="i in ghostsAfterWizard" :key="`${i}_after`"/>
         </template>
       </TransitionGroup>
     </div>
     <div class="container forCloseButton">
-      <wizard-card title="" class="closeButtonAnchor">
+      <wizardCard title="" class="closeButtonAnchor">
         <div class="closeButton" @click="wizardStore.close()">x</div>
-      </wizard-card>
+      </wizardCard>
     </div>
   </div>
 </template>

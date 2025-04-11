@@ -39,7 +39,7 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
 <style scoped lang="scss">
 .card {
   width: calc(max(min(30vw, 640px), min(420px, 95vw)));
-  background-color: orange;
+  background-color: $white;
   aspect-ratio: 1;
   overflow: hidden;
   margin: 0 2.5rem;
@@ -49,6 +49,7 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
   justify-content: space-between;
   padding: 4rem 3rem 3rem 3rem;
   cursor: default;
+  border-radius: 20px;
 
   .buttons {
     cursor: pointer;

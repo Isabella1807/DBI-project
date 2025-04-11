@@ -4,7 +4,7 @@ import WizardCard from '@/components/tempWizardStuff/wizardCard.vue';
 </script>
 
 <template>
-  <wizard-card title="" class="ghost"/>
+  <wizardCard title="" class="ghost"/>
 </template>
 
 <style scoped lang="scss">

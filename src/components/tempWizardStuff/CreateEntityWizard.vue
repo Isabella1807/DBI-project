@@ -2,22 +2,26 @@
 import WizardContainer from '@/components/tempWizardStuff/wizardContainer.vue';
 import WizardCard from '@/components/tempWizardStuff/wizardCard.vue';
 
-import { useWizardStore } from '@/stores/wizard.ts';
+import {useWizardStore} from '@/stores/wizard.ts';
+import BasicInput from '@/components/atoms/BasicInput.vue';
+
 const wizardStore = useWizardStore();
 </script>
 
 <template>
-  <wizard-container v-if="wizardStore.isOpen">
-    <wizard-card :page="0" title="Navngiv enhed" :canContinue="wizardStore.entityName.length > 0">
-      <input type="text" v-model="wizardStore.entityName" placeholder="Skriv her..."/>
-    </wizard-card>
-    <wizard-card :page="1" title="Beskrivelse" :canContinue="true">
-      <textarea type="text" v-model="wizardStore.entityDescription"/>
-    </wizard-card>
-    <wizard-card :page="2" title="Extern sync ID" :canContinue="true">
-      <input type="text" v-model="wizardStore.entitySyncId"/>
-    </wizard-card>
-  </wizard-container>
+  <wizardContainer v-if="wizardStore.isOpen">
+    <wizardCard :page="0" title="Navngiv enhed" :canContinue="wizardStore.entityName.length > 0">
+      <BasicInput type="text" label="Navn" labelId="Name" placeholder="Skriv her..." v-model="wizardStore.entityName"/>
+    </wizardCard>
+
+    <wizardCard :page="1" title="Beskrivelse" :canContinue="true">
+      <BasicInput label="Tilføj beskrivelse af enhed" labelId="description" placeholder="Skriv her..." type="textarea" v-model="wizardStore.entityDescription"/>
+    </wizardCard>
+
+    <wizardCard :page="2" title="Extern sync ID" :canContinue="true">
+      <BasicInput label="Tilføj ekstern sync ID" labelId="sync" placeholder="Skriv her..." v-model="wizardStore.entitySyncId"/>
+    </wizardCard>
+  </wizardContainer>
 </template>
 
 <style scoped lang="scss">
