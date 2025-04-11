@@ -21,17 +21,21 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
 <template>
   <div class="card" :class="{inBackground: !isCurrentPage}" @click.prevent.stop="() => {}">
     <div class="content">
-      <h1>{{ props.title }}</h1>
+      <h1 class="cardTitle">{{ props.title }}</h1>
       <slot>
         <h2>DEFAULT CARD {{ props.page }}</h2>
       </slot>
     </div>
     <div class="buttons">
-      <button v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()">CANCEL</button>
-      <button v-else :disabled="!isCurrentPage" @click="wizardStore.previous()">BACK</button>
-      <button v-if="hasSubmitButton" :disabled="!isCurrentPage || !canContinue" @click="wizardStore.submit()">SUBMIT
+      <button v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()">
+        CANCEL
       </button>
-      <button v-else :disabled="!isCurrentPage || !canContinue" @click="wizardStore.next()">NEXT</button>
+      <button v-else :disabled="!isCurrentPage" @click="wizardStore.previous()">BACK</button>
+      <button v-if="hasSubmitButton" :disabled="!isCurrentPage || !canContinue"
+              @click="wizardStore.submit()">SUBMIT
+      </button>
+      <button v-else :disabled="!isCurrentPage || !canContinue" @click="wizardStore.next()">NEXT
+      </button>
     </div>
   </div>
 </template>
@@ -50,6 +54,13 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
   padding: 4rem 3rem 3rem 3rem;
   cursor: default;
   border-radius: 20px;
+
+  .content {
+    .cardTitle {
+      @include heading1;
+      margin-bottom: 2.5rem;
+    }
+  }
 
   .buttons {
     cursor: pointer;
