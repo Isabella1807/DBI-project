@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useWizardStore} from '@/stores/wizard.ts';
 import {computed} from 'vue';
+import BasicButton from '@/components/atoms/BasicButton.vue';
 
 const wizardStore = useWizardStore();
 
@@ -26,6 +27,11 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
         <h2>DEFAULT CARD {{ props.page }}</h2>
       </slot>
     </div>
+    <BasicButton label="secondary" type="secondary" active showIcon iconName="Chevron_Right"/>
+    <BasicButton label="lukNed" type="lukNed"/>
+    <BasicButton label="default" type="default"/>
+    <BasicButton label="annuller" type="annuller"/>
+    <BasicButton label="default" type="default"/>
     <div class="buttons">
       <button v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()">
         CANCEL
@@ -67,7 +73,7 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
   }
 
   &.inBackground {
-    background-color: #00b0ff;
+    //background-color: #00b0ff;
     //transform: scale(0.85);
     cursor: not-allowed;
 

@@ -37,8 +37,6 @@ const difftentButton = computed(() => {
     activeSecondaryButton: props.type === 'secondary' && props.active,
   };
 });
-
-
 </script>
 
 <template>
