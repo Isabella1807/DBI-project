@@ -34,7 +34,7 @@ import SearchBar from "@/components/molecules/SearchBar.vue";
     background: $white;
 
     .toolbar-container {
-        max-width: 1280px;
+        max-width: 1310px;
         margin: 0 auto;
         padding: 1rem;
         display: flex;
