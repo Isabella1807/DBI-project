@@ -8,8 +8,7 @@ import FolderSection from "@/components/FolderSection.vue";
     <H1>
       TESTER VIEW 1
     </H1>
-        <FolderComponet/>
-        <FolderSection view="list"/>
+        <FolderSection view="detailed"/>
   </div>
 </template>
 
