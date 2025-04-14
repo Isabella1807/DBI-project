@@ -20,10 +20,13 @@ const props = defineProps({
     type: String,
     default: '',
   },
-
   active: {
     type: Boolean,
     default: false,
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
   },
 });
 
@@ -35,12 +38,13 @@ const difftentButton = computed(() => {
     lukNedButton: props.type === 'lukNed',
     activeButton: props.type === 'default' && props.active,
     activeSecondaryButton: props.type === 'secondary' && props.active,
+    disabledButton: props.disabled === true,
   };
 });
 </script>
 
 <template>
-  <button :class="difftentButton">
+  <button :class="[difftentButton, {disabledButton: props.disabled }]">
     <p>{{ label }}</p>
     <BasicIcon v-if="showIcon && iconName" :name="iconName"/>
   </button>
@@ -109,5 +113,8 @@ button {
   &:hover {
     background-color: $mediumGreen;
   }
+}
+.disabledButton{
+  background-color: deeppink;
 }
 </style>

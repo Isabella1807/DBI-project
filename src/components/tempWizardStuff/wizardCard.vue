@@ -27,21 +27,20 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
         <h2>DEFAULT CARD {{ props.page }}</h2>
       </slot>
     </div>
-    <BasicButton label="secondary" type="secondary" active showIcon iconName="Chevron_Right"/>
-    <BasicButton label="lukNed" type="lukNed"/>
-    <BasicButton label="default" type="default"/>
-    <BasicButton label="annuller" type="annuller"/>
-    <BasicButton label="default" type="default"/>
     <div class="buttons">
-      <button v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()">
-        CANCEL
-      </button>
-      <button v-else :disabled="!isCurrentPage" @click="wizardStore.previous()">BACK</button>
-      <button v-if="hasSubmitButton" :disabled="!isCurrentPage || !canContinue"
-              @click="wizardStore.submit()">SUBMIT
-      </button>
-      <button v-else :disabled="!isCurrentPage || !canContinue" @click="wizardStore.next()">NEXT
-      </button>
+      <BasicButton label="Annuller" type="secondary" showIcon iconName="Chevron_Right"/>
+      <BasicButton label="Videre" type="default" showIcon iconName="Chevron_Right"/>
+      <BasicButton label="Tilbage" type="default" disabled/>
+      <BasicButton label="Udfør" type="default" disabled/>
+      <!--      <button v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()">
+              CANCEL
+            </button>
+            <button v-else :disabled="!isCurrentPage" @click="wizardStore.previous()">BACK</button>
+            <button v-if="hasSubmitButton" :disabled="!isCurrentPage || !canContinue"
+                    @click="wizardStore.submit()">SUBMIT
+            </button>
+            <button v-else :disabled="!isCurrentPage || !canContinue" @click="wizardStore.next()">NEXT
+            </button>-->
     </div>
   </div>
 </template>
@@ -70,6 +69,8 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
 
   .buttons {
     cursor: pointer;
+    display: flex;
+    justify-content: space-between;
   }
 
   &.inBackground {
