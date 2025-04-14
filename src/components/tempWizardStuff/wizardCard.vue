@@ -28,10 +28,10 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
       </slot>
     </div>
     <div class="buttons">
-      <BasicButton label="Annuller" type="secondary" v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()"/>
-      <BasicButton label="Tilbage" type="default" v-else :disabled="!isCurrentPage" @click="wizardStore.previous()"/>
-      <BasicButton label="Udfør" type="default" showIcon iconName="Chevron_Right" v-if="hasSubmitButton" :disabled="!isCurrentPage || !canContinue" @click="wizardStore.submit()"/>
-      <BasicButton label="Videre" type="default" showIcon iconName="Chevron_Right" v-else :disabled="!isCurrentPage || !canContinue" @click="wizardStore.next()"/>
+      <BasicButton ariaLabel="Annuller og luk" label="Annuller" type="secondary" v-if="hasCancelButton" :disabled="!isCurrentPage" @click="wizardStore.close()"/>
+      <BasicButton ariaLabel="Gå tilbage til forrige trin" label="Tilbage" type="default" v-else :disabled="!isCurrentPage" @click="wizardStore.previous()"/>
+      <BasicButton ariaLabel="Udfør" label="Udfør" type="default" showIcon iconName="Chevron_Right" v-if="hasSubmitButton" :disabled="!isCurrentPage || !canContinue" @click="wizardStore.submit()"/>
+      <BasicButton ariaLabel="Videre til næste trin" label="Videre" type="default" showIcon iconName="Chevron_Right" v-else :disabled="!isCurrentPage || !canContinue" @click="wizardStore.next()"/>
     </div>
   </div>
 </template>

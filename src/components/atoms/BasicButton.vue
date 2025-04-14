@@ -28,6 +28,10 @@ const props = defineProps({
     type: Boolean,
     required: false,
   },
+  ariaLabel: {
+    type: String,
+    required: true,
+  },
 });
 
 const difftentButton = computed(() => {
@@ -44,7 +48,7 @@ const difftentButton = computed(() => {
 </script>
 
 <template>
-  <button :class="[difftentButton, {disabledButton: props.disabled }]">
+  <button :class="[difftentButton, {disabledButton: props.disabled }]" :aria-label="props.ariaLabel">
     <p>{{ label }}</p>
     <BasicIcon v-if="showIcon && iconName" :name="iconName"/>
   </button>
