@@ -20,7 +20,7 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
 </script>
 
 <template>
-  <div class="card" :class="{inBackground: !isCurrentPage}" @click.prevent.stop="() => {}">
+  <div class="card" :class="{inBackground: !isCurrentPage, skipAnimation: !wizardStore.isReady}" @click.prevent.stop="() => {}">
     <div class="content">
       <h1 class="cardTitle">{{ props.title }}</h1>
       <slot>
@@ -43,7 +43,7 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
   aspect-ratio: 1;
   overflow: hidden;
   margin: 0 2.5rem;
-  transition: all 0.2s linear;
+  transition: width 0.2s linear, margin 0.2s linear;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -51,6 +51,10 @@ const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 
   cursor: default;
   border-radius: 20px;
 
+  &.skipAnimation {
+    transition: all 0s;
+    opacity: 0;
+  }
   .content {
     .cardTitle {
       @include heading1;

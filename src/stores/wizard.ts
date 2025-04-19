@@ -7,6 +7,7 @@ export const useWizardStore = defineStore('wizardStore', () => {
     currentPage.value = 0;
     entityName.value = '';
     entityDescription.value = '';
+    isReady.value = false;
   };
 
   // open close
@@ -14,6 +15,9 @@ export const useWizardStore = defineStore('wizardStore', () => {
   const open = () => {
     reset();
     isOpen.value = true;
+    setTimeout(() => {
+      isReady.value = true;
+    }, 50);
   };
 
   const close = () => {
