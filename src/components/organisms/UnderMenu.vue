@@ -9,13 +9,13 @@ const wizardStore = useWizardStore();
 <template>
     <div class="toolbar-wrapper">
         <div class="toolbar-container">
-            <DropdownButton label="Opret" type="default" iconName="PlusIcon" :options="[
+            <DropdownButton label="Opret" type="default" iconName="PlusIcon" ariaLabel="Opret" :options="[
                 { label: 'Mappe', icon: 'Folder' },
                 { label: 'Enhed', icon: 'Qr_code' }
             ]" />
 
             <SearchBar @click="wizardStore.open()"/>
-            <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport" :options="[
+            <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport" ariaLabel="Eksporter" :options="[
                 { label: 'Hent som PDF', icon: 'File' },
                 { label: 'Hent som CSV', icon: 'Table' },
                 { label: 'Send til printer kø', icon: 'Printer' }

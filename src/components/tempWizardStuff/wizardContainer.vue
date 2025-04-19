@@ -60,6 +60,7 @@ const ghostsAfterWizard = computed(() => {
   background-color: rgba(0,0,0,0.5);
   transition: background-color 0.2s;
   cursor: pointer;
+  overflow: hidden;
 
   .container.forCloseButton {
     pointer-events: none;

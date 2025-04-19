@@ -24,18 +24,18 @@ import CreateEntityWizard from '@/components/tempWizardStuff/CreateEntityWizard.
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  border: 1px solid red;
+  //border: 1px solid red;
 
   .main_container {
     flex: 1;
     display: flex;
     justify-content: space-around;
-    border: 1px solid blue;
+    //border: 1px solid blue;
 
     main {
       max-width: min(1280px, calc(100% - 3rem));
       flex: 1;
-      border: 1px solid blueviolet;
+      //border: 1px solid blueviolet;
     }
   }
 }

@@ -6,12 +6,13 @@ import {useWizardStore} from '@/stores/wizard.ts';
 import BasicInput from '@/components/atoms/BasicInput.vue';
 
 const wizardStore = useWizardStore();
+
 </script>
 
 <template>
   <wizardContainer v-if="wizardStore.isOpen">
     <wizardCard :page="0" title="Navngiv enhed" :canContinue="wizardStore.entityName.length > 0">
-      <BasicInput type="text" label="Navn" labelId="Name" placeholder="Skriv her..." v-model="wizardStore.entityName"/>
+      <BasicInput type="text" label="Navn" labelId="Name" placeholder="Skriv her..." v-model="wizardStore.entityName" @blur="() => console.log('BLUR BLUR')" autoFocus/>
     </wizardCard>
 
     <wizardCard :page="1" title="Beskrivelse" :canContinue="true">
