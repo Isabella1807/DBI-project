@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 
 interface Props {
   label: string,
@@ -19,12 +19,20 @@ onMounted(() => {
     inputRef.value?.focus();
   }
 });
+
+watch(() => props.autoFocus, (newVal) => {
+  if(newVal) {
+    inputRef.value?.focus();
+  }
+});
 </script>
 
 <template>
   <div class="inputContainer">
     <label class="inputLabel" :for="props.labelId">{{ props.label }}</label>
-    <input class="inputArea" :type="props.type || 'text'" :id="props.labelId" :placeholder="props.placeholder" v-model="model" ref="inputRef" @blur="emit('blur', $event)"/>
+    <input class="inputArea" :type="props.type || 'text'" :id="props.labelId"
+           :placeholder="props.placeholder" v-model="model" ref="inputRef"
+           @blur="emit('blur', $event)"/>
   </div>
 </template>
 
