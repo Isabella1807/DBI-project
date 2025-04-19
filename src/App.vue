@@ -3,12 +3,15 @@ import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import UnderMenu from "@/components/organisms/UnderMenu.vue";
 import CreateEntityWizard from '@/components/tempWizardStuff/CreateEntityWizard.vue';
+import {useWizardStore} from '@/stores/wizard.ts';
+
+const wizardStore = useWizardStore();
 </script>
 
 <template>
   <div class="body_container">
-    <WaterMark />
-    <div class="main_container">
+    <WaterMark :class="{blur: wizardStore.isOpen}"/>
+    <div class="main_container" :class="{blur: wizardStore.isOpen}">
       <main>
         <TabNav />
         <UnderMenu />
@@ -38,5 +41,9 @@ import CreateEntityWizard from '@/components/tempWizardStuff/CreateEntityWizard.
       //border: 1px solid blueviolet;
     }
   }
+}
+
+.blur{
+  filter: blur(5px);
 }
 </style>
