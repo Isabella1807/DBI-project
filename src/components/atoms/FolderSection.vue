@@ -1,32 +1,27 @@
 <script lang="ts" setup>
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
-  // Define a prop to switch between views: "detailed" or "list"
-  const props = defineProps({
-    view: {
-      type: String,
-      default: 'detailed'  // default to detailed view; use "list" for list view
-    }
-  });
+import { inject, Ref } from 'vue';
 
-  // Dummy folder data
-  const folders = [
-    { id: 1, name: "Mappe A" },
-    { id: 2, name: "Mappe B" },
-    { id: 3, name: "Mappe C" },
-    { id: 4, name: "Mappe D" },
-    { id: 5, name: "Mappe E" },
-    { id: 6, name: "Mappe F" }
-  ];
+const currentView = inject<Ref<string>>('currentView');
+
+
+// Dummy folder data
+const folders = [
+  { id: 1, name: "Mappe A" },
+  { id: 2, name: "Mappe B" },
+  { id: 3, name: "Mappe C" },
+  { id: 4, name: "Mappe D" },
+  { id: 5, name: "Mappe E" },
+  { id: 6, name: "Mappe F" }
+];
 </script>
 
 <template>
-  <!-- Parent container that applies different layouts based on view -->
-  <div :class="['folderContainer', props.view]">
-    <!-- Render each folder item -->
-    <div 
-      v-for="folder in folders" 
-      :key="folder.id" 
-      :class="['folder', props.view]"
+  <div :class="['folderContainer', currentView.value]">
+    <div
+      v-for="folder in folders"
+      :key="folder.id"
+      :class="['folder', currentView.value]"
     >
       <div class="folderContent">
         <BasicIcon name="Folder" class="huge" />
@@ -35,6 +30,7 @@ import BasicIcon from '@/components/atoms/BasicIcon.vue';
     </div>
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 /* Parent container styles for detailed view: grid of 5 cards per row */
@@ -78,16 +74,20 @@ import BasicIcon from '@/components/atoms/BasicIcon.vue';
     flex-shrink: 0;
   }
 }
+
 .folder.list:nth-child(even) .folderContent {
-  background-color: $lightGrey;  /* Replace with your desired color */
+  background-color: $lightGrey;
+  /* Replace with your desired color */
 }
 
 /* List view styles for individual folder item */
 .folder.list .folderContent {
   background-color: $lightestGrey;
   display: flex;
-  width: 100%;      /* Takes the full available width */
-  height: 60px;     /* Reduced height for list view */
+  width: 100%;
+  /* Takes the full available width */
+  height: 60px;
+  /* Reduced height for list view */
   padding: 10px 20px;
   flex-direction: row;
   align-items: center;
@@ -107,7 +107,8 @@ import BasicIcon from '@/components/atoms/BasicIcon.vue';
     @include bodyText;
     text-align: left;
     margin: 0;
-    flex-grow: 1;   /* Let text take the remaining space */
+    flex-grow: 1;
+    /* Let text take the remaining space */
   }
 }
 </style>

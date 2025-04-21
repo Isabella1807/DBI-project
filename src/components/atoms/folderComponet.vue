@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { inject, computed } from 'vue';
+
+const currentView = inject('currentView');
 
 </script>
 

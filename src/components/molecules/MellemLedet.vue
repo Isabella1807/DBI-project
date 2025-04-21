@@ -1,7 +1,19 @@
 <script setup>
 import BasicIcon from '../atoms/BasicIcon.vue';
-</script>
+import { ref, provide } from 'vue';
 
+const currentView = ref('detailed');
+function toggleView(viewType) {
+    console.log('Skifter view til:', viewType);
+    currentView.value = viewType;
+}
+
+
+// Gør currentView tilgængelig for børn
+provide('currentView', currentView);
+provide('toggleView', toggleView);
+
+</script>
 <template>
     <div class="tableNav">
         <!-- Venstre side -->
@@ -40,10 +52,13 @@ import BasicIcon from '../atoms/BasicIcon.vue';
             <div class="tableNavIcon">
                 <BasicIcon name="Filter" />
             </div>
-            <div class="tableNavIcon">
-                <BasicIcon name="ListUnordered" />
+            <div class="tableNavIcon" :class="{ active: currentView.value === 'list' }">
+                <BasicIcon name="ListUnordered" @click="toggleView('list')" />
             </div>
-            <div class="tableNavIcon active">
+
+
+            <div class="tableNavIcon" :class="{ active: currentView.value === 'detailed' }"
+                @click="toggleView('detailed')">
                 <BasicIcon name="MoreGridSmall" />
             </div>
         </div>
@@ -96,7 +111,7 @@ import BasicIcon from '../atoms/BasicIcon.vue';
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        
+
     }
 
     .tableNavIcon {
@@ -106,6 +121,12 @@ import BasicIcon from '../atoms/BasicIcon.vue';
         display: flex;
         align-items: center;
         justify-content: center;
+
+        .tableNavIcon.active {
+            background-color: $mediumGreen;
+            color: $white;
+        }
+
     }
 
     .divider {
