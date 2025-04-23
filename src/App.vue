@@ -15,7 +15,7 @@ import MellemLedet from '@/components/molecules/MellemLedet.vue';
         <UnderMenu />
         <MellemLedet/>
         <RouterView />
-        <FolderSection />
+        <FolderSection view="list"/>
       </main>
     </div>
   </div>
