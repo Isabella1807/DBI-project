@@ -2,6 +2,7 @@
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import UnderMenu from "@/components/organisms/UnderMenu.vue";
+import FolderSection from '@/components/atoms/FolderSection.vue';
 import MellemLedet from '@/components/molecules/MellemLedet.vue';
 </script>
 
@@ -14,6 +15,7 @@ import MellemLedet from '@/components/molecules/MellemLedet.vue';
         <UnderMenu />
         <MellemLedet/>
         <RouterView />
+        <FolderSection />
       </main>
     </div>
   </div>

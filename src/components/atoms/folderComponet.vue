@@ -1,47 +1,39 @@
 <script lang="ts" setup>
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 
+
+defineProps<{ name: string }>()
 </script>
 
 <template>
-
-<div class="folder">
-  <div class="folder-content">
-    <BasicIcon name="Folder" />
-    <p>{{ }}</p>
+  <div class="folderContent">
+    <BasicIcon name="Folder" class="huge" />
+    <p>{{ name }}</p>
   </div>
-</div>
-
 </template>
 
 <style lang="scss" scoped>
-
-.folder-content {
-  display: flex;
-  width: 180px;
-  height: 180px;
-  padding: 40px 42px 11px 42px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  aspect-ratio: 1/1;
-  box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.10);
+.folderContent {
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 16px;
   background: $white;
+  box-shadow: 0px 8px 10px 0px rgba(0, 0, 0, 0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
 
-svg {
-  flex-shrink: 0;
+  svg {
+    flex-shrink: 0;
+    color: $darkGrey;
   }
 
-p {
-  @include bodyText;
-  text-align: center;
-  width: 96px;
-  height: 39px;
-  flex-shrink: 0;
+  p {
+    text-align: center;
+    margin-top: 8px;
+    @include bodyText;
   }
 }
-
 </style>
