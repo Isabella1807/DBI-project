@@ -1,31 +1,37 @@
 <script lang="ts" setup>
-import FolderComponent from '@/components/atoms/folderComponet.vue';
-import { inject, ref } from 'vue';
-import type { Ref } from 'vue';
+import BasicIcon from '@/components//atoms/BasicIcon.vue';
+  // Define a prop to switch between views: "detailed" or "list"
+  const props = defineProps({
+    view: {
+      type: String,
+      default: 'detailed'  // default to detailed view; use "list" for list view
+    }
+  });
 
-
-const currentView = inject<Ref<string>>('currentView') ?? ref('detailed')
-
-
+  // Dummy folder data
   const folders = [
-  { id: 1, name: 'Mappe A' },
-  { id: 2, name: 'Mappe B' },
-  { id: 3, name: 'Mappe C' },
-  { id: 4, name: 'Mappe D' },
-  { id: 5, name: 'Mappe E' },
-  { id: 6, name: 'Mappe F' },
-  { id: 7, name: 'Mappe G' },
-  { id: 8, name: 'Mappe H' },
-  { id: 9, name: 'Mappe I' },
-  { id: 10, name: 'Mappe J' }
-];
-
+    { id: 1, name: "Mappe A" },
+    { id: 2, name: "Mappe B" },
+    { id: 3, name: "Mappe C" },
+    { id: 4, name: "Mappe D" },
+    { id: 5, name: "Mappe E" },
+    { id: 6, name: "Mappe F" }
+  ];
 </script>
 
 <template>
-  <div :class="['folderContainer', currentView?.value || 'detailed']">
-    <div v-for="folder in folders" :key="folder.id" :class="['folder', currentView?.value || 'detailed']">
-      <FolderComponent :name="folder.name" />
+  <!-- Parent container that applies different layouts based on view -->
+  <div :class="['folderContainer', props.view]">
+    <!-- Render each folder item -->
+    <div 
+      v-for="folder in folders" 
+      :key="folder.id" 
+      :class="['folder', props.view]"
+    >
+      <div class="folderContent">
+        <BasicIcon name="Folder" class="huge" />
+        <p>{{ folder.name }}</p>
+      </div>
     </div>
   </div>
 </template>
