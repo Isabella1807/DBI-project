@@ -6,9 +6,9 @@ import MellemLedet from '@/components/molecules/MellemLedet.vue';
 </script>
 
 <template>
-  <div class="body_container">
+  <div class="bodyContainer">
     <WaterMark />
-    <div class="main_container">
+    <div class="mainContainer">
       <main>
         <TabNav />
         <UnderMenu />
@@ -20,13 +20,13 @@ import MellemLedet from '@/components/molecules/MellemLedet.vue';
 </template>
 
 <style scoped lang="scss">
-.body_container {
+.bodyContainer {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   border: 1px solid red;
 
-  .main_container {
+  .mainContainer {
     flex: 1;
     display: flex;
     justify-content: space-around;
