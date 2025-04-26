@@ -1,39 +1,44 @@
 <script lang="ts" setup>
-import BasicIcon from '@/components//atoms/BasicIcon.vue';
-  // Define a prop to switch between views: "detailed" or "list"
-  const props = defineProps({
-    view: {
-      type: String,
-      default: 'detailed'  // default to detailed view; use "list" for list view
-    }
-  });
+import BasicIcon from '@/components/atoms/BasicIcon.vue';
+import { inject, ref, computed } from 'vue';
 
-  // Dummy folder data
-  const folders = [
-    { id: 1, name: "Mappe A" },
-    { id: 2, name: "Mappe B" },
-    { id: 3, name: "Mappe C" },
-    { id: 4, name: "Mappe D" },
-    { id: 5, name: "Mappe E" },
-    { id: 6, name: "Mappe F" }
-  ];
+// Inject currentView fra MellemLedet
+const injectedView = inject('currentView', ref('detailed'));
+const currentView = computed(() => injectedView.value);
+
+console.log('Initial view:', currentView.value); // Debug
+
+
+// Dummy folder data
+const folders = [
+  { id: 1, name: "Mappe A" },
+  { id: 2, name: "Mappe B" },
+  { id: 3, name: "Mappe C" },
+  { id: 4, name: "Mappe D" },
+  { id: 5, name: "Mappe E" },
+  { id: 6, name: "Mappe F" }
+];
 </script>
 
 <template>
-  <!-- Parent container that applies different layouts based on view -->
-  <div :class="['folderContainer', props.view]">
-    <!-- Render each folder item -->
-    <div 
-      v-for="folder in folders" 
-      :key="folder.id" 
-      :class="['folder', props.view]"
-    >
-      <div class="folderContent">
-        <BasicIcon name="Folder" class="huge" />
-        <p>{{ folder.name }}</p>
+    <div v-if="false" style="color: red; padding: 1rem;">
+      Debug: currentView = {{ currentView }}
+    </div>
+    
+    <div :class="['folderContainer', currentView]">
+      <div 
+        v-for="folder in folders" 
+        :key="folder.id" 
+        :class="['folder', currentView]"
+      >
+        <div class="folderContent">
+          <BasicIcon name="Folder" class="huge" />
+          <p>{{ folder.name }}</p>
+        </div>
       </div>
     </div>
-  </div>
+
+  
 </template>
 
 <style lang="scss" scoped>
@@ -50,7 +55,7 @@ import BasicIcon from '@/components//atoms/BasicIcon.vue';
   flex-direction: column;
 }
 
-.folder.list .folderContent {
+.folderContainer.list .folderContent {
   background: $lightestGrey;
   display: flex;
   width: 100%;

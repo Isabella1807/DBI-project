@@ -1,5 +1,6 @@
 <script setup>
 import BasicIcon from '../atoms/BasicIcon.vue';
+import FolderSection from '@/components/atoms/FolderSection.vue'; 
 import { ref, provide } from 'vue';
 
 const currentView = ref('detailed');
@@ -49,20 +50,26 @@ provide('toggleView', toggleView);
 
         <!-- Højre side -->
         <div class="rightSection">
-            <div class="tableNavIcon">
-                <BasicIcon name="Filter" />
-            </div>
-            <div class="tableNavIcon" :class="{ active: currentView.value === 'list' }">
-                <BasicIcon name="ListUnordered" @click="toggleView('list')" />
-            </div>
-
-
-            <div class="tableNavIcon" :class="{ active: currentView.value === 'detailed' }"
-                @click="toggleView('detailed')">
-                <BasicIcon name="MoreGridSmall" />
-            </div>
+        <div class="tableNavIcon">
+            <BasicIcon name="Filter" />
+        </div>
+        <div 
+            class="tableNavIcon" 
+            :class="{ active: currentView === 'list' }"
+            @click="toggleView('list')"
+        >
+            <BasicIcon name="ListUnordered" />
+        </div>
+        <div 
+            class="tableNavIcon" 
+            :class="{ active: currentView === 'detailed' }"
+            @click="toggleView('detailed')"
+        >
+            <BasicIcon name="MoreGridSmall" />
         </div>
     </div>
+    </div>
+    <FolderSection />
 </template>
 
 <style scoped lang="scss">
@@ -115,19 +122,19 @@ provide('toggleView', toggleView);
     }
 
     .tableNavIcon {
-        background-color: $lightGrey;
-        padding: 0.4rem;
-        border-radius: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    background-color: $lightGrey;
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; /* Tilføj pointer for at vise det er klikbart */
+}
 
-        .tableNavIcon.active {
-            background-color: $mediumGreen;
-            color: $white;
-        }
-
-    }
+.tableNavIcon.active { /* Flyt .active ud af nesting */
+    background-color: $mediumGreen;
+    color: $white;
+}
 
     .divider {
         height: 1.5rem;
