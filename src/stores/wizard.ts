@@ -66,7 +66,7 @@ export const useWizardStore = defineStore('wizardStore', () => {
 
   // handle confirm modal
   const somethingIsWritten = computed(() => {
-    if (entityName.value === '' && entityDescription.value === '' && entitySyncId.value === '') {
+    if(entityName.value === '' && entityDescription.value === '' && entitySyncId.value === '') {
       return false;
     }
     return true;
@@ -74,7 +74,7 @@ export const useWizardStore = defineStore('wizardStore', () => {
 
   const submit = () => {
     console.log('SUBMIT', entityName.value, entityDescription.value, entitySyncId.value);
-    close();
+    confirmClose();
   };
 
   //transition fix
