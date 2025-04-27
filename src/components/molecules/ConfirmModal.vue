@@ -32,11 +32,24 @@ const props = defineProps<Props>();
 
 <style scoped lang="scss">
 .confirmModalContainer {
-  padding: 3rem;
-  border: 1px solid blue;
+  padding: 4rem 3rem 3rem 3rem;
   display: inline-block;
+  background-color: $white;
+  border-radius: 18px;
   .textContainer {
     text-align: center;
+    padding-bottom: 2rem;
+    .titleText{
+      @include heading1;
+      margin-bottom: 1rem;
+    }
+    .descriptionText{
+      @include fatBodyText;
+      margin-bottom: 0.2rem;
+    }
+    .noteText{
+      @include bodyText;
+    }
   }
   .buttonsContainer {
     justify-content: space-between;

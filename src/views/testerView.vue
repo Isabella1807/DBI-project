@@ -5,7 +5,7 @@ import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
 
 <template>
   <ConfirmModal
-    iconName="Info"
+    iconName="Circle_Warning"
     title="Det ser ud til, du ikke er færdig"
     description="Ændringer vil ikke blive gemt"
     note="Vil du afslutte alligevel?"
