@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
-import UnderMenu from "@/components/organisms/UnderMenu.vue";
+import UnderMenu from '@/components/organisms/UnderMenu.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import {useWizardStore} from '@/stores/wizard.ts';
+import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
 
 const wizardStore = useWizardStore();
 </script>
@@ -19,6 +20,17 @@ const wizardStore = useWizardStore();
       </main>
     </div>
     <CreateEntityWizard/>
+    <ConfirmModal
+      v-if="wizardStore.confirmModalIsOpen"
+      iconName="Circle_Warning"
+      title="Det ser ud til, du ikke er færdig"
+      description="Ændringer vil ikke blive gemt"
+      note="Vil du afslutte alligevel?"
+      cancelText="Annuller"
+      confirmText="Ja - afslut og luk ned"
+      @cancel="() => wizardStore.cancelClose()"
+      @confirm="() => wizardStore.confirmClose()"
+    />
   </div>
 </template>
 

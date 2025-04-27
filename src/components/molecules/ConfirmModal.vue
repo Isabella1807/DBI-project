@@ -13,6 +13,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits(['cancel', 'confirm']);
 </script>
 
 <template>
@@ -25,8 +26,8 @@ const props = defineProps<Props>();
         <p class="noteText" v-if="note">{{ props.note }}</p>
       </div>
       <div class="buttonsContainer">
-        <BasicButton ariaLabel="Annuller" :label="props.cancelText" type="annuller"/>
-        <BasicButton ariaLabel="afslut" :label="props.confirmText"/>
+        <BasicButton ariaLabel="Annuller" :label="props.cancelText" type="annuller" @click="emit('cancel', $event)"/>
+        <BasicButton ariaLabel="afslut" :label="props.confirmText" @click="emit('confirm', $event)"/>
       </div>
     </div>
   </div>
