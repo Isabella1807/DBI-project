@@ -1,9 +1,10 @@
 <script setup lang="ts">
 
+import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
 </script>
 
 <template>
-  <h1>hey</h1>
+  <ConfirmModal iconName="Info" cancelText="Annuller" confirmText="Ja - afslut og luk ned"/>
 </template>
 
 <style scoped lang="scss">
