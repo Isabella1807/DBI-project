@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import WizardContainer from '@/components/tempWizardStuff/wizardContainer.vue';
-import WizardCard from '@/components/tempWizardStuff/wizardCard.vue';
-
-import {useWizardStore} from '@/stores/wizard.ts';
+import WizardContainer from '@/components/organisms/wizardContainer.vue';
+import WizardCard from '@/components/molecules/wizardCard.vue';
+import {useWizardStore} from '@/stores/wizard';
 import BasicInput from '@/components/atoms/BasicInput.vue';
 import {ref, watch} from 'vue';
 
