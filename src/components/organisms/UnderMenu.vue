@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import DropdownButton from '@/components/molecules/DropdownButton.vue';
 import SearchBar from "@/components/molecules/SearchBar.vue";
-
-import { useWizardStore } from '@/stores/wizard.ts';
-const wizardStore = useWizardStore();
 </script>
 
 <template>
@@ -14,7 +11,7 @@ const wizardStore = useWizardStore();
                 { label: 'Enhed', icon: 'Qr_code' }
             ]" />
 
-            <SearchBar @click="wizardStore.open()"/>
+            <SearchBar/>
             <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport" ariaLabel="Eksporter" :options="[
                 { label: 'Hent som PDF', icon: 'File' },
                 { label: 'Hent som CSV', icon: 'Table' },
