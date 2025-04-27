@@ -3,13 +3,8 @@
 </script>
 
 <template>
-<div>
-  <H1>
-    TESTER VIEW 2
-  </H1>
-</div>
+  <h1>hey</h1>
 </template>
 
 <style scoped lang="scss">
-
 </style>

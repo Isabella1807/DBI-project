@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import DropdownButton from '@/components/DropdownButton.vue';
-import SearchBar from "@/components/SearchBar.vue";
+import DropdownButton from '@/components/molecules/DropdownButton.vue';
+import SearchBar from "@/components/molecules/SearchBar.vue";
+
+import { useWizardStore } from '@/stores/wizard.ts';
+const wizardStore = useWizardStore();
 </script>
 
 <template>
     <div class="toolbar-wrapper">
         <div class="toolbar-container">
-            <DropdownButton label="Opret" type="default" iconName="PlusIcon" :options="[
+            <DropdownButton label="Opret" type="default" iconName="PlusIcon" ariaLabel="Opret" :options="[
                 { label: 'Mappe', icon: 'Folder' },
                 { label: 'Enhed', icon: 'Qr_code' }
             ]" />
 
-            <SearchBar />
-            <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport" :options="[
+            <SearchBar @click="wizardStore.open()"/>
+            <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport" ariaLabel="Eksporter" :options="[
                 { label: 'Hent som PDF', icon: 'File' },
                 { label: 'Hent som CSV', icon: 'Table' },
                 { label: 'Send til printer kø', icon: 'Printer' }

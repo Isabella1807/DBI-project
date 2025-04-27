@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BasicIcon from '@/components/BasicIcon.vue';
+import BasicIcon from '@/components/atoms/BasicIcon.vue';
 
 interface Props {
   iconName: string,
