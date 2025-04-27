@@ -16,45 +16,63 @@ const props = defineProps<Props>();
 </script>
 
 <template>
-  <div class="confirmModalContainer">
-    <div class="textContainer">
-      <BasicIcon :name="props.iconName" v-if="props.iconName" large/>
-      <p class="titleText" v-if="title">{{ props.title }}</p>
-      <p class="descriptionText" v-if="description">{{ props.description }}</p>
-      <p class="noteText" v-if="note">{{ props.note }}</p>
-    </div>
-    <div class="buttonsContainer">
-      <BasicButton ariaLabel="Annuller" :label="props.cancelText" type="annuller"/>
-      <BasicButton ariaLabel="afslut" :label="props.confirmText"/>
+  <div class="modalBackdrop">
+    <div class="confirmModalContainer">
+      <div class="textContainer">
+        <BasicIcon :name="props.iconName" v-if="props.iconName" large/>
+        <p class="titleText" v-if="title">{{ props.title }}</p>
+        <p class="descriptionText" v-if="description">{{ props.description }}</p>
+        <p class="noteText" v-if="note">{{ props.note }}</p>
+      </div>
+      <div class="buttonsContainer">
+        <BasicButton ariaLabel="Annuller" :label="props.cancelText" type="annuller"/>
+        <BasicButton ariaLabel="afslut" :label="props.confirmText"/>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.confirmModalContainer {
-  padding: 4rem 3rem 3rem 3rem;
-  display: inline-block;
-  background-color: $white;
-  border-radius: 18px;
-  .textContainer {
-    text-align: center;
-    padding-bottom: 2rem;
-    .titleText{
-      @include heading1;
-      margin-bottom: 1rem;
+.modalBackdrop{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  .confirmModalContainer {
+    padding: 4rem 3rem 3rem 3rem;
+    display: inline-block;
+    background-color: $white;
+    border-radius: 18px;
+
+    .textContainer {
+      text-align: center;
+      padding-bottom: 2rem;
+
+      .titleText {
+        @include heading1;
+        margin-bottom: 1rem;
+      }
+
+      .descriptionText {
+        @include fatBodyText;
+        margin-bottom: 0.2rem;
+      }
+
+      .noteText {
+        @include bodyText;
+      }
     }
-    .descriptionText{
-      @include fatBodyText;
-      margin-bottom: 0.2rem;
-    }
-    .noteText{
-      @include bodyText;
+    .buttonsContainer {
+      justify-content: space-between;
+      display: flex;
+      gap: 2rem;
     }
   }
-  .buttonsContainer {
-    justify-content: space-between;
-    display: flex;
-    gap: 2rem;
-  }
+
 }
 </style>
