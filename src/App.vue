@@ -2,7 +2,7 @@
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import UnderMenu from "@/components/organisms/UnderMenu.vue";
-import CreateEntityWizard from '@/components/tempWizardStuff/CreateEntityWizard.vue';
+import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import {useWizardStore} from '@/stores/wizard.ts';
 
 const wizardStore = useWizardStore();

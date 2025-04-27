@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue';
-import WizardGhostCard from '@/components/tempWizardStuff/wizardGhostCard.vue';
-import WizardCard from '@/components/tempWizardStuff/wizardCard.vue';
+import WizardGhostCard from '@/components/molecules/wizardGhostCard.vue';
+import WizardCard from '@/components/molecules/wizardCard.vue';
 
 import {useWizardStore} from '@/stores/wizard.ts';
 

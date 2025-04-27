@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import WizardCard from '@/components/tempWizardStuff/wizardCard.vue';
+import WizardCard from '@/components/molecules/wizardCard.vue';
 </script>
 
 <template>
