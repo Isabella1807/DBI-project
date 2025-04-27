@@ -7,7 +7,7 @@ import {useWizardStore} from '@/stores/wizard.ts';
 
 const wizardStore = useWizardStore();
 
-const containerRef = ref(null);
+const containerRef = ref<HTMLDivElement | null>(null);
 
 const mounted = ref(false);
 
