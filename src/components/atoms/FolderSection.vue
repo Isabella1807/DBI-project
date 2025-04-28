@@ -21,22 +21,18 @@ const folders = [
 
 <template>
   <div :class="['folderContainer', currentView]">
-    <div 
-      v-for="(folder, index) in folders" 
-      :key="folder.id" 
-      :class="['folder', currentView]"
-    >
+    <div v-for="(folder, index) in folders" :key="folder.id" :class="['folder', currentView]">
       <div class="folderContent">
         <!-- List-view elementer -->
         <template v-if="currentView === 'list'">
           <BasicIcon name="ChevronRight" class="arrow" />
           <input type="checkbox" class="folderCheckbox">
         </template>
-        
+
         <!-- Fælles elementer -->
         <BasicIcon name="Folder" class="folderIcon" />
         <p>{{ folder.name }}</p>
-        
+
         <!-- List-view menu -->
         <button v-if="currentView === 'list'" class="menuDots">
           <span></span>
@@ -52,14 +48,15 @@ const folders = [
 .folderContainer {
   &.detailed {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, calc(20% - 26px)));
+    gap: 32px;
     max-width: 100%;
     margin-top: 1.5rem;
+    padding: 0;
 
     .folderContent {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      height: 200px;
       border-radius: 16px;
       background: $white;
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
@@ -69,10 +66,16 @@ const folders = [
       justify-content: center;
       align-items: center;
       gap: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: $lightGreen;
+      }
 
       .folderIcon {
-        width: 48px;
-        height: 48px;
+        width: 80px;
+        height: 80px;
         color: $darkGrey;
       }
 
@@ -81,6 +84,7 @@ const folders = [
         text-align: center;
         margin: 0;
         color: $black;
+        font-weight: 500;
       }
     }
   }
@@ -105,7 +109,7 @@ const folders = [
     .folderContent {
       display: flex;
       width: 100%;
-      height: 60px;
+      height: 40px;
       padding: 0 20px;
       align-items: center;
       gap: 16px;
@@ -123,13 +127,40 @@ const folders = [
       .arrow {
         width: 16px;
         height: 16px;
-        color: $mediumGrey;
+        color: $black;
       }
 
       .folderCheckbox {
         width: 16px;
         height: 16px;
-        accent-color: $darkGreen;
+        border: 2px solid $black;
+        border-radius: 4px;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+
+        &:checked {
+          border-color: $darkGreen;
+          background-color: $darkGreen;
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: 3.2px;
+            top: 0px;
+            width: 4px;
+            height: 8px;
+            border: solid $white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+          }
+        }
+
+        &:hover {
+          border-color: $darkGreen;
+        }
       }
 
       .folderIcon {
@@ -140,6 +171,7 @@ const folders = [
 
       p {
         @include bodyText;
+        font-weight: 500;
         flex-grow: 1;
         text-align: left;
         margin: 0;
@@ -161,7 +193,7 @@ const folders = [
           display: block;
           width: 4px;
           height: 4px;
-          background-color: $mediumGrey;
+          background-color: $black;
           border-radius: 50%;
         }
       }

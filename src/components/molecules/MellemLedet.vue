@@ -1,6 +1,6 @@
 <script setup>
 import BasicIcon from '../atoms/BasicIcon.vue';
-import FolderSection from '@/components/atoms/FolderSection.vue'; 
+import FolderSection from '@/components/atoms/FolderSection.vue';
 import { ref, provide } from 'vue';
 
 const currentView = ref('detailed');
@@ -10,7 +10,6 @@ function toggleView(viewType) {
 }
 
 
-// Gør currentView tilgængelig for børn
 provide('currentView', currentView);
 provide('toggleView', toggleView);
 
@@ -50,24 +49,19 @@ provide('toggleView', toggleView);
 
         <!-- Højre side -->
         <div class="rightSection">
-        <div class="tableNavIcon">
-            <BasicIcon name="Filter" />
+            <div class="tableNavIcon">
+                <BasicIcon name="Filter" />
+            </div>
+            <div class="tableNavIcon">
+                <BasicIcon name="SortAscending" />
+            </div>
+            <div class="tableNavIcon" :class="{ active: currentView === 'list' }" @click="toggleView('list')">
+                <BasicIcon name="ListUnordered" />
+            </div>
+            <div class="tableNavIcon" :class="{ active: currentView === 'detailed' }" @click="toggleView('detailed')">
+                <BasicIcon name="MoreGridSmall" />
+            </div>
         </div>
-        <div 
-            class="tableNavIcon" 
-            :class="{ active: currentView === 'list' }"
-            @click="toggleView('list')"
-        >
-            <BasicIcon name="ListUnordered" />
-        </div>
-        <div 
-            class="tableNavIcon" 
-            :class="{ active: currentView === 'detailed' }"
-            @click="toggleView('detailed')"
-        >
-            <BasicIcon name="MoreGridSmall" />
-        </div>
-    </div>
     </div>
     <FolderSection />
 </template>
@@ -122,19 +116,25 @@ provide('toggleView', toggleView);
     }
 
     .tableNavIcon {
-    background-color: $lightGrey;
-    padding: 0.4rem;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer; /* Tilføj pointer for at vise det er klikbart */
-}
+        background-color: $lightGrey;
+        padding: 0.4rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
 
-.tableNavIcon.active { /* Flyt .active ud af nesting */
-    background-color: $mediumGreen;
-    color: $white;
-}
+        &:hover {
+            background-color: $lightGreen;
+        }
+
+    }
+
+    .tableNavIcon.active {
+        background-color: $mediumGrey;
+        color: $white;
+    }
 
     .divider {
         height: 1.5rem;
