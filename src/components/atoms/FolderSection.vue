@@ -1,32 +1,46 @@
 <script lang="ts" setup>
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
-import { inject, ref, computed } from 'vue';
+import { inject, ref, computed, watch } from 'vue';
 
+// Modtager viewType fra TableNav
 const injectedView = inject('currentView', ref('detailed'));
 const currentView = computed(() => injectedView.value);
 
-const folders = [
-  { id: 1, name: "Mappe A" },
-  { id: 2, name: "Mappe B" },
-  { id: 3, name: "Mappe C" },
-  { id: 4, name: "Mappe D" },
-  { id: 5, name: "Mappe E" },
-  { id: 6, name: "Mappe F" },
-  { id: 7, name: "Mappe G" },
-  { id: 8, name: "Mappe H" },
-  { id: 9, name: "Mappe I" },
-  { id: 10, name: "Mappe J" }
-];
+// Modtager om alt er markeret fra TableNav
+const injectedSelectAll = inject('isAllSelected', ref(false));
+
+// Dummy mappe-data
+const folders = ref([
+  { id: 1, name: "Mappe A", selected: false },
+  { id: 2, name: "Mappe B", selected: false },
+  { id: 3, name: "Mappe C", selected: false },
+  { id: 4, name: "Mappe D", selected: false },
+  { id: 5, name: "Mappe E", selected: false },
+  { id: 6, name: "Mappe F", selected: false },
+  { id: 7, name: "Mappe G", selected: false },
+  { id: 8, name: "Mappe H", selected: false },
+  { id: 9, name: "Mappe I", selected: false },
+  { id: 10, name: "Mappe J", selected: false }
+]);
+
+// Når "Markér alt" ændres, så marker alle mapper
+watch(injectedSelectAll, (newVal) => {
+  folders.value.forEach(folder => {
+    folder.selected = newVal;
+  });
+});
 </script>
+
 
 <template>
   <div :class="['folderContainer', currentView]">
     <div v-for="(folder, index) in folders" :key="folder.id" :class="['folder', currentView]">
-      <div class="folderContent">
+      <div class="folderContent" :class="{ selected: folder.selected }" @click="folder.selected = !folder.selected">
+
         <!-- List-view elementer -->
         <template v-if="currentView === 'list'">
           <BasicIcon name="ChevronRight" class="arrow" />
-          <input type="checkbox" class="folderCheckbox">
+          <input type="checkbox" class="folderCheckbox" v-model="folder.selected" />
         </template>
 
         <!-- Fælles elementer -->
@@ -69,7 +83,8 @@ const folders = [
       cursor: pointer;
       transition: background-color 0.2s ease;
 
-      &:hover {
+      &:hover,
+      &.selected {
         background-color: $lightGreen;
       }
 
@@ -116,7 +131,8 @@ const folders = [
       transition: background-color 0.2s ease;
       border-bottom: 1px solid $mediumGrey;
 
-      &:hover {
+      &:hover,
+      &.selected {
         background: $lightGreen !important;
       }
 
@@ -180,9 +196,8 @@ const folders = [
 
       .menuDots {
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 16px;
+        flex-direction: row;
+        gap: 3px;
         width: 24px;
         background: none;
         border: none;
