@@ -3,13 +3,20 @@
     <!-- Folder Explorer Section -->
     <div class="folder-explorer">
       <h3>Viewing: <span>{{ currentFolderName }}</span></h3>
-      <!-- Back button: shows only if we're not at the root level -->
       <button v-if="currentFolderId" @click="goBack">Back</button>
       <ul>
-        <!-- List all folders that belong to the current folder -->
-        <li v-for="folder in folders" :key="folder.id">
-          <button @click="enterFolder(folder.id, folder.name)">
+        <li v-for="folder in folders" :key="folder.id" class="folder-row">
+          <!-- Enter folder -->
+          <button class="enter-btn" @click="enterFolder(folder.id, folder.name)">
             {{ folder.name }}
+          </button>
+          <!-- Rename folder -->
+          <button class="action-btn" @click="renameFolder(folder.id, folder.name)">
+            Edit
+          </button>
+          <!-- Delete folder (with recursive removal) -->
+          <button class="action-btn delete" @click="deleteFolder(folder.id)">
+            Delete
           </button>
         </li>
       </ul>
@@ -37,109 +44,103 @@ import {
   where,
   onSnapshot,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc
 } from 'firebase/firestore';
-// Use type-only imports for types
+// type-only imports
 import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
 import { db } from '@/configs/firebase';
 
-// -------------------------------------------------
-// Folder Explorer State and Functions
-// -------------------------------------------------
-
-// currentFolderId tracks the folder being viewed (null for root)
+// --- Explorer State ---
 const currentFolderId = ref<string | null>(null);
-// currentFolderName holds the display name ("Root" at the top level)
 const currentFolderName = ref('Root');
-
-// folders holds the list of child folders for the current folder
 const folders = ref<Array<{ id: string; name: string }>>([]);
-
-// We'll store the unsubscribe function to cleanup the listener later
 let unsubscribe: () => void = () => {};
 
-// Function to query Firestore for folders with current parentId
+// Fetch & listen to folders under the current parent
 const fetchFolders = () => {
-  // Clean up the previous listener, if it exists
   if (unsubscribe) unsubscribe();
-
-  // Build the query: select folders where "parentId" equals the currentFolderId value.
   const q = query(
     collection(db, 'folders'),
     where('parentId', '==', currentFolderId.value)
   );
-
-  // Start a real-time listener
-  unsubscribe = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
-    const folderList: Array<{ id: string; name: string }> = [];
-    snapshot.forEach((doc) => {
-      folderList.push({ id: doc.id, name: doc.data().name });
-    });
-    folders.value = folderList;
+  unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
+    folders.value = snap.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
   });
 };
 
-// Set up initial listener when the component mounts
-onMounted(() => {
-  fetchFolders();
-});
+onMounted(fetchFolders);
+watch(currentFolderId, fetchFolders);
+onUnmounted(() => { if (unsubscribe) unsubscribe(); });
 
-// Watch for changes in currentFolderId to update the folder list
-watch(currentFolderId, () => {
-  fetchFolders();
-});
-
-// Clean up the listener when the component unmounts
-onUnmounted(() => {
-  if (unsubscribe) unsubscribe();
-});
-
-// Navigate into a folder
-const enterFolder = (folderId: string, folderNameVal: string) => {
-  currentFolderId.value = folderId;
-  currentFolderName.value = folderNameVal;
+const enterFolder = (id: string, name: string) => {
+  currentFolderId.value = id;
+  currentFolderName.value = name;
 };
-
-// Navigate back to the root folder
 const goBack = () => {
   currentFolderId.value = null;
   currentFolderName.value = 'Root';
 };
 
-// -------------------------------------------------
-// Folder Creation Form State and Functions
-// -------------------------------------------------
-
-// Folder name input from the form
+// --- Creation State ---
 const folderName = ref<string>('');
-
-// onSubmit creates a new folder in the currently viewed folder
 const onSubmit = async () => {
-  // Validate that the folder name is not empty
   if (!folderName.value.trim()) return;
-
-  // Build the folder data; the parent is automatically set to currentFolderId
   const folderData = {
     name: folderName.value.trim(),
-    parentId: currentFolderId.value, // Use currentFolderId to nest folders
+    parentId: currentFolderId.value,
     createdAt: serverTimestamp()
   };
-
   try {
-    // Create a new folder document in the 'folders' collection in Firestore
-    const docRef = await addDoc(collection(db, 'folders'), folderData);
-    console.log('Folder created with ID:', docRef.id);
-  } catch (error) {
-    console.error('Error creating folder:', error);
+    await addDoc(collection(db, 'folders'), folderData);
+  } catch (e) {
+    console.error(e);
   }
-
-  // Reset the folder name for the next entry
   folderName.value = '';
 };
+
+// --- Rename ---
+const renameFolder = async (id: string, oldName: string) => {
+  const newName = window.prompt('New folder name:', oldName);
+  if (newName && newName.trim() && newName.trim() !== oldName) {
+    const docRef = doc(db, 'folders', id);
+    try {
+      await updateDoc(docRef, { name: newName.trim() });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+};
+
+// --- Recursive Delete ---
+const deleteFolder = async (id: string) => {
+  if (!confirm('Delete this folder and all its subfolders?')) return;
+  try {
+    await deleteFolderAndChildren(id);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+async function deleteFolderAndChildren(folderId: string) {
+  // delete subfolders first
+  const subQ = query(
+    collection(db, 'folders'),
+    where('parentId', '==', folderId)
+  );
+  const snap = await getDocs(subQ);
+  for (const child of snap.docs) {
+    await deleteFolderAndChildren(child.id);
+  }
+  // then delete this folder
+  await deleteDoc(doc(db, 'folders', folderId));
+}
 </script>
 
 <style scoped>
-/* Styling for the explorer and form */
 .folder-explorer,
 .folder-creation {
   max-width: 600px;
@@ -154,26 +155,47 @@ h3 {
   margin-bottom: 1rem;
 }
 
-button {
-  background: none;
-  border: none;
-  color: #0366d6;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0.25rem 0;
-}
-
-button:hover {
-  text-decoration: underline;
-}
-
 ul {
   list-style: none;
   padding: 0;
 }
 
-li {
+.folder-row {
+  display: flex;
+  align-items: center;
   margin-bottom: 0.5rem;
+}
+
+.enter-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #0366d6;
+  text-align: left;
+  cursor: pointer;
+}
+
+.enter-btn:hover {
+  text-decoration: underline;
+}
+
+.action-btn {
+  margin-left: 0.5rem;
+  background: none;
+  border: 1px solid #888;
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-btn.delete {
+  border-color: #d9534f;
+  color: #d9534f;
+}
+
+.action-btn.delete:hover {
+  background: #f2dede;
 }
 
 form {
