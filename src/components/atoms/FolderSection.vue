@@ -6,6 +6,11 @@ import { inject, ref, computed, watch } from 'vue';
 const injectedView = inject('currentView', ref('detailed'));
 const currentView = computed(() => injectedView.value);
 
+const selectedFoldersCount = computed(() => {
+  return folders.value.filter(folder => folder.selected).length;
+});
+
+
 // Modtager om alt er markeret fra TableNav
 const injectedSelectAll = inject('isAllSelected', ref(false));
 

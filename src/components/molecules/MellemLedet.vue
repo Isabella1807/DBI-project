@@ -10,6 +10,12 @@ provide('isAllSelected', isAllSelected);
 const savedView = localStorage.getItem('currentView');
 const currentView = ref(savedView || 'detailed'); // Hvis ingen gemt, starter på detailed
 
+const anySelected = ref(false);
+ 
+function handleSelectionChanged(selectedCount) {
+  anySelected.value = selectedCount > 0;
+}
+
 function toggleView(viewType) {
     console.log('Skifter view til:', viewType);
     currentView.value = viewType;
@@ -39,46 +45,47 @@ onMounted(() => {
 
             <div class="divider"></div>
 
-            <div class="tableNavItem disabled">
+            <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
                 <BasicIcon name="EditPencil" />
                 <span>Rediger</span>
             </div>
-            <div class="tableNavItem disabled">
+            <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
                 <BasicIcon name="copy" />
                 <span>Kopier</span>
             </div>
-            <div class="tableNavItem disabled">
+            <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
                 <BasicIcon name="ArrowUpRight" />
                 <span>Flyt</span>
             </div>
-            <div class="tableNavItem disabled">
+            <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
                 <BasicIcon name="Printer" />
                 <span>Print</span>
             </div>
-            <div class="tableNavItem disabled">
+            <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
                 <BasicIcon name="Trash" />
                 <span>Slet</span>
             </div>
         </div>
 
-        <!-- Højre side -->
-        <div class="rightSection">
-            <div class="tableNavIcon">
-                <BasicIcon name="Filter" />
-            </div>
-            <div class="tableNavIcon">
-                <BasicIcon name="SortAscending" />
-            </div>
-            <div class="tableNavIcon" :class="{ active: currentView === 'list' }" @click="toggleView('list')">
-                <BasicIcon name="ListUnordered" />
-            </div>
-            <div class="tableNavIcon" :class="{ active: currentView === 'detailed' }" @click="toggleView('detailed')">
-                <BasicIcon name="MoreGridSmall" />
+            <!-- Højre side -->
+            <div class="rightSection">
+                <div class="tableNavIcon">
+                    <BasicIcon name="Filter" />
+                </div>
+                <div class="tableNavIcon">
+                    <BasicIcon name="SortAscending" />
+                </div>
+                <div class="tableNavIcon" :class="{ active: currentView === 'list' }" @click="toggleView('list')">
+                    <BasicIcon name="ListUnordered" />
+                </div>
+                <div class="tableNavIcon" :class="{ active: currentView === 'detailed' }"
+                    @click="toggleView('detailed')">
+                    <BasicIcon name="MoreGridSmall" />
+                </div>
             </div>
         </div>
-    </div>
 
-    <FolderSection />
+        <FolderSection @selectionChanged="handleSelectionChanged" />
 </template>
 
 
@@ -151,7 +158,8 @@ onMounted(() => {
                 background-color: $lightGreen;
             }
 
-            &.checked { // ← Tilføjet!
+            &.checked {
+                // ← Tilføjet!
                 background-color: $lightGreen;
             }
 
