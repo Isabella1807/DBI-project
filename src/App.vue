@@ -2,13 +2,17 @@
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import UnderMenu from "@/components/organisms/UnderMenu.vue";
+import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
+import {useWizardStore} from '@/stores/wizard.ts';
 import MellemLedet from '@/components/molecules/MellemLedet.vue';
+
+const wizardStore = useWizardStore();
 </script>
 
 <template>
-  <div class="bodyContainer">
-    <WaterMark />
-    <div class="mainContainer">
+  <div class="body_container">
+    <WaterMark :class="{blur: wizardStore.isOpen}"/>
+    <div class="main_container" :class="{blur: wizardStore.isOpen}">
       <main>
         <TabNav />
         <UnderMenu />
@@ -16,6 +20,7 @@ import MellemLedet from '@/components/molecules/MellemLedet.vue';
         <RouterView />
       </main>
     </div>
+    <CreateEntityWizard/>
   </div>
 </template>
 
@@ -24,19 +29,23 @@ import MellemLedet from '@/components/molecules/MellemLedet.vue';
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  border: 1px solid red;
+  //border: 1px solid red;
 
   .mainContainer {
     flex: 1;
     display: flex;
     justify-content: space-around;
-    border: 1px solid blue;
+    //border: 1px solid blue;
 
     main {
       max-width: min(1280px, calc(100% - 3rem));
       flex: 1;
-      border: 1px solid blueviolet;
+      //border: 1px solid blueviolet;
     }
   }
+}
+
+.blur{
+  filter: blur(5px);
 }
 </style>
