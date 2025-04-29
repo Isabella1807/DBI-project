@@ -24,7 +24,7 @@ export const useWizardStore = defineStore('wizardStore', () => {
   };
 
   const close = () => {
-    if(somethingIsWritten.value) {
+    if (somethingIsWritten.value) {
       confirmModalIsOpen.value = true;
     } else {
       isOpen.value = false;
@@ -44,13 +44,13 @@ export const useWizardStore = defineStore('wizardStore', () => {
   const currentPage = ref(0);
   const totalPages = ref(0);
   const next = () => {
-    if(currentPage.value < (totalPages.value - 1)) {
+    if (currentPage.value < (totalPages.value - 1)) {
       currentPage.value += 1;
     }
   };
 
   const previous = () => {
-    if(currentPage.value > 0) {
+    if (currentPage.value > 0) {
       currentPage.value -= 1;
     }
   };
@@ -66,7 +66,7 @@ export const useWizardStore = defineStore('wizardStore', () => {
 
   // handle confirm modal
   const somethingIsWritten = computed(() => {
-    if(entityName.value === '' && entityDescription.value === '' && entitySyncId.value === '') {
+    if (entityName.value === '' && entityDescription.value === '' && entitySyncId.value === '') {
       return false;
     }
     return true;

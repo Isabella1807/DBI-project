@@ -10,7 +10,7 @@ const wizardStore = useWizardStore();
 const errorMessage = ref('');
 
 const onInputBlur = () => {
-  if(!wizardStore.entityName) {
+  if (!wizardStore.entityName) {
     errorMessage.value = 'Enhed mangler navn';
   }
 };

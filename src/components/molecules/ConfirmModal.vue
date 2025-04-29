@@ -44,6 +44,7 @@ const emit = defineEmits(['cancel', 'confirm']);
   align-items: center;
   top: 0;
   left: 0;
+
   .confirmModalContainer {
     padding: 4rem 3rem 3rem 3rem;
     display: inline-block;
