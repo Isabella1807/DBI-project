@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 
 export const useWizardStore = defineStore('wizardStore', () => {
   // reset
@@ -9,6 +9,9 @@ export const useWizardStore = defineStore('wizardStore', () => {
     entityDescription.value = '';
     isReady.value = false;
   };
+
+  //open close modal
+  const confirmModalIsOpen = ref(false);
 
   // open close
   const isOpen = ref(false);
@@ -21,6 +24,19 @@ export const useWizardStore = defineStore('wizardStore', () => {
   };
 
   const close = () => {
+    if (somethingIsWritten.value) {
+      confirmModalIsOpen.value = true;
+    } else {
+      isOpen.value = false;
+    }
+  };
+
+  const cancelClose = () => {
+    confirmModalIsOpen.value = false;
+  };
+
+  const confirmClose = () => {
+    confirmModalIsOpen.value = false;
     isOpen.value = false;
   };
 
@@ -28,13 +44,13 @@ export const useWizardStore = defineStore('wizardStore', () => {
   const currentPage = ref(0);
   const totalPages = ref(0);
   const next = () => {
-    if(currentPage.value < (totalPages.value - 1)) {
+    if (currentPage.value < (totalPages.value - 1)) {
       currentPage.value += 1;
     }
   };
 
   const previous = () => {
-    if(currentPage.value > 0) {
+    if (currentPage.value > 0) {
       currentPage.value -= 1;
     }
   };
@@ -47,9 +63,18 @@ export const useWizardStore = defineStore('wizardStore', () => {
   const entityName = ref('');
   const entityDescription = ref('');
   const entitySyncId = ref('');
+
+  // handle confirm modal
+  const somethingIsWritten = computed(() => {
+    if (entityName.value === '' && entityDescription.value === '' && entitySyncId.value === '') {
+      return false;
+    }
+    return true;
+  });
+
   const submit = () => {
     console.log('SUBMIT', entityName.value, entityDescription.value, entitySyncId.value);
-    close();
+    confirmClose();
   };
 
   //transition fix
@@ -58,18 +83,22 @@ export const useWizardStore = defineStore('wizardStore', () => {
   // exports
   return {
     isOpen,
+    confirmModalIsOpen,
     currentPage,
     totalPages,
     next,
     previous,
     open,
     close,
+    cancelClose,
+    confirmClose,
     submit,
     reset,
     setLength,
     entityName,
     entityDescription,
     entitySyncId,
+    somethingIsWritten,
     isReady,
   };
 });

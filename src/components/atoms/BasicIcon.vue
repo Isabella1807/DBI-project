@@ -37,17 +37,17 @@ svg {
   &.selected{
     stroke-width: 2.5;
   }
-  &.small{
-    width: 16px;
-    height: 16px;
+  &.huge{
+    width:80px;
+    height: 80px;
   }
   &.large{
     width: 38px;
     height: 38px;
   }
-  &.huge{
-    width:80px;
-    height: 80px;
+  &.small{
+    width: 16px;
+    height: 16px;
   }
 }
 </style>

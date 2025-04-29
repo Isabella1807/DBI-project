@@ -25,13 +25,13 @@ export default defineConfig([
         'eqeqeq': ['error', 'always'],
         'indent': ['error', 2],
         'no-eval': ['error'],
-        'no-trailing-spaces': ['error'],
+        //'no-trailing-spaces': ['error'],
         'no-unused-vars': ['error'],
         'no-var': ['error'],
         'prefer-const': ['error'],
         'quotes': ['error', 'single'],
         'semi': ['error', 'always'],
-        'keyword-spacing': ['error', { "overrides": { "if": { "after": false }, "for": { "after": false }, "while": { "after": false }, "static": { "after": false }, "as": { "after": false } } } ]
+        'keyword-spacing': ["error", { "before": true }],
     }
 }
 ]);
