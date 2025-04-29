@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
-import UnderMenu from "@/components/organisms/UnderMenu.vue";
+import UnderMenu from '@/components/organisms/UnderMenu.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import {useWizardStore} from '@/stores/wizard.ts';
 
@@ -9,9 +9,9 @@ const wizardStore = useWizardStore();
 </script>
 
 <template>
-  <div class="body_container">
+  <div class="bodyContainer">
     <WaterMark :class="{blur: wizardStore.isOpen}"/>
-    <div class="main_container" :class="{blur: wizardStore.isOpen}">
+    <div class="mainContainer" :class="{blur: wizardStore.isOpen}">
       <main>
         <TabNav />
         <UnderMenu />
