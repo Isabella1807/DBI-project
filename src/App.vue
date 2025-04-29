@@ -4,7 +4,6 @@ import WaterMark from '@/components/atoms/WaterMark.vue';
 import UnderMenu from "@/components/organisms/UnderMenu.vue";
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import {useWizardStore} from '@/stores/wizard.ts';
-import MellemLedet from '@/components/molecules/MellemLedet.vue';
 
 const wizardStore = useWizardStore();
 </script>
@@ -16,7 +15,6 @@ const wizardStore = useWizardStore();
       <main>
         <TabNav />
         <UnderMenu />
-        <MellemLedet/>
         <RouterView />
       </main>
     </div>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import BasicIcon from '../atoms/BasicIcon.vue';
 import FolderSection from '@/components/atoms/FolderSection.vue';
 import { ref, provide, onMounted } from 'vue';
@@ -11,7 +11,7 @@ const savedView = localStorage.getItem('currentView');
 const currentView = ref(savedView || 'detailed'); // Hvis ingen gemt, starter på detailed
 
 const anySelected = ref(false);
- 
+
 function handleSelectionChanged(selectedCount) {
   anySelected.value = selectedCount > 0;
 }
