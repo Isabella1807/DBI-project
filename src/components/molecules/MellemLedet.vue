@@ -12,11 +12,11 @@ const currentView = ref(savedView || 'detailed'); // Hvis ingen gemt, starter pÃ
 
 const anySelected = ref(false);
 
-function handleSelectionChanged(selectedCount) {
+function handleSelectionChanged(selectedCount: number) {
   anySelected.value = selectedCount > 0;
 }
 
-function toggleView(viewType) {
+function toggleView(viewType: string) {
     console.log('Skifter view til:', viewType);
     currentView.value = viewType;
     localStorage.setItem('currentView', viewType);
