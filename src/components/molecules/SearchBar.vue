@@ -3,14 +3,14 @@ import BasicIcon from '@/components/atoms/BasicIcon.vue';
 </script>
 
 <template>
-  <div class="search-wrapper">
-    <input type="text" placeholder="Søg" class="search-input" />
+  <div class="searchWrapper">
+    <input type="text" placeholder="Søg" class="searchInput" />
     <BasicIcon name="SearchGlass" />
   </div>
 </template>
 
 <style scoped lang="scss">
-.search-wrapper {
+.searchWrapper {
   display: flex;
   align-items: center;
   border: 1px solid black;
@@ -18,7 +18,7 @@ import BasicIcon from '@/components/atoms/BasicIcon.vue';
   padding: 0.5rem 1rem;
   background-color: $white;
 
-  .search-input {
+  .searchInput {
   border: none;
   outline: none;
   font-style: italic;
