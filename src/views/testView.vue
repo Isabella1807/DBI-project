@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import FolderComponet from '@/components/atoms/folderComponet.vue';
-import FolderSection from "@/components/atoms/FolderSection.vue";
+import FolderForm from '@/components/FolderForm.vue';
+import MellemLedet from '@/components/molecules/MellemLedet.vue';
 </script>
 
 <template>
@@ -8,8 +8,8 @@ import FolderSection from "@/components/atoms/FolderSection.vue";
     <H1>
       TESTER VIEW 1
     </H1>
-        <FolderComponet/>
-        <FolderSection view="list"/>
+    <MellemLedet/>
+    <FolderForm/>
   </div>
 </template>
 

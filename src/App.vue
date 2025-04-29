@@ -10,9 +10,9 @@ const wizardStore = useWizardStore();
 </script>
 
 <template>
-  <div class="body_container">
+  <div class="bodyContainer">
     <WaterMark :class="{blur: wizardStore.isOpen}"/>
-    <div class="main_container" :class="{blur: wizardStore.isOpen}">
+    <div class="mainContainer" :class="{blur: wizardStore.isOpen}">
       <main>
         <TabNav />
         <UnderMenu />
@@ -35,13 +35,13 @@ const wizardStore = useWizardStore();
 </template>
 
 <style scoped lang="scss">
-.body_container {
+.bodyContainer {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   //border: 1px solid red;
 
-  .main_container {
+  .mainContainer {
     flex: 1;
     display: flex;
     justify-content: space-around;
