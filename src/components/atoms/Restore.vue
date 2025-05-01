@@ -25,13 +25,12 @@ const message = computed(() =>
 )
 
 const toastTypeClass = computed(() =>
-  props.type === 'delete' ? 'toast-delete' : 'toast-restore'
+  props.type === 'delete' ? 'toastDelete' : 'toastRestore'
 )
 
 const iconName = computed(() =>
   props.type === 'delete' ? 'CircleWarning' : 'Check'
 )
-
 
 const handleUndo = () => {
   emits('undo')
@@ -72,29 +71,29 @@ const handleUndo = () => {
   gap: 10px;
 
   .SvgColor {
-  color: white !important;
-}
+    color: white !important;
+  }
 
 }
 
-.toast-delete {
-  background-color: #1c1c1c;
+.toastDelete {
+  background-color: $black;
 }
 
-.toast-restore {
-  background-color: #2d6e5a;
+.toastRestore {
+  background-color: $darkGreen;
 }
 
 .icon {
   display: flex;
   align-items: center;
-  color: white;
+  color: $white;
 }
 
 .undo {
   background: none;
   border: none;
-  color: #a0cfff;
+  color: $blue;
   font-weight: bold;
   cursor: pointer;
   margin-left: auto;
