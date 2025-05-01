@@ -11,3 +11,5 @@ describe('HelloWorld', () => {
   })
 })
 */
+
+console.log("TESTER");
