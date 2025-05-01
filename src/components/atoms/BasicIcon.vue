@@ -13,7 +13,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const filePath = computed(() => {
-  return `/src/assets/icons/${props.name}.svg`;
+  return `/icons/${props.name}.svg`;
 });
 </script>
 
