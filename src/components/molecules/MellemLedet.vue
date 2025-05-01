@@ -50,7 +50,7 @@ onMounted(() => {
         <span>Rediger</span>
       </div>
       <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
-        <BasicIcon name="copy"/>
+        <BasicIcon name="Copy"/>
         <span>Kopier</span>
       </div>
       <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
