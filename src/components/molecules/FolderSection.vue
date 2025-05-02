@@ -17,17 +17,18 @@ const selectedFoldersCount = computed(() => {
 const injectedSelectAll = inject('isAllSelected', ref(false));
 
 // Dummy mappe-data
+// Dummy mappe-data
 const folders = ref([
-  { id: 1, name: "Mappe A", selected: false },
-  { id: 2, name: "Mappe B", selected: false },
-  { id: 3, name: "Mappe C", selected: false },
-  { id: 4, name: "Mappe D", selected: false },
-  { id: 5, name: "Mappe E", selected: false },
-  { id: 6, name: "Mappe F", selected: false },
-  { id: 7, name: "Mappe G", selected: false },
-  { id: 8, name: "Mappe H", selected: false },
-  { id: 9, name: "Mappe I", selected: false },
-  { id: 10, name: "Mappe J", selected: false }
+  { id: 1, name: "Mappe A", selected: false, isUnit: false },
+  { id: 2, name: "Mappe B", selected: false, isUnit: false },
+  { id: 3, name: "Mappe C", selected: false, isUnit: false },
+  { id: 4, name: "Mappe D", selected: false, isUnit: false },
+  { id: 5, name: "Mappe E", selected: false, isUnit: false },
+  { id: 6, name: "Mappe F", selected: false, isUnit: false },
+  { id: 7, name: "Mappe G", selected: false, isUnit: false },
+  { id: 8, name: "Mappe H", selected: false, isUnit: false },
+  { id: 9, name: "Enhed I", selected: false, isUnit: true },
+  { id: 10, name: "Enhed J", selected: false, isUnit: true }
 ]);
 
 // Når valg ændres
@@ -50,12 +51,12 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
 <template>
   <div :class="['folderContainer', currentView]">
     <div v-for="(folder, index) in folders" :key="folder.id" :class="['folder', currentView]">
-      <div class="folderContent" :class="{ selected: folder.selected }" @click="folder.selected = !folder.selected">
+      <div class="folderContent" :class="{ selected: folder.selected, 'unit-style': folder.isUnit }" @click="folder.selected = !folder.selected">
         <BasicIcon v-if="currentView === 'list'" name="ChevronRight" class="arrow" />
 
         <input type="checkbox" class="folderCheckbox" v-model="folder.selected" @click.stop />
 
-        <BasicIcon name="Folder" class="folderIcon" />
+        <BasicIcon :name="folder.isUnit ? 'Unit' : 'Folder'" class="folderIcon" />
         <p>{{ folder.name }}</p>
 
         <FolderMenu :folder-id="folder.id" @option-selected="handleMenuAction" @click.stop />
@@ -63,7 +64,6 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
     </div>
   </div>
 </template>
-
 <style lang="scss" scoped>
 .folderContainer {
   &.detailed {
@@ -99,7 +99,7 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
       }
 
       .folderIcon {
-        width: 90px;
+        width: 80px;
         height: auto;
         color: $darkGrey;
       }

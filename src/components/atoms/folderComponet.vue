@@ -1,17 +1,24 @@
 <script lang="ts" setup>
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 
+interface Props {
+  name: string;
+  icon?: string;
+  isUnit?: boolean;
+}
 
-defineProps<{ name: string }>()
+const props = withDefaults(defineProps<Props>(), {
+  icon: 'Folder',
+  isUnit: false
+});
 </script>
 
 <template>
-  <div class="folderContent">
-    <BasicIcon name="Folder" class="huge" />
+  <div class="folderContent" :class="{ 'unit-style': isUnit }">
+    <BasicIcon :name="isUnit ? 'Unit' : icon" class="huge" />
     <p>{{ name }}</p>
   </div>
 </template>
-
 <style lang="scss" scoped>
 .folderContent {
   width: 100%;
