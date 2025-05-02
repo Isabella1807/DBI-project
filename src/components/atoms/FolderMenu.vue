@@ -31,7 +31,7 @@ const handleOptionClick = (option: string) => {
   showDropdown.value = false;
 };
 
-// Close dropdown when clicking outside
+// For den til at lukke
 const closeDropdown = (event: MouseEvent) => {
   const target = event.target as HTMLElement;
   if (!target.closest('.menuDotsContainer')) {
