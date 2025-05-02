@@ -10,7 +10,6 @@ const selectedFoldersCount = computed(() => {
   return folders.value.filter(folder => folder.selected).length;
 });
 
-
 // Modtager om alt er markeret fra TableNav
 const injectedSelectAll = inject('isAllSelected', ref(false));
 
@@ -28,6 +27,8 @@ const folders = ref([
   { id: 10, name: "Mappe J", selected: false }
 ]);
 
+
+
 // Når "Markér alt" ændres, så marker alle mapper
 watch(injectedSelectAll, (newVal) => {
   folders.value.forEach(folder => {
@@ -36,24 +37,24 @@ watch(injectedSelectAll, (newVal) => {
 });
 </script>
 
-
 <template>
   <div :class="['folderContainer', currentView]">
     <div v-for="(folder, index) in folders" :key="folder.id" :class="['folder', currentView]">
       <div class="folderContent" :class="{ selected: folder.selected }" @click="folder.selected = !folder.selected">
+        <BasicIcon v-if="currentView === 'list'" name="ChevronRight" class="arrow" />
 
-        <!-- List-view elementer -->
-        <template v-if="currentView === 'list'">
-          <BasicIcon name="ChevronRight" class="arrow" />
-          <input type="checkbox" class="folderCheckbox" v-model="folder.selected" />
-        </template>
+        <!-- Checkbox vises altid, men styres af CSS i detailed view -->
+        <input type="checkbox"
+               class="folderCheckbox"
+               v-model="folder.selected"
+               @click.stop />
 
-        <!-- Fælles elementer -->
+        <!-- Fælles indhold -->
         <BasicIcon name="Folder" class="folderIcon" />
         <p>{{ folder.name }}</p>
 
-        <!-- List-view menu -->
-        <button v-if="currentView === 'list'" class="menuDots">
+        <!-- Menu dots vises altid, men styres af CSS i detailed view -->
+        <button class="menuDots" @click.stop>
           <span></span>
           <span></span>
           <span></span>
@@ -87,15 +88,19 @@ watch(injectedSelectAll, (newVal) => {
       gap: 12px;
       cursor: pointer;
       transition: background-color 0.2s ease;
+      position: relative;
 
-      &:hover,
+      &:hover {
+        background-color: $lightGreen;
+      }
+
       &.selected {
         background-color: $lightGreen;
       }
 
       .folderIcon {
-        width: 80px;
-        height: 80px;
+        width: 90px;
+        height: auto;
         color: $darkGrey;
       }
 
@@ -105,6 +110,87 @@ watch(injectedSelectAll, (newVal) => {
         margin: 0;
         color: $black;
         font-weight: 500;
+      }
+
+      // Checkbox og menuDots placering i detailed
+      .folderCheckbox {
+        position: absolute;
+        top: 18px;
+        left: 25px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid $darkGrey;
+        border-radius: 4px;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        opacity: 0;
+        pointer-events: none;
+
+        &:checked {
+          border-color: $darkGreen;
+          background-color: $darkGreen;
+          opacity: 1;
+          pointer-events: auto;
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: 3.2px;
+            top: 0px;
+            width: 4px;
+            height: 8px;
+            border: solid $white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+          }
+        }
+
+        &:hover {
+          border-color: $darkGreen;
+        }
+      }
+
+      .menuDots {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        display: flex;
+        flex-direction: row;
+        gap: 3px;
+        width: 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+
+        span {
+          display: block;
+          width: 4px;
+          height: 4px;
+          background-color: $black;
+          border-radius: 50%;
+        }
+      }
+
+      // Vis checkbox og menuDots ved hover eller når selected
+      &:hover,
+      &.selected {
+        .folderCheckbox,
+        .menuDots {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+
+      // Sørg for at checkbox altid er synlig når den er checked
+      .folderCheckbox:checked {
+        opacity: 1;
+        pointer-events: auto;
       }
     }
   }

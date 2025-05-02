@@ -17,7 +17,14 @@ const close = () => {
   visible.value = false
 }
 
-
+// Auto-hide efter 3 sekunder ved 'restore'
+watch(() => props.type, (newVal) => {
+  if (newVal === 'restore') {
+    setTimeout(() => {
+      visible.value = false
+    }, 3000)
+  }
+ })
 
 // Tekster og ikon baseret på type
 const message = computed(() =>
