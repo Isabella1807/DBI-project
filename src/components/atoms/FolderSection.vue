@@ -2,6 +2,8 @@
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import { inject, ref, computed, watch } from 'vue';
 
+const emit = defineEmits(['selectionChanged']);
+
 // Modtager viewType fra TableNav
 const injectedView = inject('currentView', ref('detailed'));
 const currentView = computed(() => injectedView.value);
@@ -27,14 +29,17 @@ const folders = ref([
   { id: 10, name: "Mappe J", selected: false }
 ]);
 
-
+// Når valg ændres
+watch(selectedFoldersCount, (count) => {
+  emit('selectionChanged', count);
+});
 
 // Når "Markér alt" ændres, så marker alle mapper
 watch(injectedSelectAll, (newVal) => {
   folders.value.forEach(folder => {
     folder.selected = newVal;
   });
-});
+}, { immediate: true });
 </script>
 
 <template>

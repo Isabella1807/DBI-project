@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import BasicIcon from '../atoms/BasicIcon.vue';
 import FolderSection from '@/components/atoms/FolderSection.vue';
-import {ref, provide, onMounted} from 'vue';
+import { ref, provide, onMounted } from 'vue';
 
 const isAllSelected = ref(false);
 provide('isAllSelected', isAllSelected);
 
-// Tjek om der allerede er gemt et view i localStorage
 const savedView = localStorage.getItem('currentView');
-const currentView = ref(savedView || 'detailed'); // Hvis ingen gemt, starter på detailed
+const currentView = ref(savedView || 'detailed');
 
 const anySelected = ref(false);
 
 function handleSelectionChanged(selectedCount: number) {
   anySelected.value = selectedCount > 0;
+  isAllSelected.value = selectedCount === 10; // Antal mapper
 }
 
 function toggleView(viewType: string) {
-  console.log('Skifter view til:', viewType);
   currentView.value = viewType;
   localStorage.setItem('currentView', viewType);
 }
@@ -25,9 +24,8 @@ function toggleView(viewType: string) {
 provide('currentView', currentView);
 provide('toggleView', toggleView);
 
-// Valgfrit: hvis du vil sikre dig, at currentView altid er "valideret" når komponenten mountes
 onMounted(() => {
-  if(!['list', 'detailed'].includes(currentView.value)) {
+  if (!['list', 'detailed'].includes(currentView.value)) {
     currentView.value = 'detailed';
     localStorage.setItem('currentView', 'detailed');
   }
@@ -45,23 +43,23 @@ onMounted(() => {
 
       <div class="divider"></div>
 
-      <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
+      <div class="tableNavItem" :class="{ disabled: !anySelected }">
         <BasicIcon name="EditPencil"/>
         <span>Rediger</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
+      <div class="tableNavItem" :class="{ disabled: !anySelected }">
         <BasicIcon name="Copy"/>
         <span>Kopier</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
+      <div class="tableNavItem" :class="{ disabled: !anySelected }">
         <BasicIcon name="ArrowUpRight"/>
         <span>Flyt</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
+      <div class="tableNavItem" :class="{ disabled: !anySelected }">
         <BasicIcon name="Printer"/>
         <span>Print</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !isAllSelected }">
+      <div class="tableNavItem" :class="{ disabled: !anySelected }">
         <BasicIcon name="Trash"/>
         <span>Slet</span>
       </div>
@@ -86,7 +84,7 @@ onMounted(() => {
     </div>
   </div>
 
-  <FolderSection @selectionChanged="handleSelectionChanged"/>
+  <FolderSection @selection-changed="handleSelectionChanged" />
 </template>
 
 
