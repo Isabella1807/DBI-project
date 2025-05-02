@@ -95,7 +95,7 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
       }
 
       &.selected {
-        background-color: $lightGreen;
+        background-color: $mediumGreen;
       }
 
       .folderIcon {
