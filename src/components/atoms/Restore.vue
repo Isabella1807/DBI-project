@@ -62,16 +62,19 @@ const handleUndo = () => {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 4px;
   width: fit-content;
-  min-width: 300px;
-  font-family: sans-serif;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  color: white;
+  width: 396px;
+  height: 56px;
+  color: $white;
   gap: 10px;
 
   .SvgColor {
-    color: white !important;
+    color: $white !important;
+  }
+
+  p {
+    @include bodyText;
   }
 
 }
@@ -82,6 +85,7 @@ const handleUndo = () => {
 
 .toastRestore {
   background-color: $darkGreen;
+  width: 252px;
 }
 
 .icon {
@@ -103,11 +107,10 @@ const handleUndo = () => {
 .close {
   background: none;
   border: none;
-  color: white;
-  font-size: 20px;
+  color: $white;
+  @include bodyText;
   cursor: pointer;
   display: flex;
   align-items: center;
-
 }
 </style>
