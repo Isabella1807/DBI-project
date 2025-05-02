@@ -13,7 +13,7 @@ import BasicIcon from '@/components/atoms/BasicIcon.vue';
 .searchWrapper {
   display: flex;
   align-items: center;
-  border: 1px solid black;
+  border: 1px solid $black;
   border-radius: 2rem;
   padding: 0.5rem 1rem;
   background-color: $white;
