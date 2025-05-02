@@ -207,10 +207,14 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
       transition: background-color 0.2s ease;
       border-bottom: 1px solid $mediumGrey;
 
-      &:hover,
-      &.selected {
-        background: $lightGreen !important;
+      &:hover {
+        background-color: $lightGreen !important;
       }
+
+      &.selected {
+        background-color: $mediumGreen !important;
+      }
+
 
       &:last-child {
         border-bottom: none;
