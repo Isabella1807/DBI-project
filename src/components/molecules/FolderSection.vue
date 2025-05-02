@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
+import FolderMenu from '@/components/atoms/FolderMenu.vue';
 import { inject, ref, computed, watch } from 'vue';
 
-const emit = defineEmits(['selectionChanged']);
+const emit = defineEmits(['selectionChanged', 'menuAction']);
 
 // Modtager viewType fra TableNav
 const injectedView = inject('currentView', ref('detailed'));
@@ -40,6 +41,10 @@ watch(injectedSelectAll, (newVal) => {
     folder.selected = newVal;
   });
 }, { immediate: true });
+
+const handleMenuAction = ({ folderId, action }: { folderId: number, action: string }) => {
+  emit('menuAction', { folderId, action });
+}
 </script>
 
 <template>
@@ -48,22 +53,12 @@ watch(injectedSelectAll, (newVal) => {
       <div class="folderContent" :class="{ selected: folder.selected }" @click="folder.selected = !folder.selected">
         <BasicIcon v-if="currentView === 'list'" name="ChevronRight" class="arrow" />
 
-        <!-- Checkbox vises altid, men styres af CSS i detailed view -->
-        <input type="checkbox"
-               class="folderCheckbox"
-               v-model="folder.selected"
-               @click.stop />
+        <input type="checkbox" class="folderCheckbox" v-model="folder.selected" @click.stop />
 
-        <!-- Fælles indhold -->
         <BasicIcon name="Folder" class="folderIcon" />
         <p>{{ folder.name }}</p>
 
-        <!-- Menu dots vises altid, men styres af CSS i detailed view -->
-        <button class="menuDots" @click.stop>
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        <FolderMenu :folder-id="folder.id" @option-selected="handleMenuAction" @click.stop />
       </div>
     </div>
   </div>
@@ -117,7 +112,7 @@ watch(injectedSelectAll, (newVal) => {
         font-weight: 500;
       }
 
-      // Checkbox og menuDots placering i detailed
+      // Checkbox placering i detailed
       .folderCheckbox {
         position: absolute;
         top: 18px;
@@ -157,36 +152,21 @@ watch(injectedSelectAll, (newVal) => {
         }
       }
 
-      .menuDots {
+      // Styling for menu dots i detailed view
+      :deep(.menuDotsContainer) {
         position: absolute;
-        top: 25px;
+        top: 18px;
         right: 25px;
-        display: flex;
-        flex-direction: row;
-        gap: 3px;
-        width: 24px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.2s ease;
-
-        span {
-          display: block;
-          width: 4px;
-          height: 4px;
-          background-color: $black;
-          border-radius: 50%;
-        }
       }
 
-      // Vis checkbox og menuDots ved hover eller når selected
+      // Vis checkbox og menuDropdown ved hover eller når selected
       &:hover,
       &.selected {
         .folderCheckbox,
-        .menuDots {
+        :deep(.menuDotsContainer) {
           opacity: 1;
           pointer-events: auto;
         }
@@ -290,23 +270,10 @@ watch(injectedSelectAll, (newVal) => {
         color: $black;
       }
 
-      .menuDots {
+      // Styling for menu dots i list view
+      :deep(.menuDotsContainer) {
         display: flex;
-        flex-direction: row;
-        gap: 3px;
-        width: 24px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-
-        span {
-          display: block;
-          width: 4px;
-          height: 4px;
-          background-color: $black;
-          border-radius: 50%;
-        }
+        align-items: center;
       }
     }
   }

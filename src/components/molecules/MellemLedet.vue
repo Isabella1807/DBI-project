@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BasicIcon from '../atoms/BasicIcon.vue';
-import FolderSection from '@/components/atoms/FolderSection.vue';
+import FolderSection from '@/components/molecules/FolderSection.vue';
 import { ref, provide, onMounted } from 'vue';
 
 const isAllSelected = ref(false);

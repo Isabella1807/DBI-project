@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   folderId: {
@@ -14,11 +14,11 @@ const emit = defineEmits(['optionSelected']);
 const showDropdown = ref(false);
 
 const options = [
-  { label: 'Rediger', icon: 'EditPencil' },
-  { label: 'Kopier', icon: 'Copy' },
-  { label: 'Flyt', icon: 'ArrowUpRight' },
-  { label: 'Send til print', icon: 'Printer' },
-  { label: 'Slet', icon: 'Trash' }
+  { label: 'Rediger', icon: 'EditPencil', action: 'edit' },
+  { label: 'Kopier', icon: 'Copy', action: 'copy' },
+  { label: 'Flyt', icon: 'ArrowUpRight', action: 'move' },
+  { label: 'Send til print', icon: 'Printer', action: 'print' },
+  { label: 'Slet', icon: 'Trash', action: 'delete' }
 ];
 
 const toggleDropdown = (event: Event) => {
@@ -30,10 +30,26 @@ const handleOptionClick = (option: string) => {
   emit('optionSelected', { folderId: props.folderId, action: option });
   showDropdown.value = false;
 };
+
+// Close dropdown when clicking outside
+const closeDropdown = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.menuDotsContainer')) {
+    showDropdown.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdown);
+});
 </script>
 
 <template>
-  <div class="menu-dots-container">
+  <div class="menuDotsContainer">
     <button class="menuDots" @click="toggleDropdown">
       <span></span>
       <span></span>
@@ -41,11 +57,9 @@ const handleOptionClick = (option: string) => {
     </button>
 
     <Transition name="dropdown">
-      <ul v-if="showDropdown" class="dropdown-menu">
-        <li v-for="(option, index) in options"
-            :key="index"
-            @click="handleOptionClick(option.label)">
-          <BasicIcon :name="option.icon" class="dropdown-icon"/>
+      <ul v-if="showDropdown" class="dropdownMenu">
+        <li v-for="(option, index) in options" :key="index" @click="handleOptionClick(option.action)">
+          <BasicIcon :name="option.icon" class="dropdown-icon" />
           {{ option.label }}
         </li>
       </ul>
@@ -54,7 +68,7 @@ const handleOptionClick = (option: string) => {
 </template>
 
 <style scoped lang="scss">
-.menu-dots-container {
+.menuDotsContainer {
   position: relative;
   display: inline-block;
 }
@@ -78,7 +92,7 @@ const handleOptionClick = (option: string) => {
   }
 }
 
-.dropdown-menu {
+.dropdownMenu {
   position: absolute;
   top: 100%;
   right: 0;
@@ -88,7 +102,7 @@ const handleOptionClick = (option: string) => {
   margin-top: 4px;
   list-style: none;
   z-index: 100;
-  width: 200px;
+  width: 213px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 
