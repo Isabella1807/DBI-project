@@ -1,4 +1,4 @@
-name: Run eslint on pull requests to dev
+name: Run eslint on pull requests to dev & main
 
 on:
   pull_request:
