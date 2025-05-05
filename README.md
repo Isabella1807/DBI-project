@@ -1,7 +1,8 @@
-# DBI project
+# DBI project ![Last Commit](https://img.shields.io/github/last-commit/Isabella1807/DBI-project?style=for-the-badge)
 
-Beskrivelse wohoo
+A modern frontend project for DBI Egenkontrol, built with Vue 3 (Composition API) and tools like TypeScript for type safety, Pinia for state management, SCSS for modular styling, and ESLint to ensure code consistency.
 
+During development, we focused on writing clean and consistent code, using reusable components and maintaining a modular structure.
 
 ## Built with
 
@@ -42,26 +43,34 @@ Beskrivelse wohoo
 [firebase-badge]: https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black
 [firebase-url]: https://firebase.google.com/
 
-# Getting Started
+## Getting Started
 
-## Project Setup
+### Project Install
 
-```sh
+``` sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Start development server
 
 ```sh
 npm run dev
 ```
 
+## Usage
+How to login, Environment variables? other things to know
 
-
-### Type-Check, Compile and Minify for Production
+## Other useful commands
+### Compile for production
 
 ```sh
 npm run build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
 ```
 
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
@@ -76,22 +85,6 @@ npm run test:unit
 npm run test:e2e:dev
 ```
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
-
-```sh
-npm run build
-npm run test:e2e
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
-
-### Contributors:
-[![](https://contrib.rocks/image?repo=dit-brugernavn/projektnavn)](https://github.com/dit-brugernavn/projektnavn/graphs/contributors)
-
+## Contributors
+[![](https://contrib.rocks/image?repo=Isabella1807/DBI-project)](https://github.com/Isabella1807/DBI-project/graphs/contributors)
