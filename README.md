@@ -1,12 +1,8 @@
 # DBI project
 
----
 Beskrivelse wohoo
 
 
-<pre><code>```js const hello = () => { console.log("Hej verden!"); } ```</code></pre>
-
-<pre>`wohoo` </pre>
 ## Built with
 
 [![Vue][vue-badge]][vue-url]
@@ -46,19 +42,7 @@ Beskrivelse wohoo
 [firebase-badge]: https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black
 [firebase-url]: https://firebase.google.com/
 
->Citat wohoo
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+# Getting Started
 
 ## Project Setup
 
@@ -71,6 +55,8 @@ npm install
 ```sh
 npm run dev
 ```
+
+
 
 ### Type-Check, Compile and Minify for Production
 
@@ -105,3 +91,7 @@ npm run test:e2e
 ```sh
 npm run lint
 ```
+
+### Contributors:
+[![](https://contrib.rocks/image?repo=dit-brugernavn/projektnavn)](https://github.com/dit-brugernavn/projektnavn/graphs/contributors)
+
