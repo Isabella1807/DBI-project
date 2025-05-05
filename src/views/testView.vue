@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import FolderForm from '@/components/FolderForm.vue';
 import MellemLedet from '@/components/molecules/MellemLedet.vue';
+
+import {onMounted} from 'vue';
+import entityService from '@/services/entityService.ts';
+
+onMounted(() => {
+  entityService.createEntity('tester', '12f45');
+});
 </script>
 
 <template>

@@ -1,16 +1,15 @@
 <script setup lang="ts">
-
 </script>
 
 <template>
-<div class="card">
-  <button>
-    Annuller
-  </button>
-  <button>
-    Videre
-  </button>
-</div>
+  <div class="card">
+    <button>
+      Annuller
+    </button>
+    <button>
+      Videre
+    </button>
+  </div>
 </template>
 
 <style scoped lang="scss">
