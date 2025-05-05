@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
+import FolderMenu from '@/components/atoms/FolderMenu.vue';
 import { inject, ref, computed, watch } from 'vue';
+
+const emit = defineEmits(['selectionChanged', 'menuAction']);
 
 // Modtager viewType fra TableNav
 const injectedView = inject('currentView', ref('detailed'));
@@ -10,59 +13,57 @@ const selectedFoldersCount = computed(() => {
   return folders.value.filter(folder => folder.selected).length;
 });
 
-
 // Modtager om alt er markeret fra TableNav
 const injectedSelectAll = inject('isAllSelected', ref(false));
 
 // Dummy mappe-data
+// Dummy mappe-data
 const folders = ref([
-  { id: 1, name: "Mappe A", selected: false },
-  { id: 2, name: "Mappe B", selected: false },
-  { id: 3, name: "Mappe C", selected: false },
-  { id: 4, name: "Mappe D", selected: false },
-  { id: 5, name: "Mappe E", selected: false },
-  { id: 6, name: "Mappe F", selected: false },
-  { id: 7, name: "Mappe G", selected: false },
-  { id: 8, name: "Mappe H", selected: false },
-  { id: 9, name: "Mappe I", selected: false },
-  { id: 10, name: "Mappe J", selected: false }
+  { id: 1, name: "Mappe A", selected: false, isUnit: false },
+  { id: 2, name: "Mappe B", selected: false, isUnit: false },
+  { id: 3, name: "Mappe C", selected: false, isUnit: false },
+  { id: 4, name: "Mappe D", selected: false, isUnit: false },
+  { id: 5, name: "Mappe E", selected: false, isUnit: false },
+  { id: 6, name: "Mappe F", selected: false, isUnit: false },
+  { id: 7, name: "Mappe G", selected: false, isUnit: false },
+  { id: 8, name: "Mappe H", selected: false, isUnit: false },
+  { id: 9, name: "Enhed I", selected: false, isUnit: true },
+  { id: 10, name: "Enhed J", selected: false, isUnit: true }
 ]);
+
+// Når valg ændres
+watch(selectedFoldersCount, (count) => {
+  emit('selectionChanged', count);
+});
 
 // Når "Markér alt" ændres, så marker alle mapper
 watch(injectedSelectAll, (newVal) => {
   folders.value.forEach(folder => {
     folder.selected = newVal;
   });
-});
-</script>
+}, { immediate: true });
 
+const handleMenuAction = ({ folderId, action }: { folderId: number, action: string }) => {
+  emit('menuAction', { folderId, action });
+}
+</script>
 
 <template>
   <div :class="['folderContainer', currentView]">
     <div v-for="(folder, index) in folders" :key="folder.id" :class="['folder', currentView]">
-      <div class="folderContent" :class="{ selected: folder.selected }" @click="folder.selected = !folder.selected">
+      <div class="folderContent" :class="{ selected: folder.selected, 'unit-style': folder.isUnit }" @click="folder.selected = !folder.selected">
+        <BasicIcon v-if="currentView === 'list'" name="ChevronRight" class="arrow" />
 
-        <!-- List-view elementer -->
-        <template v-if="currentView === 'list'">
-          <BasicIcon name="ChevronRight" class="arrow" />
-          <input type="checkbox" class="folderCheckbox" v-model="folder.selected" />
-        </template>
+        <input type="checkbox" class="folderCheckbox" v-model="folder.selected" @click.stop />
 
-        <!-- Fælles elementer -->
-        <BasicIcon name="Folder" class="folderIcon" />
+        <BasicIcon :name="folder.isUnit ? 'Unit' : 'Folder'" class="folderIcon" />
         <p>{{ folder.name }}</p>
 
-        <!-- List-view menu -->
-        <button v-if="currentView === 'list'" class="menuDots">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        <FolderMenu :folder-id="folder.id" @option-selected="handleMenuAction" @click.stop />
       </div>
     </div>
   </div>
 </template>
-
 <style lang="scss" scoped>
 .folderContainer {
   &.detailed {
@@ -87,15 +88,19 @@ watch(injectedSelectAll, (newVal) => {
       gap: 12px;
       cursor: pointer;
       transition: background-color 0.2s ease;
+      position: relative;
 
-      &:hover,
-      &.selected {
+      &:hover {
         background-color: $lightGreen;
+      }
+
+      &.selected {
+        background-color: $mediumGreen;
       }
 
       .folderIcon {
         width: 80px;
-        height: 80px;
+        height: auto;
         color: $darkGrey;
       }
 
@@ -105,6 +110,72 @@ watch(injectedSelectAll, (newVal) => {
         margin: 0;
         color: $black;
         font-weight: 500;
+      }
+
+      // Checkbox placering i detailed
+      .folderCheckbox {
+        position: absolute;
+        top: 18px;
+        left: 25px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid $darkGrey;
+        border-radius: 4px;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        opacity: 0;
+        pointer-events: none;
+
+        &:checked {
+          border-color: $darkGreen;
+          background-color: $darkGreen;
+          opacity: 1;
+          pointer-events: auto;
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: 3.2px;
+            top: 0px;
+            width: 4px;
+            height: 8px;
+            border: solid $white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+          }
+        }
+
+        &:hover {
+          border-color: $darkGreen;
+        }
+      }
+
+      // Styling for menu dots i detailed view
+      :deep(.menuDotsContainer) {
+        position: absolute;
+        top: 18px;
+        right: 25px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      // Vis checkbox og menuDropdown ved hover eller når selected
+      &:hover,
+      &.selected {
+        .folderCheckbox,
+        :deep(.menuDotsContainer) {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+
+      // Sørg for at checkbox altid er synlig når den er checked
+      .folderCheckbox:checked {
+        opacity: 1;
+        pointer-events: auto;
       }
     }
   }
@@ -136,10 +207,14 @@ watch(injectedSelectAll, (newVal) => {
       transition: background-color 0.2s ease;
       border-bottom: 1px solid $mediumGrey;
 
-      &:hover,
-      &.selected {
-        background: $lightGreen !important;
+      &:hover {
+        background-color: $lightGreen !important;
       }
+
+      &.selected {
+        background-color: $mediumGreen !important;
+      }
+
 
       &:last-child {
         border-bottom: none;
@@ -199,23 +274,10 @@ watch(injectedSelectAll, (newVal) => {
         color: $black;
       }
 
-      .menuDots {
+      // Styling for menu dots i list view
+      :deep(.menuDotsContainer) {
         display: flex;
-        flex-direction: row;
-        gap: 3px;
-        width: 24px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-
-        span {
-          display: block;
-          width: 4px;
-          height: 4px;
-          background-color: $black;
-          border-radius: 50%;
-        }
+        align-items: center;
       }
     }
   }
