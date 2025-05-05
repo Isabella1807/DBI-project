@@ -1,6 +1,6 @@
 # DBI project ![Last Commit](https://img.shields.io/github/last-commit/Isabella1807/DBI-project?style=for-the-badge)
 
-A modern frontend project for DBI Egenkontrol, built with Vue 3 (Composition API) and tools like TypeScript for type safety, Pinia for state management, SCSS for modular styling, and ESLint to ensure code consistency.
+A modern frontend project for **DBI Egenkontrol**, built with Vue 3 (Composition API) and tools like *TypeScript* for type safety, *Pinia* for state management, *SCSS* for modular styling, and *ESLint* to ensure code consistency.
 
 During development, we focused on writing clean and consistent code, using reusable components and maintaining a modular structure.
 
@@ -85,6 +85,29 @@ npm run test:unit
 npm run test:e2e:dev
 ```
 
+## Deployment
+The project is run using **Firebase Hosting**. A GitHub Actions workflow is set up to automatically deploy the site when changes are pushed to the `main` branch.
 
+### Manual deploy using firebase CLI
+To deploy manually using firebase follow these steps:
+1. Install Firebase CLI globally:
+    ```sh
+    npm install -g firebase-tools
+    ```
+
+2. Log in to Firebase:
+    ```sh
+    firebase login
+    ```
+
+3. Build the project (generates a `dist/` folder):
+    ```sh
+    npm run build
+    ```
+
+4. Deploy to Firebase Hosting:
+    ```sh
+    firebase deploy --only hosting
+    ```
 ## Contributors
 [![](https://contrib.rocks/image?repo=Isabella1807/DBI-project)](https://github.com/Isabella1807/DBI-project/graphs/contributors)
