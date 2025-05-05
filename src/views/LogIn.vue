@@ -91,6 +91,7 @@ const handleCreateAccount = () => {
 
 .formLabel {
   font-size: 1rem;
+  font-weight: 700;
   color: $black;
 }
 
