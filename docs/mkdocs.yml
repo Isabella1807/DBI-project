@@ -1,11 +1,11 @@
-site_name: Team Dokumentation
-site_description: Vores herre seje dokumentation
-site_author: Os
+site_name: DBI-Project MKdocs
+site_description: Project for 2 semester for Webudhvilker - MKdocs
+site_author: Anders, Claudia og Isabella
 
 theme:
   name: material #Eller readthedocs som navn
 
 nav:
-  - Home: index.md
+  - StartSide: index.md
   - Git: git.md
   - Clean Code: cleanCode.md
