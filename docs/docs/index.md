@@ -1,4 +1,4 @@
-# Velkommen til projektet
+# Velkommen til DBI-projektet
 
 ## Introduktion
 Mega sej intro
