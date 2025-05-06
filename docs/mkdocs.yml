@@ -7,5 +7,6 @@ theme:
 
 nav:
   - StartSide: index.md
+  - Start Projekt: startprojekt.md
   - Git: git.md
   - Clean Code: cleanCode.md

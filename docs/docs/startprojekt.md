@@ -1,3 +1,4 @@
+# Start projekt
 
 ## Installation & opsætning
 For at starte et Vue 3 projekt skal man have en mappe oprettet på sin pc og derefter åbne sin terminal og hoppe ind i mappen derfra.
@@ -27,3 +28,9 @@ npm run dev
 ``` 
 
 Så køre den på Localhost
+
+## Navigation
+
+- [StartSide](index.md)
+- [Git](git.md)
+- [Clean Code](cleanCode.md)
