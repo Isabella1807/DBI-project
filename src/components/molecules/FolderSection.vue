@@ -40,7 +40,7 @@
           />
           <p>{{ folder.name }}</p>
 
-          <!-- Three-dot menu drives open/rename/delete -->
+          <!-- Three-dot menu: only "edit" & "delete" -->
           <FolderMenu
             :folder-id="folder.id as any"
             @option-selected="handleMenuAction"
@@ -190,29 +190,17 @@ async function deleteFolder(id: string) {
   await deleteFolderAndChildren(id);
 }
 
-// Handle menu actions (including Danish labels)
+// Handle menu actions: only "edit" & "delete"
 function handleMenuAction(payload: {
   folderId: string;
   action: string;
 }) {
   const { folderId, action } = payload;
   const f = folders.value.find(x => x.id === folderId);
-
-  switch (action.toLowerCase()) {
-    case 'open':
-      if (f) enterFolder(folderId, f.name);
-      break;
-    case 'rename':
-    case 'edit':
-    case 'rediger':    // Danish for "edit"
-      if (f) renameFolder(folderId, f.name);
-      break;
-    case 'delete':
-    case 'slet':      // Danish for "delete"
-      deleteFolder(folderId);
-      break;
-    default:
-      console.warn(`Unhandled menu action: ${action}`);
+  if (action === 'edit' && f) {
+    renameFolder(folderId, f.name);
+  } else if (action === 'delete') {
+    deleteFolder(folderId);
   }
 }
 </script>
