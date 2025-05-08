@@ -8,7 +8,7 @@ import SearchBar from "@/components/molecules/SearchBar.vue";
         <div class="toolbar-container">
             <DropdownButton label="Opret" type="default" iconName="PlusIcon" ariaLabel="Opret" :options="[
                 { label: 'Mappe', icon: 'Folder' },
-                { label: 'Enhed', icon: 'Qr_code' }
+                { label: 'Enhed', icon: 'Qr_Code' }
             ]" />
 
             <SearchBar/>
