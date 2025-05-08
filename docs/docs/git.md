@@ -24,16 +24,10 @@ Vi har valgt en simpel og struktureret branching-strategi. Alt arbejde foregår 
 
 - Denne metode bruger flere grene, bl.a. main, develop, feature, release og hotfix. Det giver en tydelig struktur og egner sig godt til større projekter, hvor der er brug for at holde styr på forskellige udviklingsfaser.
 
-**GitHub Flow**
-
-- En enklere tilgang, som især er velegnet til webprojekter med løbende opdateringer. Her arbejder man typisk med feature branches, som bliver flettet ind i main via pull requests. Det passer godt sammen med CI/CD-processer.
-
-**GitLab Flow**
-
-- Bygger videre på Git Flow, men kombinerer det med GitLabs issue-håndtering. Det gør workflowet mere fleksibelt og nemt at tilpasse afhængigt af, hvordan man organiserer sit udviklingsarbejde.
 
 ## Navigation
 
 - [Start Projektet](startprojekt.md)
 - [Start side](index.md)
 - [Clean Code](cleanCode.md)
+- [Test](test.md)

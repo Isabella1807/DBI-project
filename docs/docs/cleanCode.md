@@ -49,3 +49,4 @@ En central del af vores udviklingsproces har været refaktorering, som vi løben
 - [Start Projektet](startprojekt.md)
 - [Git](git.md)
 - [Start side](index.md)
+- [Test](test.md)
