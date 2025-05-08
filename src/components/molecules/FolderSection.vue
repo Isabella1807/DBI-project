@@ -19,7 +19,6 @@
           @click="folder.selected = !folder.selected"
           @dblclick.stop="enterFolder(folder.id, folder.name)"
         >
-          <!-- Arrow to enter folder in list view -->
           <BasicIcon
             v-if="currentView === 'list'"
             name="ChevronRight"
@@ -40,7 +39,6 @@
           />
           <p>{{ folder.name }}</p>
 
-          <!-- Three-dot menu: only "edit" & "delete" -->
           <FolderMenu
             :folder-id="folder.id as any"
             @option-selected="handleMenuAction"
@@ -50,28 +48,17 @@
       </div>
     </div>
 
-    <!-- Create-folder form -->
-    <div class="folder-creation">
-      <h3>Create New Folder in {{ currentFolderName }}</h3>
-      <form @submit.prevent="onSubmit">
-        <div>
-          <label for="folderName">Folder Name:</label>
-          <input
-            id="folderName"
-            v-model="folderName"
-            placeholder="Folder Name"
-            required
-          />
-        </div>
-        <button type="submit">Create Folder</button>
-      </form>
-    </div>
+    <!-- Create-folder dialog -->
+    <CreateFolderDialog
+      :visible="showCreateDialog"
+      :currentFolderName="currentFolderName"
+      @submit="onDialogSubmit"
+      @cancel="onDialogCancel"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import BasicIcon from '@/components/atoms/BasicIcon.vue';
-import FolderMenu from '@/components/atoms/FolderMenu.vue';
 import {
   inject,
   ref,
@@ -79,8 +66,14 @@ import {
   watch,
   onMounted,
   onUnmounted,
+  toRef,
   type Ref
-} from 'vue';
+} from 'vue'
+
+import BasicIcon from '@/components/atoms/BasicIcon.vue'
+import FolderMenu from '@/components/atoms/FolderMenu.vue'
+import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue'
+
 import {
   collection,
   query,
@@ -92,115 +85,115 @@ import {
   updateDoc,
   deleteDoc,
   doc
-} from 'firebase/firestore';
-import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
-import { db } from '@/configs/firebase';
+} from 'firebase/firestore'
+import type { DocumentData, QuerySnapshot } from 'firebase/firestore'
+import { db } from '@/configs/firebase'
 
 interface Folder {
-  id: string;
-  name: string;
-  selected: boolean;
-  isUnit: boolean;
+  id: string
+  name: string
+  selected: boolean
+  isUnit: boolean
 }
 
-// Emit selection changes
+// **Make the incoming prop reactive** instead of destructuring it away
+const props = defineProps<{ showCreateDialog: boolean }>()
+const showCreateDialog = toRef(props, 'showCreateDialog')
+
+// Emits for dialog toggle and selection‐count
 const emit = defineEmits<{
-  (e: 'selectionChanged', count: number): void;
-}>();
+  (e: 'update:showCreateDialog', v: boolean): void
+  (e: 'selectionChanged', count: number): void
+}>()
 
 // Injected UI state
-const currentView = inject<Ref<'detailed' | 'list'>>(
-  'currentView',
-  ref<'detailed'>('detailed')
-)!;
-const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!;
+const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!
+const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!
 
 // Folder data & selection
-const folders = ref<Folder[]>([]);
-const selectionCount = computed(() => folders.value.filter(f => f.selected).length);
-watch(selectionCount, cnt => emit('selectionChanged', cnt));
-watch(isAllSelected, all => folders.value.forEach(f => (f.selected = all)), {
-  immediate: true
-});
+const folders = ref<Folder[]>([])
+const selectionCount = computed(() => folders.value.filter(f => f.selected).length)
+watch(selectionCount, cnt => emit('selectionChanged', cnt))
+watch(isAllSelected, all => {
+  folders.value.forEach(f => (f.selected = all))
+}, { immediate: true })
 
 // Navigation & real-time fetch
-const currentFolderId = ref<string | null>(null);
-const currentFolderName = ref('Root');
-let unsubscribe = () => {};
+const currentFolderId = ref<string | null>(null)
+const currentFolderName = ref('Root')
+let unsubscribe = () => {}
 
 function fetchFolders() {
-  unsubscribe();
+  unsubscribe()
   const q = query(
     collection(db, 'folders'),
     where('parentId', '==', currentFolderId.value)
-  );
+  )
   unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
     folders.value = snap.docs.map(d => ({
       id: d.id,
       name: d.data().name as string,
       selected: false,
       isUnit: false
-    }));
-  });
+    }))
+  })
 }
 
-onMounted(fetchFolders);
-watch(currentFolderId, fetchFolders);
-onUnmounted(() => unsubscribe());
+onMounted(fetchFolders)
+watch(currentFolderId, fetchFolders)
+onUnmounted(() => unsubscribe())
 
 function enterFolder(id: string, name: string) {
-  currentFolderId.value = id;
-  currentFolderName.value = name;
+  currentFolderId.value = id
+  currentFolderName.value = name
 }
 function goBack() {
-  currentFolderId.value = null;
-  currentFolderName.value = 'Root';
+  currentFolderId.value = null
+  currentFolderName.value = 'Root'
 }
 
-// Create-folder form
-const folderName = ref('');
-async function onSubmit() {
-  if (!folderName.value.trim()) return;
+// Create-folder dialog handlers
+async function onDialogSubmit(name: string) {
+  if (!name.trim()) return
   await addDoc(collection(db, 'folders'), {
-    name: folderName.value.trim(),
+    name: name.trim(),
     parentId: currentFolderId.value,
     createdAt: serverTimestamp()
-  });
-  folderName.value = '';
+  })
+  emit('update:showCreateDialog', false)
+}
+function onDialogCancel() {
+  emit('update:showCreateDialog', false)
 }
 
 // Rename & recursive delete
 async function renameFolder(id: string, oldName: string) {
-  const newName = window.prompt('New folder name:', oldName);
-  if (!newName || newName.trim() === oldName) return;
-  await updateDoc(doc(db, 'folders', id), { name: newName.trim() });
+  const newName = window.prompt('New folder name:', oldName)
+  if (!newName || newName.trim() === oldName) return
+  await updateDoc(doc(db, 'folders', id), { name: newName.trim() })
 }
 
 async function deleteFolderAndChildren(id: string) {
-  const subQ = query(collection(db, 'folders'), where('parentId', '==', id));
-  const subSnap = await getDocs(subQ);
+  const subQ = query(collection(db, 'folders'), where('parentId', '==', id))
+  const subSnap = await getDocs(subQ)
   for (const c of subSnap.docs) {
-    await deleteFolderAndChildren(c.id);
+    await deleteFolderAndChildren(c.id)
   }
-  await deleteDoc(doc(db, 'folders', id));
+  await deleteDoc(doc(db, 'folders', id))
 }
 
 async function deleteFolder(id: string) {
-  if (!confirm('Delete this folder and all its subfolders?')) return;
-  await deleteFolderAndChildren(id);
+  if (!confirm('Delete this folder and all its subfolders?')) return
+  await deleteFolderAndChildren(id)
 }
 
-// Handle menu actions: only "edit" & "delete"
-function handleMenuAction(payload: {
-  folderId: string;
-  action: string;
-}) {
-  const { folderId, action } = payload;
-  const f = folders.value.find(x => x.id === folderId);
-  if (action === 'edit' && f) {
-    renameFolder(folderId, f.name);
-  } else if (action === 'delete') {
-    deleteFolder(folderId);
+// Handle menu actions
+function handleMenuAction(payload: { folderId: string; action: string }) {
+  const f = folders.value.find(x => x.id === payload.folderId)
+  if (payload.action === 'edit' && f) {
+    renameFolder(payload.folderId, f.name)
+  } else if (payload.action === 'delete') {
+    deleteFolder(payload.folderId)
   }
 }
 </script>

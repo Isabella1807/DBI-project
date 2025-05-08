@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import UnderMenu from '@/components/organisms/UnderMenu.vue';
-import MellemLedet from '@/components/molecules/MellemLedet.vue';
+import { ref } from 'vue'
+import UnderMenu from '@/components/organisms/UnderMenu.vue'
+import MellemLedet from '@/components/molecules/MellemLedet.vue'
+
+const showCreateDialog = ref(false)
+
+function onCreateOption(opt: string) {
+  if (opt === 'Mappe') showCreateDialog.value = true
+}
 </script>
 
 <template>
-  <div>
-    <h1>
-      TESTER VIEW 1
-    </h1>
-    <UnderMenu />
-    <MellemLedet/>
-  </div>
+  <h1>TESTER VIEW 1</h1>
+  <UnderMenu @option-selected="onCreateOption" />
+  <MellemLedet v-model:showCreateDialog="showCreateDialog" />
 </template>
-
-<style scoped lang="scss">
-
-</style>

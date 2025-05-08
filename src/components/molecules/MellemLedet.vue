@@ -1,92 +1,110 @@
+<!-- src/components/molecules/MellemLedet.vue -->
 <script setup lang="ts">
-import BasicIcon from '../atoms/BasicIcon.vue';
-import FolderSection from '@/components/molecules/FolderSection.vue';
-import { ref, provide, onMounted } from 'vue';
+import BasicIcon from '../atoms/BasicIcon.vue'
+import FolderSection from '@/components/molecules/FolderSection.vue'
+import { ref, provide, onMounted } from 'vue'
 
-const isAllSelected = ref(false);
-provide('isAllSelected', isAllSelected);
+const props = defineProps({
+  showCreateDialog: {
+    type: Boolean,
+    required: true
+  }
+})
 
-const savedView = localStorage.getItem('currentView');
-const currentView = ref(savedView || 'detailed');
+const emit = defineEmits<{
+  (e: 'update:showCreateDialog', v: boolean): void
+  (e: 'selection-changed', count: number): void
+}>()
 
-const anySelected = ref(false);
-
-function handleSelectionChanged(selectedCount: number) {
-  anySelected.value = selectedCount > 0;
-  isAllSelected.value = selectedCount === 10; // Antal mapper
+function update(v: boolean) {
+  emit('update:showCreateDialog', v)
 }
 
-function toggleView(viewType: string) {
-  currentView.value = viewType;
-  localStorage.setItem('currentView', viewType);
+const isAllSelected = ref(false)
+provide('isAllSelected', isAllSelected)
+
+const anySelected = ref(false)
+function handleSelectionChanged(count: number) {
+  anySelected.value = count > 0
+  isAllSelected.value = count === 10
 }
 
-provide('currentView', currentView);
-provide('toggleView', toggleView);
+const savedView = localStorage.getItem('currentView')
+const currentView = ref(savedView || 'detailed')
+function toggleView(v: string) {
+  currentView.value = v
+  localStorage.setItem('currentView', v)
+}
+provide('currentView', currentView)
+provide('toggleView', toggleView)
 
 onMounted(() => {
-  if (!['list', 'detailed'].includes(currentView.value)) {
-    currentView.value = 'detailed';
-    localStorage.setItem('currentView', 'detailed');
+  if (!['list','detailed'].includes(currentView.value)) {
+    currentView.value = 'detailed'
+    localStorage.setItem('currentView','detailed')
   }
-});
+})
 </script>
 
 <template>
   <div class="tableNav">
-    <!-- Venstre side -->
+    <!-- Venstre side: markér alt, rediger, kopier, osv. -->
     <div class="leftSection">
       <div class="tableNavItem" :class="{ checked: isAllSelected }">
-        <input type="checkbox" id="selectAll" class="customCheckbox" v-model="isAllSelected"/>
+        <input
+          type="checkbox"
+          id="selectAll"
+          class="customCheckbox"
+          v-model="isAllSelected"
+        />
         <label for="selectAll">Markér alt</label>
       </div>
-
       <div class="divider"></div>
-
       <div class="tableNavItem" :class="{ disabled: !anySelected }">
-        <BasicIcon name="EditPencil"/>
-        <span>Rediger</span>
+        <BasicIcon name="EditPencil" /><span>Rediger</span>
       </div>
       <div class="tableNavItem" :class="{ disabled: !anySelected }">
-        <BasicIcon name="Copy"/>
-        <span>Kopier</span>
+        <BasicIcon name="Copy" /><span>Kopier</span>
       </div>
       <div class="tableNavItem" :class="{ disabled: !anySelected }">
-        <BasicIcon name="ArrowUpRight"/>
-        <span>Flyt</span>
+        <BasicIcon name="ArrowUpRight" /><span>Flyt</span>
       </div>
       <div class="tableNavItem" :class="{ disabled: !anySelected }">
-        <BasicIcon name="Printer"/>
-        <span>Print</span>
+        <BasicIcon name="Printer" /><span>Print</span>
       </div>
       <div class="tableNavItem" :class="{ disabled: !anySelected }">
-        <BasicIcon name="Trash"/>
-        <span>Slet</span>
+        <BasicIcon name="Trash" /><span>Slet</span>
       </div>
     </div>
 
-    <!-- Højre side -->
+    <!-- Højre side: filtrer, sorter, skift visning -->
     <div class="rightSection">
-      <div class="tableNavIcon">
-        <BasicIcon name="Filter"/>
+      <div class="tableNavIcon"><BasicIcon name="Filter" /></div>
+      <div class="tableNavIcon"><BasicIcon name="SortAscending" /></div>
+      <div
+        class="tableNavIcon"
+        :class="{ active: currentView === 'list' }"
+        @click="toggleView('list')"
+      >
+        <BasicIcon name="ListUnordered" />
       </div>
-      <div class="tableNavIcon">
-        <BasicIcon name="SortAscending"/>
-      </div>
-      <div class="tableNavIcon" :class="{ active: currentView === 'list' }"
-           @click="toggleView('list')">
-        <BasicIcon name="ListUnordered"/>
-      </div>
-      <div class="tableNavIcon" :class="{ active: currentView === 'detailed' }"
-           @click="toggleView('detailed')">
-        <BasicIcon name="MoreGridSmall"/>
+      <div
+        class="tableNavIcon"
+        :class="{ active: currentView === 'detailed' }"
+        @click="toggleView('detailed')"
+      >
+        <BasicIcon name="MoreGridSmall" />
       </div>
     </div>
   </div>
 
-  <FolderSection @selection-changed="handleSelectionChanged" />
+  <!-- FolderSection med v-model og events -->
+  <FolderSection
+    :showCreateDialog="props.showCreateDialog"
+    @update:showCreateDialog="update"
+    @selection-changed="handleSelectionChanged"
+  />
 </template>
-
 
 <style scoped lang="scss">
 .tableNav {
@@ -105,16 +123,13 @@ onMounted(() => {
     border: 2px solid $black;
     border-radius: 4px;
     appearance: none;
-    -webkit-appearance: none;
     cursor: pointer;
-    transition: all 0.2s ease;
     position: relative;
     margin-bottom: 7px;
 
     &:checked {
       border-color: $darkGreen;
       background-color: $darkGreen;
-
       &::after {
         content: "";
         position: absolute;
@@ -149,27 +164,13 @@ onMounted(() => {
       border-radius: 0.5rem;
       transition: background-color 0.2s ease;
 
-      &:hover {
-        background-color: $lightGreen;
-      }
-
-      &:active {
-        background-color: $lightGreen;
-      }
-
-      &.checked {
-        // ← Tilføjet!
-        background-color: $lightGreen;
-      }
-
+      &:hover { background-color: $lightGreen; }
+      &:active { background-color: $lightGreen; }
+      &.checked { background-color: $lightGreen; }
       &.disabled {
         opacity: 0.3;
         cursor: default;
-
-        // stadig hover effekt hvis ønsket
-        &:hover {
-          background-color: $lightGreen;
-        }
+        &:hover { background-color: $lightGreen; }
       }
     }
   }
@@ -178,26 +179,23 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
 
-  .tableNavIcon {
-    background-color: $lightGrey;
-    padding: 0.4rem;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+    .tableNavIcon {
+      background-color: $lightGrey;
+      padding: 0.4rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
 
-    &:hover {
-      background-color: $lightGreen;
+      &:hover { background-color: $lightGreen; }
+      &.active {
+        background-color: $mediumGrey;
+        color: $white;
+      }
     }
-  }
-
-  .tableNavIcon.active {
-    background-color: $mediumGrey;
-    color: $white;
   }
 
   .divider {

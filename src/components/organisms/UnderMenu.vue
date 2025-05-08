@@ -1,25 +1,47 @@
 <script setup lang="ts">
-import DropdownButton from '@/components/molecules/DropdownButton.vue';
-import SearchBar from "@/components/molecules/SearchBar.vue";
+import DropdownButton from '@/components/molecules/DropdownButton.vue'
+import SearchBar from '@/components/molecules/SearchBar.vue'
+
+// Now correctly expect a string payload
+const emit = defineEmits<{
+  (e: 'option-selected', label: string): void
+}>()
+
+// Accept a string, not an object
+function onOptionSelected(label: string) {
+  console.log('[UnderMenu] option-selected:', label)
+  emit('option-selected', label)
+}
 </script>
 
 <template>
-    <div class="toolbar-wrapper">
-        <div class="toolbar-container">
-            <DropdownButton label="Opret" type="default" iconName="PlusIcon" ariaLabel="Opret" :options="[
-                { label: 'Mappe', icon: 'Folder' },
-                { label: 'Enhed', icon: 'Qr_Code' }
-            ]" />
-
-            <SearchBar/>
-            <DropdownButton label="Eksporter" type="secondary" iconName="ShareExport" ariaLabel="Eksporter" :options="[
-                { label: 'Hent som PDF', icon: 'File' },
-                { label: 'Hent som CSV', icon: 'Table' },
-                { label: 'Send til printer kø', icon: 'Printer' }
-            ]" />
-
-        </div>
+  <div class="toolbar-wrapper">
+    <div class="toolbar-container">
+      <DropdownButton
+        label="Opret"
+        type="default"
+        iconName="PlusIcon"
+        ariaLabel="Opret"
+        :options="[
+          { label: 'Mappe', icon: 'Folder' },
+          { label: 'Enhed', icon: 'Qr_Code' }
+        ]"
+        @option-selected="onOptionSelected"
+      />
+      <SearchBar />
+      <DropdownButton
+        label="Eksporter"
+        type="secondary"
+        iconName="ShareExport"
+        ariaLabel="Eksporter"
+        :options="[
+          { label: 'Hent som PDF', icon: 'File' },
+          { label: 'Hent som CSV', icon: 'Table' },
+          { label: 'Send til printer kø', icon: 'Printer' }
+        ]"
+      />
     </div>
+  </div>
 </template>
 
 

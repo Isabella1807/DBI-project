@@ -1,51 +1,71 @@
 <script setup lang="ts">
-import {ref} from 'vue';
-import BasicButton from '../atoms/BasicButton.vue';
-import BasicIcon from '../atoms/BasicIcon.vue';
-import { useWizardStore } from '@/stores/wizard.ts';
+import { ref } from 'vue'
+import BasicButton from '../atoms/BasicButton.vue'
+import BasicIcon from '../atoms/BasicIcon.vue'
+import { useWizardStore } from '@/stores/wizard.ts'
 
-const wizardStore = useWizardStore();
+const wizardStore = useWizardStore()
 
 const props = defineProps({
-  label: {type: String, required: true},
-  type: {type: String, required: true},
-  iconName: {type: String, required: true},
-  ariaLabel: {type: String, required: true},
-  options: {
+  label:      { type: String, required: true },
+  type:       { type: String, required: true },
+  iconName:   { type: String, required: true },
+  ariaLabel:  { type: String, required: true },
+  options:    {
     type: Array as () => { label: string; icon: string }[],
     required: true,
   },
-});
+})
 
+// ← emit option-selected(label: string)
+const emit = defineEmits<{
+  (e: 'option-selected', label: string): void
+}>()
 
-const showDropdown = ref(false);
+const showDropdown = ref(false)
 
 function toggleDropdown() {
-  showDropdown.value = !showDropdown.value;
+  console.log('[DropdownButton] toggleDropdown fired')
+  showDropdown.value = !showDropdown.value
 }
 
-function handleOptionClick(option: string) {
-  console.log('Valgte:', option);
-  showDropdown.value = false;
-  if(option === 'Enhed'){
-    wizardStore.open();
+function handleOptionClick(optionLabel: string) {
+  console.log('[DropdownButton] handleOptionClick:', optionLabel)
+  showDropdown.value = false
+
+  // emit up to parent
+  emit('option-selected', optionLabel)
+
+  // your existing wizard logic
+  if (optionLabel === 'Enhed') {
+    wizardStore.open()
   }
 }
 </script>
 
 <template>
   <div class="dropdown-wrapper">
-    <BasicButton :label="label" :type="type" :iconName="iconName" :active="showDropdown" @click="toggleDropdown" :ariaLabel="ariaLabel"/>
+    <BasicButton
+      :label="label"
+      :type="type"
+      :iconName="iconName"
+      :active="showDropdown"
+      @click="toggleDropdown"
+      :ariaLabel="ariaLabel"
+    />
 
     <ul v-if="showDropdown" class="dropdown-menu">
-      <li v-for="(option, index) in options" :key="index" @click="handleOptionClick(option.label)">
-        <BasicIcon :name="option.icon" class="dropdown-icon"/>
-        {{ option.label }}
+      <li
+        v-for="(opt, idx) in options"
+        :key="idx"
+        @click="handleOptionClick(opt.label)"
+      >
+        <BasicIcon :name="opt.icon" class="dropdown-icon"/>
+        {{ opt.label }}
       </li>
     </ul>
   </div>
 </template>
-
 
 <style scoped lang="scss">
 .dropdown-wrapper {
@@ -76,7 +96,6 @@ function handleOptionClick(option: string) {
     &:hover {
       background: $lightGreen;
     }
-
   }
 }
 </style>
