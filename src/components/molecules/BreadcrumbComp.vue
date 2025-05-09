@@ -29,21 +29,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useFolderStore } from '@/stores/folderStore'
+import { computed } from 'vue';
+import { useFolderStore } from '@/stores/folderStore';
 
-const store = useFolderStore()
+const store = useFolderStore();
 
-const rootLabel = computed(() => store.rootLabel)
-const ancestors = computed(() => store.ancestors)
-const currentFolderName = computed(() => store.currentFolderName)
-const isAtRoot = computed(() => store.currentFolderId === null)
+const rootLabel = computed(() => store.rootLabel);
+const ancestors = computed(() => store.ancestors);
+const currentFolderName = computed(() => store.currentFolderName);
+const isAtRoot = computed(() => store.currentFolderId === null);
 
 function goRoot() {
-  store.resetToRoot()
+  store.resetToRoot();
 }
 function goTo(index: number) {
-  store.goToAncestor(index)
+  store.goToAncestor(index);
 }
 </script>
 

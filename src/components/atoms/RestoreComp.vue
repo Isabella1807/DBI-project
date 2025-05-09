@@ -1,58 +1,58 @@
 <script lang="ts" setup>
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue';
 
 const props = defineProps<{
   type: 'delete' | 'restore'
-}>()
+}>();
 
 const emits = defineEmits<{
   (e: 'undo'): void
-}>()
+}>();
 
-const visible = ref(true)
-const isEntering = ref(true)
-const isExiting = ref(false)
+const visible = ref(true);
+const isEntering = ref(true);
+const isExiting = ref(false);
 
 const close = () => {
-  isExiting.value = true
+  isExiting.value = true;
   setTimeout(() => {
-    visible.value = false
-  }, 300) // Svarer til animationens varighed
-}
+    visible.value = false;
+  }, 300); // Svarer til animationens varighed
+};
 
 // Auto-hide efter 3 sekunder ved 'restore'
 watch(() => props.type, (newVal) => {
   if (newVal === 'restore') {
     setTimeout(() => {
-      close()
-    }, 3000)
+      close();
+    }, 3000);
   }
-}, { immediate: true })
+}, { immediate: true });
 
 // Tekster og ikon baseret på type
 const message = computed(() =>
-  props.type === 'delete' ? 'Element blev slettet' : 'Element gendannet'
-)
+  props.type === 'delete' ? 'Element blev slettet' : 'Element gendannet',
+);
 
 const toastTypeClass = computed(() =>
-  props.type === 'delete' ? 'toastDelete' : 'toastRestore'
-)
+  props.type === 'delete' ? 'toastDelete' : 'toastRestore',
+);
 
 const iconName = computed(() =>
-  props.type === 'delete' ? 'CircleWarning' : 'Check'
-)
+  props.type === 'delete' ? 'CircleWarning' : 'Check',
+);
 
 const handleUndo = () => {
-  emits('undo')
-}
+  emits('undo');
+};
 
 // Fade-in animation ved mount
 onMounted(() => {
   setTimeout(() => {
-    isEntering.value = false
-  }, 300)
-})
+    isEntering.value = false;
+  }, 300);
+});
 </script>
 
 <template>
