@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import DropdownButton from '@/components/molecules/DropdownButton.vue'
-import SearchBar from '@/components/molecules/SearchBar.vue'
+import DropdownButton from '@/components/molecules/DropdownButton.vue';
+import SearchBar from '@/components/molecules/SearchBar.vue';
 
 // Now correctly expect a string payload
 const emit = defineEmits<{
   (e: 'option-selected', label: string): void
-}>()
+}>();
 
 // Accept a string, not an object
 function onOptionSelected(label: string) {
-  console.log('[UnderMenu] option-selected:', label)
-  emit('option-selected', label)
+  emit('option-selected', label);
 }
 </script>
 

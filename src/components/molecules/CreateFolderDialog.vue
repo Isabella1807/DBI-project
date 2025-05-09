@@ -1,28 +1,30 @@
 <!-- src/components/molecules/CreateFolderDialog.vue -->
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
   visible: boolean
   currentFolderName: string
-}>()
+}>();
 
 const emit = defineEmits<{
   (e: 'submit', folderName: string): void
   (e: 'cancel'): void
-}>()
+}>();
 
-const name = ref('')
+const name = ref('');
 
 // Clear input whenever dialog re‐opens
-watch(() => props.visible, v => { if (v) name.value = '' })
+watch(() => props.visible, v => {
+  if (v) name.value = ''; 
+});
 
 function onSubmit() {
-  if (!name.value.trim()) return
-  emit('submit', name.value.trim())
+  if (!name.value.trim()) return;
+  emit('submit', name.value.trim());
 }
 function onCancel() {
-  emit('cancel')
+  emit('cancel');
 }
 </script>
 

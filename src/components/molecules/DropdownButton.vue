@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import BasicButton from '../atoms/BasicButton.vue'
-import BasicIcon from '../atoms/BasicIcon.vue'
-import { useWizardStore } from '@/stores/wizard.ts'
+import { ref } from 'vue';
+import BasicButton from '../atoms/BasicButton.vue';
+import BasicIcon from '../atoms/BasicIcon.vue';
+import { useWizardStore } from '@/stores/wizard.ts';
 
-const wizardStore = useWizardStore()
+const wizardStore = useWizardStore();
 
 const props = defineProps({
   label:      { type: String, required: true },
@@ -15,30 +15,28 @@ const props = defineProps({
     type: Array as () => { label: string; icon: string }[],
     required: true,
   },
-})
+});
 
 // ← emit option-selected(label: string)
 const emit = defineEmits<{
   (e: 'option-selected', label: string): void
-}>()
+}>();
 
-const showDropdown = ref(false)
+const showDropdown = ref(false);
 
 function toggleDropdown() {
-  console.log('[DropdownButton] toggleDropdown fired')
-  showDropdown.value = !showDropdown.value
+  showDropdown.value = !showDropdown.value;
 }
 
 function handleOptionClick(optionLabel: string) {
-  console.log('[DropdownButton] handleOptionClick:', optionLabel)
-  showDropdown.value = false
+  showDropdown.value = false;
 
   // emit up to parent
-  emit('option-selected', optionLabel)
+  emit('option-selected', optionLabel);
 
   // your existing wizard logic
   if (optionLabel === 'Enhed') {
-    wizardStore.open()
+    wizardStore.open();
   }
 }
 </script>
@@ -46,12 +44,12 @@ function handleOptionClick(optionLabel: string) {
 <template>
   <div class="dropdown-wrapper">
     <BasicButton
-      :label="label"
-      :type="type"
-      :iconName="iconName"
+      :label="props.label"
+      :type="props.type"
+      :iconName="props.iconName"
       :active="showDropdown"
       @click="toggleDropdown"
-      :ariaLabel="ariaLabel"
+      :ariaLabel="props.ariaLabel"
     />
 
     <ul v-if="showDropdown" class="dropdown-menu">

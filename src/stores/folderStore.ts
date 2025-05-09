@@ -1,5 +1,5 @@
 // src/stores/folderStore.ts
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 interface Ancestor {
   id: string | null
@@ -25,22 +25,22 @@ export const useFolderStore = defineStore('folder', {
         this.ancestors.push({
           id: this.currentFolderId,
           name: this.currentFolderName,
-        })
+        });
       }
-      this.currentFolderId = id
-      this.currentFolderName = name
+      this.currentFolderId = id;
+      this.currentFolderName = name;
     },
     goToAncestor(index: number) {
-      const target = this.ancestors[index]
-      this.currentFolderId = target.id
-      this.currentFolderName = target.name
-      this.ancestors.splice(index)
+      const target = this.ancestors[index];
+      this.currentFolderId = target.id;
+      this.currentFolderName = target.name;
+      this.ancestors.splice(index);
     },
     resetToRoot() {
-      this.currentFolderId = null
+      this.currentFolderId = null;
       // reset back to the fixed rootLabel
-      this.currentFolderName = this.rootLabel
-      this.ancestors = []
+      this.currentFolderName = this.rootLabel;
+      this.ancestors = [];
     },
   },
-})
+});

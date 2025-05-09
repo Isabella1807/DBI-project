@@ -4,6 +4,7 @@
 
 <template>
   <!-- <MellemLedet/> -->
+  <h1>womp</h1>
 </template>
 
 <style scoped lang="scss">

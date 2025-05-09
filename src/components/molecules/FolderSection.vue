@@ -7,13 +7,13 @@ import {
   onMounted,
   onUnmounted,
   toRef,
-  type Ref
-} from 'vue'
-import { useFolderStore } from '@/stores/folderStore'
+  type Ref,
+} from 'vue';
+import { useFolderStore } from '@/stores/folderStore';
 
-import BasicIcon from '@/components/atoms/BasicIcon.vue'
-import FolderMenu from '@/components/atoms/FolderMenu.vue'
-import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue'
+import BasicIcon from '@/components/atoms/BasicIcon.vue';
+import FolderMenu from '@/components/atoms/FolderMenu.vue';
+import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
 
 import {
   collection,
@@ -25,10 +25,10 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
-  doc
-} from 'firebase/firestore'
-import type { DocumentData, QuerySnapshot } from 'firebase/firestore'
-import { db } from '@/configs/firebase'
+  doc,
+} from 'firebase/firestore';
+import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
+import { db } from '@/configs/firebase';
 
 interface Folder {
   id: string
@@ -38,106 +38,106 @@ interface Folder {
 }
 
 // Props & emits
-const props = defineProps<{ showCreateDialog: boolean }>()
-const showCreateDialog = toRef(props, 'showCreateDialog')
+const props = defineProps<{ showCreateDialog: boolean }>();
+const showCreateDialog = toRef(props, 'showCreateDialog');
 const emit = defineEmits<{
   (e: 'update:showCreateDialog', v: boolean): void
   (e: 'selectionChanged', count: number): void
-}>()
+}>();
 
 // Pinia store for navigation state
-const folderStore = useFolderStore()
-const currentFolderId = computed(() => folderStore.currentFolderId)
-const currentFolderName = computed(() => folderStore.currentFolderName)
+const folderStore = useFolderStore();
+const currentFolderId = computed(() => folderStore.currentFolderId);
+const currentFolderName = computed(() => folderStore.currentFolderName);
 
 // Injected UI state
-const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!
-const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!
+const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!;
+const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!;
 
 // Folder data & selection
-const folders = ref<Folder[]>([])
-const selectionCount = computed(() => folders.value.filter(f => f.selected).length)
-watch(selectionCount, cnt => emit('selectionChanged', cnt))
+const folders = ref<Folder[]>([]);
+const selectionCount = computed(() => folders.value.filter(f => f.selected).length);
+watch(selectionCount, cnt => emit('selectionChanged', cnt));
 watch(isAllSelected, all => {
-  folders.value.forEach(f => (f.selected = all))
-}, { immediate: true })
+  folders.value.forEach(f => (f.selected = all));
+}, { immediate: true });
 
 // Firestore subscription
-let unsubscribe = () => {}
+let unsubscribe = () => {};
 function fetchFolders() {
-  unsubscribe()
+  unsubscribe();
   const q = query(
     collection(db, 'folders'),
-    where('parentId', '==', currentFolderId.value)
-  )
+    where('parentId', '==', currentFolderId.value),
+  );
   unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
     folders.value = snap.docs.map(d => ({
       id: d.id,
       name: d.data().name as string,
       selected: false,
-      isUnit: false
-    }))
-  })
+      isUnit: false,
+    }));
+  });
 }
 
-onMounted(fetchFolders)
-watch(currentFolderId, fetchFolders)
-onUnmounted(() => unsubscribe())
+onMounted(fetchFolders);
+watch(currentFolderId, fetchFolders);
+onUnmounted(() => unsubscribe());
 
 // Navigation handlers
 function enterFolder(id: string, name: string) {
-  folderStore.enterFolder(id, name)
+  folderStore.enterFolder(id, name);
 }
 function goBack() {
   if (folderStore.ancestors.length) {
-    folderStore.goToAncestor(folderStore.ancestors.length - 1)
+    folderStore.goToAncestor(folderStore.ancestors.length - 1);
   } else {
-    folderStore.resetToRoot()
+    folderStore.resetToRoot();
   }
 }
 
 // Create-folder dialog handlers
 async function onDialogSubmit(name: string) {
-  if (!name.trim()) return
+  if (!name.trim()) return;
   await addDoc(collection(db, 'folders'), {
     name: name.trim(),
     parentId: currentFolderId.value,
-    createdAt: serverTimestamp()
-  })
-  emit('update:showCreateDialog', false)
+    createdAt: serverTimestamp(),
+  });
+  emit('update:showCreateDialog', false);
 }
 function onDialogCancel() {
-  emit('update:showCreateDialog', false)
+  emit('update:showCreateDialog', false);
 }
 
 // Rename & recursive delete
 async function renameFolder(id: string, oldName: string) {
-  const newName = window.prompt('New folder name:', oldName)
-  if (!newName || newName.trim() === oldName) return
-  await updateDoc(doc(db, 'folders', id), { name: newName.trim() })
+  const newName = window.prompt('New folder name:', oldName);
+  if (!newName || newName.trim() === oldName) return;
+  await updateDoc(doc(db, 'folders', id), { name: newName.trim() });
 }
 
 async function deleteFolderAndChildren(id: string) {
-  const subQ = query(collection(db, 'folders'), where('parentId', '==', id))
-  const subSnap = await getDocs(subQ)
+  const subQ = query(collection(db, 'folders'), where('parentId', '==', id));
+  const subSnap = await getDocs(subQ);
   for (const c of subSnap.docs) {
-    await deleteFolderAndChildren(c.id)
+    await deleteFolderAndChildren(c.id);
   }
-  await deleteDoc(doc(db, 'folders', id))
+  await deleteDoc(doc(db, 'folders', id));
 }
 
 async function deleteFolder(id: string) {
-  if (!confirm('Delete this folder and all its subfolders?')) return
-  await deleteFolderAndChildren(id)
+  if (!confirm('Delete this folder and all its subfolders?')) return;
+  await deleteFolderAndChildren(id);
 }
 
 // Handle menu actions
 function handleMenuAction(payload: { folderId: string; action: string }) {
-  const f = folders.value.find(x => x.id === payload.folderId)
+  const f = folders.value.find(x => x.id === payload.folderId);
   if (payload.action === 'edit' && f) {
-    renameFolder(payload.folderId, f.name)
+    renameFolder(payload.folderId, f.name);
   } else if (payload.action === 'delete') {
-    deleteFolder(payload.folderId)
+    deleteFolder(payload.folderId);
   }
 }
 </script>

@@ -1,49 +1,49 @@
 <!-- src/components/molecules/MellemLedet.vue -->
 <script setup lang="ts">
-import BasicIcon from '../atoms/BasicIcon.vue'
-import FolderSection from '@/components/molecules/FolderSection.vue'
-import { ref, provide, onMounted } from 'vue'
+import BasicIcon from '../atoms/BasicIcon.vue';
+import FolderSection from '@/components/molecules/FolderSection.vue';
+import { ref, provide, onMounted } from 'vue';
 
 const props = defineProps({
   showCreateDialog: {
     type: Boolean,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
 const emit = defineEmits<{
   (e: 'update:showCreateDialog', v: boolean): void
   (e: 'selection-changed', count: number): void
-}>()
+}>();
 
 function update(v: boolean) {
-  emit('update:showCreateDialog', v)
+  emit('update:showCreateDialog', v);
 }
 
-const isAllSelected = ref(false)
-provide('isAllSelected', isAllSelected)
+const isAllSelected = ref(false);
+provide('isAllSelected', isAllSelected);
 
-const anySelected = ref(false)
+const anySelected = ref(false);
 function handleSelectionChanged(count: number) {
-  anySelected.value = count > 0
-  isAllSelected.value = count === 10
+  anySelected.value = count > 0;
+  isAllSelected.value = count === 10;
 }
 
-const savedView = localStorage.getItem('currentView')
-const currentView = ref(savedView || 'detailed')
+const savedView = localStorage.getItem('currentView');
+const currentView = ref(savedView || 'detailed');
 function toggleView(v: string) {
-  currentView.value = v
-  localStorage.setItem('currentView', v)
+  currentView.value = v;
+  localStorage.setItem('currentView', v);
 }
-provide('currentView', currentView)
-provide('toggleView', toggleView)
+provide('currentView', currentView);
+provide('toggleView', toggleView);
 
 onMounted(() => {
   if (!['list','detailed'].includes(currentView.value)) {
-    currentView.value = 'detailed'
-    localStorage.setItem('currentView','detailed')
+    currentView.value = 'detailed';
+    localStorage.setItem('currentView','detailed');
   }
-})
+});
 </script>
 
 <template>
