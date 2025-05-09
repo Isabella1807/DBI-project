@@ -1,70 +1,228 @@
-<script lang="ts" setup>
-import BasicIcon from '@/components/atoms/BasicIcon.vue';
-import FolderMenu from '@/components/atoms/FolderMenu.vue';
-import { inject, ref, computed, watch } from 'vue';
+<script setup lang="ts">
+import {
+  inject,
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  toRef,
+  type Ref
+} from 'vue'
+import { useFolderStore } from '@/stores/folderStore'
 
-const emit = defineEmits(['selectionChanged', 'menuAction']);
+import BasicIcon from '@/components/atoms/BasicIcon.vue'
+import FolderMenu from '@/components/atoms/FolderMenu.vue'
+import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue'
 
-// Modtager viewType fra TableNav
-const injectedView = inject('currentView', ref('detailed'));
-const currentView = computed(() => injectedView.value);
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  serverTimestamp,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc
+} from 'firebase/firestore'
+import type { DocumentData, QuerySnapshot } from 'firebase/firestore'
+import { db } from '@/configs/firebase'
 
-const selectedFoldersCount = computed(() => {
-  return folders.value.filter(folder => folder.selected).length;
-});
+interface Folder {
+  id: string
+  name: string
+  selected: boolean
+  isUnit: boolean
+}
 
-// Modtager om alt er markeret fra TableNav
-const injectedSelectAll = inject('isAllSelected', ref(false));
+// Props & emits
+const props = defineProps<{ showCreateDialog: boolean }>()
+const showCreateDialog = toRef(props, 'showCreateDialog')
+const emit = defineEmits<{
+  (e: 'update:showCreateDialog', v: boolean): void
+  (e: 'selectionChanged', count: number): void
+}>()
 
-// Dummy mappe-data
-// Dummy mappe-data
-const folders = ref([
-  { id: 1, name: "Mappe A", selected: false, isUnit: false },
-  { id: 2, name: "Mappe B", selected: false, isUnit: false },
-  { id: 3, name: "Mappe C", selected: false, isUnit: false },
-  { id: 4, name: "Mappe D", selected: false, isUnit: false },
-  { id: 5, name: "Mappe E", selected: false, isUnit: false },
-  { id: 6, name: "Mappe F", selected: false, isUnit: false },
-  { id: 7, name: "Mappe G", selected: false, isUnit: false },
-  { id: 8, name: "Mappe H", selected: false, isUnit: false },
-  { id: 9, name: "Enhed I", selected: false, isUnit: true },
-  { id: 10, name: "Enhed J", selected: false, isUnit: true }
-]);
+// Pinia store for navigation state
+const folderStore = useFolderStore()
+const currentFolderId = computed(() => folderStore.currentFolderId)
+const currentFolderName = computed(() => folderStore.currentFolderName)
 
-// Når valg ændres
-watch(selectedFoldersCount, (count) => {
-  emit('selectionChanged', count);
-});
+// Injected UI state
+const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!
+const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!
 
-// Når "Markér alt" ændres, så marker alle mapper
-watch(injectedSelectAll, (newVal) => {
-  folders.value.forEach(folder => {
-    folder.selected = newVal;
-  });
-}, { immediate: true });
+// Folder data & selection
+const folders = ref<Folder[]>([])
+const selectionCount = computed(() => folders.value.filter(f => f.selected).length)
+watch(selectionCount, cnt => emit('selectionChanged', cnt))
+watch(isAllSelected, all => {
+  folders.value.forEach(f => (f.selected = all))
+}, { immediate: true })
 
-const handleMenuAction = ({ folderId, action }: { folderId: number, action: string }) => {
-  emit('menuAction', { folderId, action });
+// Firestore subscription
+let unsubscribe = () => {}
+function fetchFolders() {
+  unsubscribe()
+  const q = query(
+    collection(db, 'folders'),
+    where('parentId', '==', currentFolderId.value)
+  )
+  unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
+    folders.value = snap.docs.map(d => ({
+      id: d.id,
+      name: d.data().name as string,
+      selected: false,
+      isUnit: false
+    }))
+  })
+}
+
+onMounted(fetchFolders)
+watch(currentFolderId, fetchFolders)
+onUnmounted(() => unsubscribe())
+
+// Navigation handlers
+function enterFolder(id: string, name: string) {
+  folderStore.enterFolder(id, name)
+}
+function goBack() {
+  if (folderStore.ancestors.length) {
+    folderStore.goToAncestor(folderStore.ancestors.length - 1)
+  } else {
+    folderStore.resetToRoot()
+  }
+}
+
+// Create-folder dialog handlers
+async function onDialogSubmit(name: string) {
+  if (!name.trim()) return
+  await addDoc(collection(db, 'folders'), {
+    name: name.trim(),
+    parentId: currentFolderId.value,
+    createdAt: serverTimestamp()
+  })
+  emit('update:showCreateDialog', false)
+}
+function onDialogCancel() {
+  emit('update:showCreateDialog', false)
+}
+
+// Rename & recursive delete
+async function renameFolder(id: string, oldName: string) {
+  const newName = window.prompt('New folder name:', oldName)
+  if (!newName || newName.trim() === oldName) return
+  await updateDoc(doc(db, 'folders', id), { name: newName.trim() })
+}
+
+async function deleteFolderAndChildren(id: string) {
+  const subQ = query(collection(db, 'folders'), where('parentId', '==', id))
+  const subSnap = await getDocs(subQ)
+  for (const c of subSnap.docs) {
+    await deleteFolderAndChildren(c.id)
+  }
+  await deleteDoc(doc(db, 'folders', id))
+}
+
+async function deleteFolder(id: string) {
+  if (!confirm('Delete this folder and all its subfolders?')) return
+  await deleteFolderAndChildren(id)
+}
+
+// Handle menu actions
+function handleMenuAction(payload: { folderId: string; action: string }) {
+  const f = folders.value.find(x => x.id === payload.folderId)
+  if (payload.action === 'edit' && f) {
+    renameFolder(payload.folderId, f.name)
+  } else if (payload.action === 'delete') {
+    deleteFolder(payload.folderId)
+  }
 }
 </script>
 
 <template>
-  <div :class="['folderContainer', currentView]">
-    <div v-for="(folder, index) in folders" :key="folder.id" :class="['folder', currentView]">
-      <div class="folderContent" :class="{ selected: folder.selected, 'unit-style': folder.isUnit }" @click="folder.selected = !folder.selected">
-        <BasicIcon v-if="currentView === 'list'" name="ChevronRight" class="arrow" />
+  <div>
+    <!-- Navigation Header -->
+    <div class="navigation-header">
+      <h3>Viewing: {{ currentFolderName }}</h3>
+      <button v-if="currentFolderId" @click="goBack">Back</button>
+    </div>
 
-        <input type="checkbox" class="folderCheckbox" v-model="folder.selected" @click.stop />
+    <!-- Folder Grid / List -->
+    <div :class="['folderContainer', currentView]">
+      <div
+        v-for="folder in folders"
+        :key="folder.id"
+        :class="['folder', currentView]"
+      >
+        <div
+          class="folderContent"
+          :class="{ selected: folder.selected, 'unit-style': folder.isUnit }"
+          @click="folder.selected = !folder.selected"
+          @dblclick.stop="enterFolder(folder.id, folder.name)"
+        >
+          <BasicIcon
+            v-if="currentView === 'list'"
+            name="ChevronRight"
+            class="arrow"
+            @click.stop="enterFolder(folder.id, folder.name)"
+          />
 
-        <BasicIcon :name="folder.isUnit ? 'Unit' : 'Folder'" class="folderIcon" />
-        <p>{{ folder.name }}</p>
+          <input
+            type="checkbox"
+            class="folderCheckbox"
+            v-model="folder.selected"
+            @click.stop
+          />
 
-        <FolderMenu :folder-id="folder.id" @option-selected="handleMenuAction" @click.stop />
+          <BasicIcon
+            :name="folder.isUnit ? 'Unit' : 'Folder'"
+            class="folderIcon"
+          />
+          <p>{{ folder.name }}</p>
+
+          <FolderMenu
+            :folder-id="folder.id as any"
+            @option-selected="handleMenuAction"
+            @click.stop
+          />
+        </div>
       </div>
     </div>
+
+    <!-- Create-folder dialog -->
+    <CreateFolderDialog
+      :visible="showCreateDialog"
+      :currentFolderName="currentFolderName"
+      @submit="onDialogSubmit"
+      @cancel="onDialogCancel"
+    />
   </div>
 </template>
+
 <style lang="scss" scoped>
+.navigation-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem auto 0;
+  max-width: 600px;
+
+  h3 {
+    margin: 0;
+    font-weight: 500;
+  }
+  button {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #888;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+  }
+}
+
 .folderContainer {
   &.detailed {
     display: grid;
@@ -112,7 +270,6 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
         font-weight: 500;
       }
 
-      // Checkbox placering i detailed
       .folderCheckbox {
         position: absolute;
         top: 18px;
@@ -122,7 +279,6 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
         border: 2px solid $darkGrey;
         border-radius: 4px;
         appearance: none;
-        -webkit-appearance: none;
         cursor: pointer;
         transition: all 0.2s ease;
         opacity: 0;
@@ -138,7 +294,7 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
             content: "";
             position: absolute;
             left: 3.2px;
-            top: 0px;
+            top: 0;
             width: 4px;
             height: 8px;
             border: solid $white;
@@ -152,7 +308,6 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
         }
       }
 
-      // Styling for menu dots i detailed view
       :deep(.menuDotsContainer) {
         position: absolute;
         top: 18px;
@@ -162,17 +317,16 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
         transition: opacity 0.2s ease;
       }
 
-      // Vis checkbox og menuDropdown ved hover eller når selected
       &:hover,
       &.selected {
-        .folderCheckbox,
+        .folder
+        Checkbox,
         :deep(.menuDotsContainer) {
           opacity: 1;
           pointer-events: auto;
         }
       }
 
-      // Sørg for at checkbox altid er synlig når den er checked
       .folderCheckbox:checked {
         opacity: 1;
         pointer-events: auto;
@@ -215,7 +369,6 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
         background-color: $mediumGreen !important;
       }
 
-
       &:last-child {
         border-bottom: none;
       }
@@ -232,9 +385,7 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
         border: 2px solid $black;
         border-radius: 4px;
         appearance: none;
-        -webkit-appearance: none;
         cursor: pointer;
-        transition: all 0.2s ease;
         position: relative;
 
         &:checked {
@@ -245,7 +396,7 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
             content: "";
             position: absolute;
             left: 3.2px;
-            top: 0px;
+            top: 0;
             width: 4px;
             height: 8px;
             border: solid $white;
@@ -274,10 +425,50 @@ const handleMenuAction = ({ folderId, action }: { folderId: number, action: stri
         color: $black;
       }
 
-      // Styling for menu dots i list view
       :deep(.menuDotsContainer) {
         display: flex;
         align-items: center;
+      }
+    }
+  }
+
+  /* Creation form styling */
+  .folder-creation {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+    h3 {
+      margin-bottom: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+
+      > div {
+        margin-bottom: 0.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      input {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        align-self: flex-start;
+        padding: 0.5rem 1rem;
+        border: none;
+        background: $mediumGreen;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
       }
     }
   }
