@@ -1,35 +1,76 @@
-# DBI-project
+# DBI project ![Last Commit](https://img.shields.io/github/last-commit/Isabella1807/DBI-project?style=for-the-badge)
 
-This template should help get you started developing with Vue 3 in Vite.
+A modern frontend project for **DBI Egenkontrol**, built with Vue 3 (Composition API) and tools like *TypeScript* for type safety, *Pinia* for state management, *SCSS* for modular styling, and *ESLint* to ensure code consistency.
 
-## Recommended IDE Setup
+During development, we focused on writing clean and consistent code, using reusable components and maintaining a modular structure.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Built with
 
-## Type Support for `.vue` Imports in TS
+[![Vue][vue-badge]][vue-url]
+[![Vite][vite-badge]][vite-url]
+[![TypeScript][ts-badge]][ts-url]
+[![Pinia][pinia-badge]][pinia-url]
+[![Sass][sass-badge]][sass-url]
+[![ESLint][eslint-badge]][eslint-url]
+[![Cypress][cypress-badge]][cypress-url]
+[![Vitest][vitest-badge]][vitest-url]
+[![Firebase][firebase-badge]][firebase-url]
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+[vue-badge]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D
+[vue-url]: https://vuejs.org/
 
-## Customize configuration
+[vite-badge]: https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white
+[vite-url]: https://vitejs.dev/
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+[ts-badge]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
+[ts-url]: https://www.typescriptlang.org/
 
-## Project Setup
+[pinia-badge]: https://img.shields.io/badge/Pinia-2EBC4F?style=for-the-badge&logo=pinia&logoColor=white
+[pinia-url]: https://pinia.vuejs.org/
 
-```sh
+[sass-badge]: https://img.shields.io/badge/Sass-hotpink?style=for-the-badge&logo=sass&logoColor=white
+[sass-url]: https://sass-lang.com/
+
+[eslint-badge]: https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white
+[eslint-url]: https://eslint.org/
+
+[cypress-badge]: https://img.shields.io/badge/Cypress-17202C?style=for-the-badge&logo=cypress&logoColor=white
+[cypress-url]: https://www.cypress.io/
+
+[vitest-badge]: https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge
+[vitest-url]: https://vitest.dev/
+
+[firebase-badge]: https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black
+[firebase-url]: https://firebase.google.com/
+
+## Getting Started
+
+### Project Install
+
+``` sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Start development server
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Usage
+How to login, Environment variables? other things to know
+
+## Other useful commands
+### Compile for production
 
 ```sh
 npm run build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
 ```
 
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
@@ -44,18 +85,29 @@ npm run test:unit
 npm run test:e2e:dev
 ```
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+## Deployment
+The project is run using **Firebase Hosting**. A GitHub Actions workflow is set up to automatically deploy the site when changes are pushed to the `main` branch.
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+### Manual deploy using firebase CLI
+To deploy manually using firebase follow these steps:
+1. Install Firebase CLI globally:
+    ```sh
+    npm install -g firebase-tools
+    ```
 
-```sh
-npm run build
-npm run test:e2e
-```
+2. Log in to Firebase:
+    ```sh
+    firebase login
+    ```
 
-### Lint with [ESLint](https://eslint.org/)
+3. Build the project (generates a `dist/` folder):
+    ```sh
+    npm run build
+    ```
 
-```sh
-npm run lint
-```
+4. Deploy to Firebase Hosting:
+    ```sh
+    firebase deploy --only hosting
+    ```
+## Contributors
+[![](https://contrib.rocks/image?repo=Isabella1807/DBI-project)](https://github.com/Isabella1807/DBI-project/graphs/contributors)
