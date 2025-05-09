@@ -11,7 +11,6 @@ function onCreateOption(opt: string) {
 </script>
 
 <template>
-  <h1>TESTER VIEW 1</h1>
   <UnderMenu @option-selected="onCreateOption" />
   <MellemLedet v-model:showCreateDialog="showCreateDialog" />
 </template>
