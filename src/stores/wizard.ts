@@ -73,7 +73,6 @@ export const useWizardStore = defineStore('wizardStore', () => {
   });
 
   const submit = () => {
-    console.log('SUBMIT', entityName.value, entityDescription.value, entitySyncId.value);
     confirmClose();
   };
 

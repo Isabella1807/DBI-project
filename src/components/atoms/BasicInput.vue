@@ -15,13 +15,13 @@ const emit = defineEmits(['blur']);
 const inputRef = ref<HTMLInputElement | null>(null);
 
 onMounted(() => {
-  if(props.autoFocus) {
+  if (props.autoFocus) {
     inputRef.value?.focus();
   }
 });
 
 watch(() => props.autoFocus, (newVal) => {
-  if(newVal) {
+  if (newVal) {
     inputRef.value?.focus();
   }
 });

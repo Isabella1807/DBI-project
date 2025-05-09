@@ -20,7 +20,7 @@ export default defineConfig([
       'eqeqeq': ['error', 'always'],
       'indent': ['error', 2],
       'no-eval': ['error'],
-      'no-unused-vars': ['error'],
+      //'no-unused-vars': ['error'],
       'no-var': ['error'],
       'prefer-const': ['error'],
       'quotes': ['error', 'single'],

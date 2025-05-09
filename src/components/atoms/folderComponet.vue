@@ -9,13 +9,13 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   icon: 'Folder',
-  isUnit: false
+  isUnit: false,
 });
 </script>
 
 <template>
-  <div class="folderContent" :class="{ 'unit-style': isUnit }">
-    <BasicIcon :name="isUnit ? 'Unit' : icon" class="huge" />
+  <div class="folderContent" :class="{ 'unit-style': props.isUnit }">
+    <BasicIcon :name="props.isUnit ? 'Unit' : props.icon" class="huge" />
     <p>{{ name }}</p>
   </div>
 </template>

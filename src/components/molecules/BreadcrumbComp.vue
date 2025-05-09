@@ -1,4 +1,4 @@
-<!-- src/components/molecules/Breadcrumb.vue -->
+<!-- src/components/molecules/BreadcrumbComp.vue -->
 <template>
   <nav class="breadcrumb">
     <ul>

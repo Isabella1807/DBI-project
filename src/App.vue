@@ -4,7 +4,7 @@ import WaterMark from '@/components/atoms/WaterMark.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import {useWizardStore} from '@/stores/wizard.ts';
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
-//import Restore from './components/atoms/Restore.vue';
+//import Restore from './components/atoms/RestoreComp.vue';
 //import { ref } from 'vue'
 
 /*const showToast = ref(true)

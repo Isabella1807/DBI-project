@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import UnderMenu from '@/components/organisms/UnderMenu.vue'
-import Breadcrumb from '@/components/molecules/Breadcrumb.vue'
-import MellemLedet from '@/components/molecules/MellemLedet.vue'
+import { ref } from 'vue';
+import UnderMenu from '@/components/organisms/UnderMenu.vue';
+import Breadcrumb from '@/components/molecules/BreadcrumbComp.vue';
+import MellemLedet from '@/components/molecules/MellemLedet.vue';
 
-const showCreateDialog = ref(false)
+const showCreateDialog = ref(false);
 
 function onCreateOption(opt: string) {
-  if (opt === 'Mappe') showCreateDialog.value = true
+  if (opt === 'Mappe') showCreateDialog.value = true;
 }
 </script>
 
