@@ -1,29 +1,4 @@
 <!-- src/components/molecules/CreateFolderDialog.vue -->
-<template>
-  <Teleport to="body">
-    <div v-if="visible" class="modal-backdrop">
-      <div class="modal">
-        <h3>Create New Folder in {{ currentFolderName }}</h3>
-        <form @submit.prevent="onSubmit">
-          <div>
-            <label for="folderName">Folder Name:</label>
-            <input
-              id="folderName"
-              v-model="name"
-              placeholder="Folder Name"
-              required
-            />
-          </div>
-          <div class="buttons">
-            <button type="submit">Create</button>
-            <button type="button" @click="onCancel">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </Teleport>
-</template>
-
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
@@ -50,6 +25,31 @@ function onCancel() {
   emit('cancel')
 }
 </script>
+
+<template>
+  <Teleport to="body">
+    <div v-if="visible" class="modal-backdrop">
+      <div class="modal">
+        <h3>Create New Folder in {{ currentFolderName }}</h3>
+        <form @submit.prevent="onSubmit">
+          <div>
+            <label for="folderName">Folder Name:</label>
+            <input
+              id="folderName"
+              v-model="name"
+              placeholder="Folder Name"
+              required
+            />
+          </div>
+          <div class="buttons">
+            <button type="submit">Create</button>
+            <button type="button" @click="onCancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </Teleport>
+</template>
 
 <style scoped>
 .modal-backdrop {

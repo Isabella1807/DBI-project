@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import UnderMenu from '@/components/organisms/UnderMenu.vue'
+import Breadcrumb from '@/components/molecules/Breadcrumb.vue'
 import MellemLedet from '@/components/molecules/MellemLedet.vue'
 
 const showCreateDialog = ref(false)
@@ -12,5 +13,6 @@ function onCreateOption(opt: string) {
 
 <template>
   <UnderMenu @option-selected="onCreateOption" />
+  <Breadcrumb />
   <MellemLedet v-model:showCreateDialog="showCreateDialog" />
 </template>
