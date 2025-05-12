@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
-import UnderMenu from '@/components/organisms/UnderMenu.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import {useWizardStore} from '@/stores/wizard.ts';
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
+//import Restore from './components/atoms/RestoreComp.vue';
+//import { ref } from 'vue'
+
+/*const showToast = ref(true)
+const toastType = ref('delete')
+
+const handleUndo = () => {
+  toastType.value = 'restore'
+}*/
 
 const wizardStore = useWizardStore();
 </script>
@@ -15,8 +23,8 @@ const wizardStore = useWizardStore();
     <div class="mainContainer" :class="{blur: wizardStore.isOpen}">
       <main>
         <TabNav />
-        <UnderMenu />
         <RouterView />
+<!--        <Restore v-if="showToast" :type="toastType" @undo="handleUndo" />-->
       </main>
     </div>
     <CreateEntityWizard/>

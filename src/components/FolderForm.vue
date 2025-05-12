@@ -1,20 +1,21 @@
+<!--
 <template>
   <div>
-    <!-- Folder Explorer Section -->
+    &lt;!&ndash; Folder Explorer Section &ndash;&gt;
     <div class="folder-explorer">
       <h3>Viewing: <span>{{ currentFolderName }}</span></h3>
       <button v-if="currentFolderId" @click="goBack">Back</button>
       <ul>
         <li v-for="folder in folders" :key="folder.id" class="folder-row">
-          <!-- Enter folder -->
+          &lt;!&ndash; Enter folder &ndash;&gt;
           <button class="enter-btn" @click="enterFolder(folder.id, folder.name)">
             {{ folder.name }}
           </button>
-          <!-- Rename folder -->
+          &lt;!&ndash; Rename folder &ndash;&gt;
           <button class="action-btn" @click="renameFolder(folder.id, folder.name)">
             Edit
           </button>
-          <!-- Delete folder (with recursive removal) -->
+          &lt;!&ndash; Delete folder (with recursive removal) &ndash;&gt;
           <button class="action-btn delete" @click="deleteFolder(folder.id)">
             Delete
           </button>
@@ -22,7 +23,7 @@
       </ul>
     </div>
 
-    <!-- Folder Creation Form Section -->
+    &lt;!&ndash; Folder Creation Form Section &ndash;&gt;
     <div class="folder-creation">
       <h3>Create New Folder in {{ currentFolderName }}</h3>
       <form @submit.prevent="onSubmit">
@@ -48,13 +49,13 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
 } from 'firebase/firestore';
 // type-only imports
 import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
 import { db } from '@/configs/firebase';
 
-// --- Explorer State ---
+// -&#45;&#45; Explorer State -&#45;&#45;
 const currentFolderId = ref<string | null>(null);
 const currentFolderName = ref('Root');
 const folders = ref<Array<{ id: string; name: string }>>([]);
@@ -65,7 +66,7 @@ const fetchFolders = () => {
   if (unsubscribe) unsubscribe();
   const q = query(
     collection(db, 'folders'),
-    where('parentId', '==', currentFolderId.value)
+    where('parentId', '==', currentFolderId.value),
   );
   unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
     folders.value = snap.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
@@ -74,7 +75,9 @@ const fetchFolders = () => {
 
 onMounted(fetchFolders);
 watch(currentFolderId, fetchFolders);
-onUnmounted(() => { if (unsubscribe) unsubscribe(); });
+onUnmounted(() => {
+  if (unsubscribe) unsubscribe();
+});
 
 const enterFolder = (id: string, name: string) => {
   currentFolderId.value = id;
@@ -85,14 +88,14 @@ const goBack = () => {
   currentFolderName.value = 'Root';
 };
 
-// --- Creation State ---
+// -&#45;&#45; Creation State -&#45;&#45;
 const folderName = ref<string>('');
 const onSubmit = async () => {
   if (!folderName.value.trim()) return;
   const folderData = {
     name: folderName.value.trim(),
     parentId: currentFolderId.value,
-    createdAt: serverTimestamp()
+    createdAt: serverTimestamp(),
   };
   try {
     await addDoc(collection(db, 'folders'), folderData);
@@ -102,7 +105,7 @@ const onSubmit = async () => {
   folderName.value = '';
 };
 
-// --- Rename ---
+// -&#45;&#45; Rename -&#45;&#45;
 const renameFolder = async (id: string, oldName: string) => {
   const newName = window.prompt('New folder name:', oldName);
   if (newName && newName.trim() && newName.trim() !== oldName) {
@@ -115,7 +118,7 @@ const renameFolder = async (id: string, oldName: string) => {
   }
 };
 
-// --- Recursive Delete ---
+// -&#45;&#45; Recursive Delete -&#45;&#45;
 const deleteFolder = async (id: string) => {
   if (!confirm('Delete this folder and all its subfolders?')) return;
   try {
@@ -129,7 +132,7 @@ async function deleteFolderAndChildren(folderId: string) {
   // delete subfolders first
   const subQ = query(
     collection(db, 'folders'),
-    where('parentId', '==', folderId)
+    where('parentId', '==', folderId),
   );
   const snap = await getDocs(subQ);
   for (const child of snap.docs) {
@@ -218,3 +221,4 @@ input {
   border-radius: 4px;
 }
 </style>
+-->
