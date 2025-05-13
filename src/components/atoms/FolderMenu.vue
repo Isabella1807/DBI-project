@@ -4,7 +4,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   folderId: {
-    type: Number,
+    type: String,
     required: true,
   },
 });

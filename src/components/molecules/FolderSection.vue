@@ -7,7 +7,7 @@ import {
   onMounted,
   onUnmounted,
   toRef,
-  type Ref,
+  type Ref, type ComputedRef,
 } from 'vue';
 import { useFolderStore } from '@/stores/folderStore';
 
@@ -29,12 +29,15 @@ import {
 } from 'firebase/firestore';
 import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
 import { db } from '@/configs/firebase';
+import {useUnitStore} from '@/stores/unitStore.ts';
+
+const unitStore = useUnitStore();
 
 interface Folder {
   id: string
   name: string
   selected: boolean
-  isUnit: boolean
+  type: 'folder';
 }
 
 // Props & emits
@@ -75,12 +78,32 @@ function fetchFolders() {
       id: d.id,
       name: d.data().name as string,
       selected: false,
-      isUnit: false,
+      type: 'folder',
     }));
   });
 }
 
-onMounted(fetchFolders);
+interface ContentThingy {
+  id: string;
+  name: string;
+  type: 'folder' | 'unit';
+}
+
+const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() => {
+  return unitStore.visibleUnits.map((unit) => ({
+    id: unit.id,
+    name: unit.name,
+    type: 'unit',
+  }));
+});
+
+const content: ComputedRef<ContentThingy[]> = computed(() => {
+  return [...folders.value, ...unitsOnScreen.value];
+});
+
+onMounted(() => {
+  fetchFolders();
+});
 watch(currentFolderId, fetchFolders);
 onUnmounted(() => unsubscribe());
 
@@ -140,6 +163,8 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
     deleteFolder(payload.folderId);
   }
 }
+
+const TEMP_selected = ref(false);
 </script>
 
 <template>
@@ -153,38 +178,38 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
     <!-- Folder Grid / List -->
     <div :class="['folderContainer', currentView]">
       <div
-        v-for="folder in folders"
-        :key="folder.id"
+        v-for="item in content"
+        :key="item.id"
         :class="['folder', currentView]"
       >
         <div
           class="folderContent"
-          :class="{ selected: folder.selected, 'unit-style': folder.isUnit }"
-          @click="folder.selected = !folder.selected"
-          @dblclick.stop="enterFolder(folder.id, folder.name)"
+          :class="{ selected: TEMP_selected, 'unit-style': item.type === 'unit' }"
+          @click="TEMP_selected = !TEMP_selected"
+          @dblclick.stop="enterFolder(item.id, item.name)"
         >
           <BasicIcon
             v-if="currentView === 'list'"
             name="ChevronRight"
             class="arrow"
-            @click.stop="enterFolder(folder.id, folder.name)"
+            @click.stop="enterFolder(item.id, item.name)"
           />
 
           <input
             type="checkbox"
             class="folderCheckbox"
-            v-model="folder.selected"
+            v-model="TEMP_selected"
             @click.stop
           />
 
           <BasicIcon
-            :name="folder.isUnit ? 'Unit' : 'Folder'"
+            :name="item.type === 'unit' ? 'Unit' : 'Folder'"
             class="folderIcon"
           />
-          <p>{{ folder.name }}</p>
+          <p>{{ item.name }}</p>
 
           <FolderMenu
-            :folder-id="folder.id as any"
+            :folder-id="item.id"
             @option-selected="handleMenuAction"
             @click.stop
           />
