@@ -108,9 +108,12 @@ watch(currentFolderId, fetchFolders);
 onUnmounted(() => unsubscribe());
 
 // Navigation handlers
-function enterFolder(id: string, name: string) {
-  folderStore.enterFolder(id, name);
+function enterItem(item: ContentThingy) {
+  if (item.type === 'folder') {
+    folderStore.enterFolder(item.id, item.name);
+  }
 }
+
 function goBack() {
   if (folderStore.ancestors.length) {
     folderStore.goToAncestor(folderStore.ancestors.length - 1);
@@ -186,13 +189,13 @@ const TEMP_selected = ref(false);
           class="folderContent"
           :class="{ selected: TEMP_selected, 'unit-style': item.type === 'unit' }"
           @click="TEMP_selected = !TEMP_selected"
-          @dblclick.stop="enterFolder(item.id, item.name)"
+          @dblclick.stop="enterItem(item)"
         >
           <BasicIcon
             v-if="currentView === 'list'"
             name="ChevronRight"
             class="arrow"
-            @click.stop="enterFolder(item.id, item.name)"
+            @click.stop="enterItem(item)"
           />
 
           <input
