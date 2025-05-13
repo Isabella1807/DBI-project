@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import type {unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 import {useFolderStore} from '@/stores/folderStore.ts';
-import {createUnit} from '@/services/unitService.ts';
+import {createUnit, getAllUnitsByFolderId} from '@/services/unitService.ts';
 import {ref, type Ref, watch} from 'vue';
 
 export const useUnitStore = defineStore('unitStore', () => {
@@ -21,13 +21,14 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
-  watch(() => folderStore.currentFolderId, () => {
-    // Viewed folder changed. "Forget" all visible units, and fetch units visible in the new folder.
+  const refreshVisibleUnits = async (newFolderId: string | null) => {
     visibleUnits.value = [];
+    visibleUnits.value = await getAllUnitsByFolderId(newFolderId);
+  };
 
-    //TODO: Fetch all units with folderid via service layer and place in visibleUnits array
-
-  });
+  watch(() => folderStore.currentFolderId, async (newFolderId) => {
+    refreshVisibleUnits(newFolderId);
+  }, {immediate: true});
 
   return {
     createNew,

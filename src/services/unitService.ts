@@ -1,5 +1,5 @@
 import {db} from '@/configs/firebase';
-import {collection, addDoc, FirestoreError} from 'firebase/firestore';
+import {collection, addDoc, FirestoreError, getDocs, query, where} from 'firebase/firestore';
 import type {BaseUnitType, UnitTypeWithId} from '@/types/unitTypes.ts';
 
 // create new unit
@@ -10,9 +10,7 @@ export const createUnit = async (unit: BaseUnitType): Promise<UnitTypeWithId> =>
   }
 
   try {
-    const res = await addDoc(collection(db, 'units'), {
-      unit: unit,
-    });
+    const res = await addDoc(collection(db, 'units'), unit);
 
     return {
       ...unit,
@@ -21,6 +19,22 @@ export const createUnit = async (unit: BaseUnitType): Promise<UnitTypeWithId> =>
 
   } catch (error) {
     throw new Error('Enhed kunne ikke oprettes: ' + (error as FirestoreError).message);
+  }
+};
+
+export const getAllUnitsByFolderId = async (currentFolderId: string | null): Promise<UnitTypeWithId[]> => {
+  try {
+    const q = query(collection(db, 'units'), where('parentId', '==', currentFolderId));
+    const querySnapshot = await getDocs(q);
+
+
+    const results = querySnapshot.docs.map((doc) => ({
+      id: doc.id, ...doc.data(),
+    }));
+    return results as UnitTypeWithId[];
+
+  } catch (error) {
+    throw new Error('Kunne ikke finde enhed(er): ' + (error as FirestoreError).message);
   }
 };
 
