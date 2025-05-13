@@ -40,6 +40,22 @@ interface Folder {
   type: 'folder';
 }
 
+const itemSelectedList: Ref<string[]> = ref([]);
+
+const clearSelectedList = () => {
+  itemSelectedList.value = [];
+};
+
+const toggleItemSelection = (id: string) => {
+  const index = itemSelectedList.value.indexOf(id);
+  if (index !== -1) {
+    //If index exists remove id from list
+    itemSelectedList.value.splice(index, 1);
+  } else {
+    itemSelectedList.value.push(id);
+  }
+};
+
 // Props & emits
 const props = defineProps<{ showCreateDialog: boolean }>();
 const showCreateDialog = toRef(props, 'showCreateDialog');
@@ -104,7 +120,12 @@ const content: ComputedRef<ContentThingy[]> = computed(() => {
 onMounted(() => {
   fetchFolders();
 });
-watch(currentFolderId, fetchFolders);
+
+watch(currentFolderId, () => {
+  fetchFolders();
+  clearSelectedList();
+});
+
 onUnmounted(() => unsubscribe());
 
 // Navigation handlers
@@ -166,8 +187,6 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
     deleteFolder(payload.folderId);
   }
 }
-
-const TEMP_selected = ref(false);
 </script>
 
 <template>
@@ -187,8 +206,8 @@ const TEMP_selected = ref(false);
       >
         <div
           class="folderContent"
-          :class="{ selected: TEMP_selected, 'unit-style': item.type === 'unit' }"
-          @click="TEMP_selected = !TEMP_selected"
+          :class="{ selected: itemSelectedList.includes(item.id), 'unit-style': item.type === 'unit' }"
+          @click="toggleItemSelection(item.id)"
           @dblclick.stop="enterItem(item)"
         >
           <BasicIcon
@@ -201,8 +220,8 @@ const TEMP_selected = ref(false);
           <input
             type="checkbox"
             class="folderCheckbox"
-            v-model="TEMP_selected"
-            @click.stop
+            :checked="itemSelectedList.includes(item.id)"
+            @click.stop="toggleItemSelection(item.id)"
           />
 
           <BasicIcon

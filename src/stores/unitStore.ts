@@ -27,7 +27,7 @@ export const useUnitStore = defineStore('unitStore', () => {
   };
 
   watch(() => folderStore.currentFolderId, async (newFolderId) => {
-    refreshVisibleUnits(newFolderId);
+    await refreshVisibleUnits(newFolderId);
   }, {immediate: true});
 
   return {
