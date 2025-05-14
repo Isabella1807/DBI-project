@@ -1,5 +1,5 @@
 import {db} from '@/configs/firebase';
-import {collection, addDoc, FirestoreError, getDocs, query, where} from 'firebase/firestore';
+import {collection, addDoc, FirestoreError, getDocs, query, where, deleteDoc, doc} from 'firebase/firestore';
 import type {BaseUnitType, UnitTypeWithId} from '@/types/unitTypes.ts';
 
 // create new unit
@@ -37,3 +37,10 @@ export const getAllUnitsByFolderId = async (currentFolderId: string | null): Pro
   }
 };
 
+export const deleteUnitById = async (unitId: string) => {
+  try {
+    await deleteDoc(doc(db, 'units', unitId));
+  } catch (error) {
+    throw new Error('Kunne ikke slette enhed: ' + (error as FirestoreError).message);
+  }
+};

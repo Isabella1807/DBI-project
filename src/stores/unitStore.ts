@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import type {unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 import {useFolderStore} from '@/stores/folderStore.ts';
-import {createUnit, getAllUnitsByFolderId} from '@/services/unitService.ts';
+import {createUnit, deleteUnitById, getAllUnitsByFolderId} from '@/services/unitService.ts';
 import {ref, type Ref, watch} from 'vue';
 
 export const useUnitStore = defineStore('unitStore', () => {
@@ -30,9 +30,22 @@ export const useUnitStore = defineStore('unitStore', () => {
     await refreshVisibleUnits(newFolderId);
   }, {immediate: true});
 
+  const deleteById = (unitId: string) => {
+    deleteUnitById(unitId).then(() => {
+      const deletedUnitIndex = visibleUnits.value.findIndex((item) => {
+        return item.id === unitId;
+      });
+      if (deletedUnitIndex > -1) {
+        visibleUnits.value.splice(deletedUnitIndex, 1);
+      }
+    }).catch(error => {
+      throw new Error(error);
+    });
+  };
 
   return {
     createNew,
     visibleUnits,
+    deleteById,
   };
 });

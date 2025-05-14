@@ -31,6 +31,7 @@ import {
 import type {DocumentData, QuerySnapshot} from 'firebase/firestore';
 import {db} from '@/configs/firebase';
 import {useUnitStore} from '@/stores/unitStore.ts';
+import {deleteUnitById} from '@/services/unitService.ts';
 
 const unitStore = useUnitStore();
 
@@ -220,7 +221,7 @@ function handleMenuAction(payload: { itemId: string; action: string }) {
       //console.log('Edit unit');
       break;
     case 'delete':
-      //console.log('Delete unit');
+      unitStore.deleteById(payload.itemId);
       break;
     default:
       break;
