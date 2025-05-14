@@ -7,9 +7,10 @@ import {
   onMounted,
   onUnmounted,
   toRef,
-  type Ref,
+  defineExpose,
+  type Ref, type ComputedRef,
 } from 'vue';
-import { useFolderStore } from '@/stores/folderStore';
+import {useFolderStore} from '@/stores/folderStore';
 
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import FolderMenu from '@/components/atoms/FolderMenu.vue';
@@ -27,15 +28,51 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
-import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
-import { db } from '@/configs/firebase';
+import type {DocumentData, QuerySnapshot} from 'firebase/firestore';
+import {db} from '@/configs/firebase';
+import {useUnitStore} from '@/stores/unitStore.ts';
+import {useWizardStore} from '@/stores/wizard.ts';
+
+const unitStore = useUnitStore();
+const wizardStore = useWizardStore();
 
 interface Folder {
-  id: string
-  name: string
-  selected: boolean
-  isUnit: boolean
+  id: string;
+  name: string;
+  selected: boolean;
+  type: 'folder';
 }
+
+const itemSelectedList: Ref<string[]> = ref([]);
+
+const clearSelectedList = () => {
+  itemSelectedList.value = [];
+};
+
+const toggleItemSelection = (id: string) => {
+  const index = itemSelectedList.value.indexOf(id);
+  if (index !== -1) {
+    //If index exists remove id from list
+    itemSelectedList.value.splice(index, 1);
+  } else {
+    itemSelectedList.value.push(id);
+  }
+};
+
+const toggleAllItemsSelection = () => {
+  if (everythingIsSelected.value) {
+    // All items are selected. De-select everything
+    clearSelectedList();
+  } else {
+    // Not all items are selected. Select the remaining items.
+    folders.value.forEach(({id}) => {
+      if (!itemSelectedList.value.includes(id)) itemSelectedList.value.push(id);
+    });
+    unitsOnScreen.value.forEach(({id}) => {
+      if (!itemSelectedList.value.includes(id)) itemSelectedList.value.push(id);
+    });
+  }
+};
 
 // Props & emits
 const props = defineProps<{ showCreateDialog: boolean }>();
@@ -60,10 +97,12 @@ const selectionCount = computed(() => folders.value.filter(f => f.selected).leng
 watch(selectionCount, cnt => emit('selectionChanged', cnt));
 watch(isAllSelected, all => {
   folders.value.forEach(f => (f.selected = all));
-}, { immediate: true });
+}, {immediate: true});
 
 // Firestore subscription
-let unsubscribe = () => {};
+let unsubscribe = () => {
+};
+
 function fetchFolders() {
   unsubscribe();
   const q = query(
@@ -75,26 +114,60 @@ function fetchFolders() {
       id: d.id,
       name: d.data().name as string,
       selected: false,
-      isUnit: false,
+      type: 'folder',
     }));
   });
 }
 
-onMounted(fetchFolders);
-watch(currentFolderId, fetchFolders);
+interface ContentThingy {
+  id: string;
+  name: string;
+  type: 'folder' | 'unit';
+}
+
+const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() => {
+  return unitStore.visibleUnits.map((unit) => ({
+    id: unit.id,
+    name: unit.name,
+    type: 'unit',
+  }));
+});
+
+const content: ComputedRef<ContentThingy[]> = computed(() => {
+  return [...folders.value, ...unitsOnScreen.value];
+});
+
+const totalAmountOfItemsOnScreen = computed(() => content.value.length);
+
+const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length);
+
+const everythingIsSelected = computed(() => totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value);
+
+onMounted(() => {
+  fetchFolders();
+});
+
+watch(currentFolderId, () => {
+  fetchFolders();
+  clearSelectedList();
+});
+
 onUnmounted(() => unsubscribe());
 
 // Navigation handlers
-function enterFolder(id: string, name: string) {
-  folderStore.enterFolder(id, name);
+function enterItem(item: ContentThingy) {
+  if (item.type === 'folder') {
+    folderStore.enterFolder(item.id, item.name);
+  }
 }
-function goBack() {
+
+/*function goBack() {
   if (folderStore.ancestors.length) {
     folderStore.goToAncestor(folderStore.ancestors.length - 1);
   } else {
     folderStore.resetToRoot();
   }
-}
+}*/
 
 // Create-folder dialog handlers
 async function onDialogSubmit(name: string) {
@@ -106,6 +179,7 @@ async function onDialogSubmit(name: string) {
   });
   emit('update:showCreateDialog', false);
 }
+
 function onDialogCancel() {
   emit('update:showCreateDialog', false);
 }
@@ -114,7 +188,7 @@ function onDialogCancel() {
 async function renameFolder(id: string, oldName: string) {
   const newName = window.prompt('New folder name:', oldName);
   if (!newName || newName.trim() === oldName) return;
-  await updateDoc(doc(db, 'folders', id), { name: newName.trim() });
+  await updateDoc(doc(db, 'folders', id), {name: newName.trim()});
 }
 
 async function deleteFolderAndChildren(id: string) {
@@ -132,59 +206,86 @@ async function deleteFolder(id: string) {
 }
 
 // Handle menu actions
-function handleMenuAction(payload: { folderId: string; action: string }) {
-  const f = folders.value.find(x => x.id === payload.folderId);
-  if (payload.action === 'edit' && f) {
-    renameFolder(payload.folderId, f.name);
-  } else if (payload.action === 'delete') {
-    deleteFolder(payload.folderId);
+function handleMenuAction(payload: { itemId: string; action: string }) {
+  const folder = folders.value.find(x => x.id === payload.itemId);
+  if (folder) {
+    // Item is a folder
+    if (payload.action === 'edit') {
+      renameFolder(payload.itemId, folder.name);
+    } else if (payload.action === 'delete') {
+      deleteFolder(payload.itemId);
+    }
+  } else {
+    // Item is a unit
+    switch (payload.action) {
+    case 'edit':
+      {
+        const foundUnit = unitStore.getUnitById(payload.itemId);
+        if (foundUnit){
+          wizardStore.open(foundUnit);
+        }
+      }
+      break;
+    case 'delete':
+      unitStore.deleteById(payload.itemId);
+      break;
+    default:
+      break;
+    }
   }
 }
+
+defineExpose({
+  toggleAllItemsSelection,
+  totalAmountOfItemsOnScreen,
+  totalAmountOfItemsSelected,
+});
+
 </script>
 
 <template>
   <div>
     <!-- Navigation Header -->
-    <div class="navigation-header">
+<!--    <div class="navigation-header">
       <h3>Viewing: {{ currentFolderName }}</h3>
       <button v-if="currentFolderId" @click="goBack">Back</button>
-    </div>
+    </div>-->
 
     <!-- Folder Grid / List -->
     <div :class="['folderContainer', currentView]">
       <div
-        v-for="folder in folders"
-        :key="folder.id"
+        v-for="item in content"
+        :key="item.id"
         :class="['folder', currentView]"
       >
         <div
           class="folderContent"
-          :class="{ selected: folder.selected, 'unit-style': folder.isUnit }"
-          @click="folder.selected = !folder.selected"
-          @dblclick.stop="enterFolder(folder.id, folder.name)"
+          :class="{ selected: itemSelectedList.includes(item.id), 'unit-style': item.type === 'unit' }"
+          @click="toggleItemSelection(item.id)"
+          @dblclick.stop="enterItem(item)"
         >
           <BasicIcon
             v-if="currentView === 'list'"
             name="ChevronRight"
             class="arrow"
-            @click.stop="enterFolder(folder.id, folder.name)"
+            @click.stop="enterItem(item)"
           />
 
           <input
             type="checkbox"
             class="folderCheckbox"
-            v-model="folder.selected"
-            @click.stop
+            :checked="itemSelectedList.includes(item.id)"
+            @click.stop="toggleItemSelection(item.id)"
           />
 
           <BasicIcon
-            :name="folder.isUnit ? 'Unit' : 'Folder'"
+            :name="item.type === 'unit' ? 'Unit' : 'Folder'"
             class="folderIcon"
           />
-          <p>{{ folder.name }}</p>
+          <p>{{ item.name }}</p>
 
           <FolderMenu
-            :folder-id="folder.id as any"
+            :folder-id="item.id"
             @option-selected="handleMenuAction"
             @click.stop
           />
@@ -214,6 +315,7 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
     margin: 0;
     font-weight: 500;
   }
+
   button {
     padding: 0.25rem 0.5rem;
     border: 1px solid #888;
@@ -456,11 +558,13 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
         display: block;
         margin-bottom: 0.25rem;
       }
+
       input {
         padding: 0.5rem;
         border: 1px solid #ccc;
         border-radius: 4px;
       }
+
       button {
         align-self: flex-start;
         padding: 0.5rem 1rem;

@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import BasicIcon from '../atoms/BasicIcon.vue';
 import FolderSection from '@/components/molecules/FolderSection.vue';
-import { ref, provide, onMounted } from 'vue';
+import {ref, provide, onMounted, computed, type Ref} from 'vue';
 
 const props = defineProps({
   showCreateDialog: {
@@ -19,6 +19,26 @@ const emit = defineEmits<{
 function update(v: boolean) {
   emit('update:showCreateDialog', v);
 }
+
+const folderSection: Ref<{toggleAllItemsSelection: () => void, totalAmountOfItemsOnScreen: number, totalAmountOfItemsSelected: number} | null> = ref(null);
+
+const toggleAllItemsSelection = () => {
+  if (folderSection.value) {
+    folderSection.value.toggleAllItemsSelection();
+  }
+};
+
+const totalAmountOfItemsOnScreen = computed(() => {
+  if (!folderSection.value) return 0;
+  return folderSection.value.totalAmountOfItemsOnScreen;
+});
+
+const totalAmountOfItemsSelected = computed(() => {
+  if (!folderSection.value) return 0;
+  return folderSection.value.totalAmountOfItemsSelected;
+});
+
+const everythingIsSelected = computed(() => totalAmountOfItemsOnScreen.value > 0 && totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value);
 
 const isAllSelected = ref(false);
 provide('isAllSelected', isAllSelected);
@@ -50,29 +70,29 @@ onMounted(() => {
   <div class="tableNav">
     <!-- Venstre side: markér alt, rediger, kopier, osv. -->
     <div class="leftSection">
-      <div class="tableNavItem" :class="{ checked: isAllSelected }">
+      <div class="tableNavItem" :class="{ checked: everythingIsSelected, disabled: !totalAmountOfItemsOnScreen }" @click.stop="toggleAllItemsSelection">
         <input
           type="checkbox"
           id="selectAll"
           class="customCheckbox"
-          v-model="isAllSelected"
+          :checked="everythingIsSelected"
         />
         <label for="selectAll">Markér alt</label>
       </div>
       <div class="divider"></div>
-      <div class="tableNavItem" :class="{ disabled: !anySelected }">
+      <div class="tableNavItem" :class="{ disabled: !totalAmountOfItemsSelected }">
         <BasicIcon name="EditPencil" /><span>Rediger</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !anySelected }">
+      <div class="tableNavItem" :class="{ disabled: !totalAmountOfItemsSelected }">
         <BasicIcon name="Copy" /><span>Kopier</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !anySelected }">
+      <div class="tableNavItem" :class="{ disabled: !totalAmountOfItemsSelected }">
         <BasicIcon name="ArrowUpRight" /><span>Flyt</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !anySelected }">
+      <div class="tableNavItem" :class="{ disabled: !totalAmountOfItemsSelected }">
         <BasicIcon name="Printer" /><span>Print</span>
       </div>
-      <div class="tableNavItem" :class="{ disabled: !anySelected }">
+      <div class="tableNavItem" :class="{ disabled: !totalAmountOfItemsSelected }">
         <BasicIcon name="Trash" /><span>Slet</span>
       </div>
     </div>
@@ -100,10 +120,15 @@ onMounted(() => {
 
   <!-- FolderSection med v-model og events -->
   <FolderSection
+    ref="folderSection"
     :showCreateDialog="props.showCreateDialog"
     @update:showCreateDialog="update"
     @selection-changed="handleSelectionChanged"
   />
+
+  <div v-if="!totalAmountOfItemsOnScreen">
+    Mappen er tom
+  </div>
 </template>
 
 <style scoped lang="scss">
