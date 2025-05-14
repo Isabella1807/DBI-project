@@ -43,9 +43,16 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
+  const getUnitById = (unitId: string): UnitTypeWithId | undefined => {
+    return visibleUnits.value.find(unit => {
+      return unit.id === unitId;
+    });
+  };
+
   return {
     createNew,
     visibleUnits,
+    getUnitById,
     deleteById,
   };
 });

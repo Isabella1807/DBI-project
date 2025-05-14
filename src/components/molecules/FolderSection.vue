@@ -218,7 +218,7 @@ function handleMenuAction(payload: { itemId: string; action: string }) {
     // Item is a unit
     switch (payload.action) {
     case 'edit':
-      //console.log('Edit unit');
+      const foundUnit = unitStore.getUnitById(payload.itemId);
       break;
     case 'delete':
       unitStore.deleteById(payload.itemId);
