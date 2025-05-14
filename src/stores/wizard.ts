@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
 import {ref, computed} from 'vue';
+import {useUnitStore} from '@/stores/unitStore.ts';
 
 export const useWizardStore = defineStore('wizardStore', () => {
   // reset
@@ -74,6 +75,14 @@ export const useWizardStore = defineStore('wizardStore', () => {
 
   const submit = () => {
     confirmClose();
+
+    const unitStore = useUnitStore();
+
+    unitStore.createNew({
+      name: entityName.value,
+      description: entityDescription.value,
+      syncId: entitySyncId.value,
+    });
   };
 
   //transition fix

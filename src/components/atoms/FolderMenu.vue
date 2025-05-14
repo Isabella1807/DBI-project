@@ -4,7 +4,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   folderId: {
-    type: Number,
+    type: String,
     required: true,
   },
 });
@@ -27,7 +27,7 @@ const toggleDropdown = (event: Event) => {
 };
 
 const handleOptionClick = (option: string) => {
-  emit('optionSelected', { folderId: props.folderId, action: option });
+  emit('optionSelected', { itemId: props.folderId, action: option });
   showDropdown.value = false;
 };
 
