@@ -16,7 +16,7 @@ export const useWizardStore = defineStore('wizardStore', () => {
 
   // open close
   const isOpen = ref(false);
-  const open = () => {
+  const open = (editUnitId?: string) => {
     reset();
     isOpen.value = true;
     setTimeout(() => {
