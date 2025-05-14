@@ -30,9 +30,10 @@ import {
 import type {DocumentData, QuerySnapshot} from 'firebase/firestore';
 import {db} from '@/configs/firebase';
 import {useUnitStore} from '@/stores/unitStore.ts';
-import {deleteUnitById} from '@/services/unitService.ts';
+import {useWizardStore} from '@/stores/wizard.ts';
 
 const unitStore = useUnitStore();
+const wizardStore = useWizardStore();
 
 interface Folder {
   id: string;
@@ -196,7 +197,12 @@ function handleMenuAction(payload: { itemId: string; action: string }) {
     // Item is a unit
     switch (payload.action) {
     case 'edit':
-      const foundUnit = unitStore.getUnitById(payload.itemId);
+      {
+        const foundUnit = unitStore.getUnitById(payload.itemId);
+        if (foundUnit){
+          wizardStore.open(foundUnit);
+        }
+      }
       break;
     case 'delete':
       unitStore.deleteById(payload.itemId);

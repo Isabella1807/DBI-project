@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import {ref, computed} from 'vue';
 import {useUnitStore} from '@/stores/unitStore.ts';
+import type {UnitTypeWithId} from '@/types/unitTypes.ts';
 
 export const useWizardStore = defineStore('wizardStore', () => {
   // reset
@@ -16,8 +17,13 @@ export const useWizardStore = defineStore('wizardStore', () => {
 
   // open close
   const isOpen = ref(false);
-  const open = (editUnitId?: string) => {
+  const open = (editUnit?: UnitTypeWithId) => {
     reset();
+    if (editUnit) {
+      entityName.value = editUnit.name;
+      entityDescription.value = editUnit.description;
+      entitySyncId.value = editUnit.syncId;
+    }
     isOpen.value = true;
     setTimeout(() => {
       isReady.value = true;
