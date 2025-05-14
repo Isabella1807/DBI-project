@@ -51,7 +51,7 @@ export const useUnitStore = defineStore('unitStore', () => {
 
   const updateUnit = (unit: UnitTypeWithId) => {
     // call service to update this unit
-
+    return unit;
     // then find the unit in the visibleUnits array and update its values
   };
 
