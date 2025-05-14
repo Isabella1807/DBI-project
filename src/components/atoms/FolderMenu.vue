@@ -27,7 +27,7 @@ const toggleDropdown = (event: Event) => {
 };
 
 const handleOptionClick = (option: string) => {
-  emit('optionSelected', { folderId: props.folderId, action: option });
+  emit('optionSelected', { itemId: props.folderId, action: option });
   showDropdown.value = false;
 };
 

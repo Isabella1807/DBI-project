@@ -17,7 +17,7 @@ export const useUnitStore = defineStore('unitStore', () => {
       visibleUnits.value.push(createdUnit);
     }).catch(error => {
       // Handle error
-      console.log(error);
+      throw new Error(error);
     });
   };
 
@@ -29,6 +29,7 @@ export const useUnitStore = defineStore('unitStore', () => {
   watch(() => folderStore.currentFolderId, async (newFolderId) => {
     await refreshVisibleUnits(newFolderId);
   }, {immediate: true});
+
 
   return {
     createNew,

@@ -9,7 +9,7 @@ import {
   toRef,
   type Ref, type ComputedRef,
 } from 'vue';
-import { useFolderStore } from '@/stores/folderStore';
+import {useFolderStore} from '@/stores/folderStore';
 
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import FolderMenu from '@/components/atoms/FolderMenu.vue';
@@ -27,16 +27,16 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
-import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
-import { db } from '@/configs/firebase';
+import type {DocumentData, QuerySnapshot} from 'firebase/firestore';
+import {db} from '@/configs/firebase';
 import {useUnitStore} from '@/stores/unitStore.ts';
 
 const unitStore = useUnitStore();
 
 interface Folder {
-  id: string
-  name: string
-  selected: boolean
+  id: string;
+  name: string;
+  selected: boolean;
   type: 'folder';
 }
 
@@ -79,10 +79,12 @@ const selectionCount = computed(() => folders.value.filter(f => f.selected).leng
 watch(selectionCount, cnt => emit('selectionChanged', cnt));
 watch(isAllSelected, all => {
   folders.value.forEach(f => (f.selected = all));
-}, { immediate: true });
+}, {immediate: true});
 
 // Firestore subscription
-let unsubscribe = () => {};
+let unsubscribe = () => {
+};
+
 function fetchFolders() {
   unsubscribe();
   const q = query(
@@ -135,13 +137,13 @@ function enterItem(item: ContentThingy) {
   }
 }
 
-function goBack() {
+/*function goBack() {
   if (folderStore.ancestors.length) {
     folderStore.goToAncestor(folderStore.ancestors.length - 1);
   } else {
     folderStore.resetToRoot();
   }
-}
+}*/
 
 // Create-folder dialog handlers
 async function onDialogSubmit(name: string) {
@@ -153,6 +155,7 @@ async function onDialogSubmit(name: string) {
   });
   emit('update:showCreateDialog', false);
 }
+
 function onDialogCancel() {
   emit('update:showCreateDialog', false);
 }
@@ -161,7 +164,7 @@ function onDialogCancel() {
 async function renameFolder(id: string, oldName: string) {
   const newName = window.prompt('New folder name:', oldName);
   if (!newName || newName.trim() === oldName) return;
-  await updateDoc(doc(db, 'folders', id), { name: newName.trim() });
+  await updateDoc(doc(db, 'folders', id), {name: newName.trim()});
 }
 
 async function deleteFolderAndChildren(id: string) {
@@ -179,12 +182,27 @@ async function deleteFolder(id: string) {
 }
 
 // Handle menu actions
-function handleMenuAction(payload: { folderId: string; action: string }) {
-  const f = folders.value.find(x => x.id === payload.folderId);
-  if (payload.action === 'edit' && f) {
-    renameFolder(payload.folderId, f.name);
-  } else if (payload.action === 'delete') {
-    deleteFolder(payload.folderId);
+function handleMenuAction(payload: { itemId: string; action: string }) {
+  const folder = folders.value.find(x => x.id === payload.itemId);
+  if (folder) {
+    // Item is a folder
+    if (payload.action === 'edit') {
+      renameFolder(payload.itemId, folder.name);
+    } else if (payload.action === 'delete') {
+      deleteFolder(payload.itemId);
+    }
+  } else {
+    // Item is a unit
+    switch (payload.action) {
+    case 'edit':
+      //console.log('Edit unit');
+      break;
+    case 'delete':
+      //console.log('Delete unit');
+      break;
+    default:
+      break;
+    }
   }
 }
 </script>
@@ -192,10 +210,10 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
 <template>
   <div>
     <!-- Navigation Header -->
-    <div class="navigation-header">
+<!--    <div class="navigation-header">
       <h3>Viewing: {{ currentFolderName }}</h3>
       <button v-if="currentFolderId" @click="goBack">Back</button>
-    </div>
+    </div>-->
 
     <!-- Folder Grid / List -->
     <div :class="['folderContainer', currentView]">
@@ -261,6 +279,7 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
     margin: 0;
     font-weight: 500;
   }
+
   button {
     padding: 0.25rem 0.5rem;
     border: 1px solid #888;
@@ -503,11 +522,13 @@ function handleMenuAction(payload: { folderId: string; action: string }) {
         display: block;
         margin-bottom: 0.25rem;
       }
+
       input {
         padding: 0.5rem;
         border: 1px solid #ccc;
         border-radius: 4px;
       }
+
       button {
         align-self: flex-start;
         padding: 0.5rem 1rem;

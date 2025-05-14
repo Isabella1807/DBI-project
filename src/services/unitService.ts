@@ -15,7 +15,7 @@ export const createUnit = async (unit: BaseUnitType): Promise<UnitTypeWithId> =>
     return {
       ...unit,
       id: res.id,
-    };
+    } as UnitTypeWithId;
 
   } catch (error) {
     throw new Error('Enhed kunne ikke oprettes: ' + (error as FirestoreError).message);
@@ -26,7 +26,6 @@ export const getAllUnitsByFolderId = async (currentFolderId: string | null): Pro
   try {
     const q = query(collection(db, 'units'), where('parentId', '==', currentFolderId));
     const querySnapshot = await getDocs(q);
-
 
     const results = querySnapshot.docs.map((doc) => ({
       id: doc.id, ...doc.data(),
