@@ -49,10 +49,17 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
+  const updateUnit = (unit: UnitTypeWithId) => {
+    // call service to update this unit
+
+    // then find the unit in the visibleUnits array and update its values
+  };
+
   return {
     createNew,
     visibleUnits,
     getUnitById,
     deleteById,
+    updateUnit,
   };
 });
