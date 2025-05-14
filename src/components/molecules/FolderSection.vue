@@ -7,6 +7,7 @@ import {
   onMounted,
   onUnmounted,
   toRef,
+  defineExpose,
   type Ref, type ComputedRef,
 } from 'vue';
 import {useFolderStore} from '@/stores/folderStore';
@@ -55,6 +56,21 @@ const toggleItemSelection = (id: string) => {
     itemSelectedList.value.splice(index, 1);
   } else {
     itemSelectedList.value.push(id);
+  }
+};
+
+const toggleAllItemsSelection = () => {
+  if (everythingIsSelected.value) {
+    // All items are selected. De-select everything
+    clearSelectedList();
+  } else {
+    // Not all items are selected. Select the remaining items.
+    folders.value.forEach(({id}) => {
+      if (!itemSelectedList.value.includes(id)) itemSelectedList.value.push(id);
+    });
+    unitsOnScreen.value.forEach(({id}) => {
+      if (!itemSelectedList.value.includes(id)) itemSelectedList.value.push(id);
+    });
   }
 };
 
@@ -120,6 +136,12 @@ const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() => {
 const content: ComputedRef<ContentThingy[]> = computed(() => {
   return [...folders.value, ...unitsOnScreen.value];
 });
+
+const totalAmountOfItemsOnScreen = computed(() => content.value.length);
+
+const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length);
+
+const everythingIsSelected = computed(() => totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value);
 
 onMounted(() => {
   fetchFolders();
@@ -212,6 +234,13 @@ function handleMenuAction(payload: { itemId: string; action: string }) {
     }
   }
 }
+
+defineExpose({
+  toggleAllItemsSelection,
+  totalAmountOfItemsOnScreen,
+  totalAmountOfItemsSelected,
+});
+
 </script>
 
 <template>
