@@ -31,8 +31,15 @@ export const useUnitStore = defineStore('unitStore', () => {
   }, {immediate: true});
 
 
+  const getUnitById = (unitId: string): UnitTypeWithId | undefined => {
+    return visibleUnits.value.find(unit => {
+      return unit.id === unitId;
+    });
+  };
+
   return {
     createNew,
     visibleUnits,
+    getUnitById,
   };
 });
