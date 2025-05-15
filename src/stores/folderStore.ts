@@ -1,46 +1,56 @@
-// src/stores/folderStore.ts
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
 interface Ancestor {
-  id: string | null
-  name: string
+  id: string | null;
+  name: string;
 }
 
-export const useFolderStore = defineStore('folder', {
-  state: () => ({
-    // A fixed label for your “top‐level” view:
-    rootLabel: 'All files',
+export const useFolderStore = defineStore('folder', () => {
+  // A fixed label for your “top‐level” view:
+  const rootLabel = 'All files';
 
-    // These track where you are:
-    currentFolderId: null as string | null,
-    currentFolderName: 'All files',
+  // These track where you are:
+  const currentFolderId = ref<string | null>(null);
+  const currentFolderName = ref<string>(rootLabel);
 
-    // Only store *real* ancestors here:
-    ancestors: [] as Ancestor[],
-  }),
-  actions: {
-    enterFolder(id: string, name: string) {
-      // push only if you’re inside a non‐root folder
-      if (this.currentFolderId !== null) {
-        this.ancestors.push({
-          id: this.currentFolderId,
-          name: this.currentFolderName,
-        });
-      }
-      this.currentFolderId = id;
-      this.currentFolderName = name;
-    },
-    goToAncestor(index: number) {
-      const target = this.ancestors[index];
-      this.currentFolderId = target.id;
-      this.currentFolderName = target.name;
-      this.ancestors.splice(index);
-    },
-    resetToRoot() {
-      this.currentFolderId = null;
-      // reset back to the fixed rootLabel
-      this.currentFolderName = this.rootLabel;
-      this.ancestors = [];
-    },
-  },
+  // Only store *real* ancestors here:
+  const ancestors = ref<Ancestor[]>([]);
+
+  function enterFolder(id: string, name: string) {
+    // push only if you’re inside a non‐root folder
+    if (currentFolderId.value !== null) {
+      ancestors.value.push({
+        id: currentFolderId.value,
+        name: currentFolderName.value,
+      });
+    }
+    currentFolderId.value = id;
+    currentFolderName.value = name;
+  }
+
+  function goToAncestor(index: number) {
+    const target = ancestors.value[index];
+    currentFolderId.value = target.id;
+    currentFolderName.value = target.name;
+    // remove all deeper ancestors
+    ancestors.value.splice(index);
+  }
+
+  function resetToRoot() {
+    currentFolderId.value = null;
+    // reset back to the fixed rootLabel
+    currentFolderName.value = rootLabel;
+    ancestors.value = [];
+  }
+
+  return {
+    rootLabel,
+    currentFolderId,
+    currentFolderName,
+    ancestors,
+    enterFolder,
+    goToAncestor,
+    resetToRoot,
+  };
 });

@@ -17,12 +17,17 @@
         v-for="(anc, i) in ancestors"
         :key="anc.id + '-' + i"
       >
-        / <a @click.prevent="goTo(i)">{{ anc.name }}</a>
+        <div class="breadcrumbContainer">
+          <BasicIcon name="ChevronRight" small/> <a @click.prevent="goTo(i)">{{ anc.name }}</a>
+        </div>
       </li>
 
       <!-- 3) The current folder, if not at root -->
       <li v-if="!isAtRoot">
-        / {{ currentFolderName }}
+        <div class="breadcrumbContainer">
+          <BasicIcon name="ChevronRight" small/> {{ currentFolderName }}
+        </div>
+        
       </li>
     </ul>
   </nav>
@@ -31,6 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useFolderStore } from '@/stores/folderStore';
+import BasicIcon from '../atoms/BasicIcon.vue';
 
 const store = useFolderStore();
 
@@ -48,14 +54,24 @@ function goTo(index: number) {
 </script>
 
 <style lang="scss" scoped>
+
+.breadcrumbContainer {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}
+
 .breadcrumb ul {
   display: flex;
   list-style: none;
   padding: 0;
-  margin: 1rem 0;
+  margin: 1rem;
+  align-items: center;
 }
 .breadcrumb li {
   margin-right: 0.5rem;
+  margin-left: -0.5rem;
 }
 .breadcrumb a {
   @include breadCrumb;
