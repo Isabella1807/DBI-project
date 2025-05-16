@@ -1,6 +1,16 @@
 import {db} from '@/configs/firebase';
-import {collection, addDoc, FirestoreError, getDocs, query, where, deleteDoc, doc} from 'firebase/firestore';
-import type {BaseUnitType, UnitTypeWithId} from '@/types/unitTypes.ts';
+import {
+  collection,
+  addDoc,
+  FirestoreError,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  updateDoc
+} from 'firebase/firestore';
+import type {BaseUnitType, unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 
 // create new unit
 export const createUnit = async (unit: BaseUnitType): Promise<UnitTypeWithId> => {
@@ -42,5 +52,15 @@ export const deleteUnitById = async (unitId: string) => {
     await deleteDoc(doc(db, 'units', unitId));
   } catch (error) {
     throw new Error('Kunne ikke slette enhed: ' + (error as FirestoreError).message);
+  }
+};
+
+export const updateUnitById = async (unitId: string, updatedUnitValues: unitInputType) => {
+  try {
+    await updateDoc(doc(db, 'units', unitId), {
+      ...updatedUnitValues,
+    });
+  } catch (error) {
+    throw new Error('Kunne ikke ændre enhed: ' + (error as FirestoreError).message);
   }
 };
