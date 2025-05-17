@@ -146,15 +146,22 @@ interface ContentThingy {
 }
 
 const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() => {
-  return unitStore.visibleUnits.map((unit) => ({
+  return unitStore.visibleUnits.map(unit => ({
     id: unit.id,
     name: unit.name,
-    type: 'unit',
+    type: 'unit' as const,
   }));
 });
 
 const content: ComputedRef<ContentThingy[]> = computed(() => {
-  return [...folders.value, ...unitsOnScreen.value];
+  return [
+    ...folders.value.map(folder => ({
+      id: folder.id,
+      name: folder.name,
+      type: 'folder' as const,
+    })),
+    ...unitsOnScreen.value,
+  ];
 });
 
 const totalAmountOfItemsOnScreen = computed(() => content.value.length);
