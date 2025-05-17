@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import testView from '../views/testView.vue';
-import Login from '../views/LogIn.vue';
+//import Login from '../views/LogIn.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,13 +19,21 @@ const router = createRouter({
       component: () => import('../views/testerView.vue'),
     },
     {
-      path: '/login',
-      name: 'login',
+      path: '/dummy',
+      name: 'dummy',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/LogIn.vue'),
+      component: () => import('../views/dummyView.vue'),
     },
+    /*    {
+          path: '/login',
+          name: 'login',
+          // route level code-splitting
+          // this generates a separate chunk (About.[hash].js) for this route
+          // which is lazy-loaded when the route is visited.
+          component: () => import('../views/LogIn.vue'),
+        },*/
   ],
 });
 

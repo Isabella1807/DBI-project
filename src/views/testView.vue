@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import FolderForm from '@/components/FolderForm.vue';
+import { ref } from 'vue';
+import UnderMenu from '@/components/organisms/UnderMenu.vue';
+import Breadcrumb from '@/components/molecules/BreadcrumbComp.vue';
 import MellemLedet from '@/components/molecules/MellemLedet.vue';
+
+const showCreateDialog = ref(false);
+
+function onCreateOption(opt: string) {
+  if (opt === 'Mappe') showCreateDialog.value = true;
+}
 </script>
 
 <template>
-  <div>
-    <H1>
-      TESTER VIEW 1
-    </H1>
-    <MellemLedet/>
-    <FolderForm/>
-  </div>
+  <UnderMenu @option-selected="onCreateOption" />
+  <Breadcrumb />
+  <MellemLedet v-model:showCreateDialog="showCreateDialog" />
 </template>
-
-<style scoped lang="scss">
-
-</style>

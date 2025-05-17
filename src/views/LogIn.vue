@@ -3,12 +3,12 @@ import BasicButton from '@/components/atoms/BasicButton.vue';
 
 const handleLogin = () => {
   // Logik for login
-  console.log('Login clicked');
+  //console.log('Login clicked');
 };
 
 const handleCreateAccount = () => {
   // Logik for oprettelse af konto
-  console.log('Create account clicked');
+  //console.log('Create account clicked');
 };
 </script>
 

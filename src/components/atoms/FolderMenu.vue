@@ -4,9 +4,9 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   folderId: {
-    type: Number,
-    required: true
-  }
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(['optionSelected']);
@@ -18,7 +18,7 @@ const options = [
   { label: 'Kopier', icon: 'Copy', action: 'copy' },
   { label: 'Flyt', icon: 'ArrowUpRight', action: 'move' },
   { label: 'Send til print', icon: 'Printer', action: 'print' },
-  { label: 'Slet', icon: 'Trash', action: 'delete' }
+  { label: 'Slet', icon: 'Trash', action: 'delete' },
 ];
 
 const toggleDropdown = (event: Event) => {
@@ -27,7 +27,7 @@ const toggleDropdown = (event: Event) => {
 };
 
 const handleOptionClick = (option: string) => {
-  emit('optionSelected', { folderId: props.folderId, action: option });
+  emit('optionSelected', { itemId: props.folderId, action: option });
   showDropdown.value = false;
 };
 

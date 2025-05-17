@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import MellemLedet from '@/components/molecules/MellemLedet.vue';
+// import MellemLedet from '@/components/molecules/MellemLedet.vue';
 </script>
 
 <template>
-  <MellemLedet/>
+  <!-- <MellemLedet/> -->
+  <h1>womp</h1>
 </template>
 
 <style scoped lang="scss">
