@@ -23,7 +23,7 @@ async function handleLogin() {
     }));
 
     router.push('/test');
-  } catch (error: any) {
+  } catch (error: unknown) {
     errorMsg.value = 'Forkert login. Prøv igen.';
     console.error(error);
   }
