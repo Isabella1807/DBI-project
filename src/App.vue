@@ -1,46 +1,47 @@
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
-import {useWizardStore} from '@/stores/wizard.ts';
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
-//import Restore from './components/atoms/RestoreComp.vue';
-//import { ref } from 'vue'
-
-/*const showToast = ref(true)
-const toastType = ref('delete')
-
-const handleUndo = () => {
-  toastType.value = 'restore'
-}*/
+import { useWizardStore } from '@/stores/wizard.ts';
 
 const wizardStore = useWizardStore();
+const route = useRoute();
 </script>
 
 <template>
   <div class="bodyContainer">
-    <WaterMark :class="{blur: wizardStore.isOpen}"/>
-    <div class="mainContainer" :class="{blur: wizardStore.isOpen}">
-      <main>
-        <TabNav />
-        <RouterView />
-<!--        <Restore v-if="showToast" :type="toastType" @undo="handleUndo" />-->
-      </main>
-    </div>
-    <CreateEntityWizard/>
-    <ConfirmModal
-      v-if="wizardStore.confirmModalIsOpen"
-      iconName="Circle_Warning"
-      title="Det ser ud til, du ikke er færdig"
-      description="Ændringer vil ikke blive gemt"
-      note="Vil du afslutte alligevel?"
-      cancelText="Annuller"
-      confirmText="Ja - afslut og luk ned"
-      @cancel="() => wizardStore.cancelClose()"
-      @confirm="() => wizardStore.confirmClose()"
-    />
+    <!-- Hvis layout ikke er "auth", vis layoutet -->
+    <template v-if="route.meta.layout !== 'auth'">
+      <WaterMark :class="{ blur: wizardStore.isOpen }" />
+      <div class="mainContainer" :class="{ blur: wizardStore.isOpen }">
+        <main>
+          <TabNav />
+          <RouterView />
+        </main>
+      </div>
+      <CreateEntityWizard />
+      <ConfirmModal
+        v-if="wizardStore.confirmModalIsOpen"
+        iconName="Circle_Warning"
+        title="Det ser ud til, du ikke er færdig"
+        description="Ændringer vil ikke blive gemt"
+        note="Vil du afslutte alligevel?"
+        cancelText="Annuller"
+        confirmText="Ja - afslut og luk ned"
+        @cancel="() => wizardStore.cancelClose()"
+        @confirm="() => wizardStore.confirmClose()"
+      />
+    </template>
+
+    <!-- Hvis layout er "auth", vis kun router-view -->
+    <template v-else>
+      <RouterView />
+    </template>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 .bodyContainer {

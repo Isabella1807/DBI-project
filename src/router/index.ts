@@ -1,40 +1,38 @@
-import {createRouter, createWebHistory} from 'vue-router';
-import testView from '../views/testView.vue';
-//import Login from '../views/LogIn.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import { auth } from '@/configs/firebase';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: testView,
+      name: 'login',
+      component: () => import('../views/LogIn.vue'),
+      meta: { layout: 'auth' },
     },
     {
       path: '/test',
       name: 'test',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/testerView.vue'),
+      component: () => import('@/views/testView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/dummy',
       name: 'dummy',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/dummyView.vue'),
     },
-    /*    {
-          path: '/login',
-          name: 'login',
-          // route level code-splitting
-          // this generates a separate chunk (About.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
-          component: () => import('../views/LogIn.vue'),
-        },*/
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.meta.requiresAuth;
+  const user = auth.currentUser || JSON.parse(localStorage.getItem('user') || 'null');
+
+  if (requiresAuth && !user) {
+    next('/');
+  } else {
+    next();
+  }
 });
 
 export default router;
