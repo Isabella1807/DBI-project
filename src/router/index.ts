@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { auth } from '@/configs/firebase';
+import { useAuthStore } from '@/stores/loginStore';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,12 +24,27 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.meta.requiresAuth;
-  const user = auth.currentUser || JSON.parse(localStorage.getItem('user') || 'null');
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
 
-  if (requiresAuth && !user) {
-    next('/');
+  // Hvis auth ikke er initialiseret endnu
+  if (authStore.loading) {
+    await authStore.initializeAuth();
+  }
+
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isAuthenticated = authStore.isAuthenticated;
+
+  if (requiresAuth && !isAuthenticated) {
+    // Gem den oprindelige destination for senere omdirigering
+    if (to.path !== '/login') {
+      authStore.redirectPath = to.fullPath;
+    }
+    next('/login');
+  } else if ((to.path === '/login') && isAuthenticated) {
+    // Omdiriger til den gemte path eller standard route
+    next(authStore.redirectPath || '/test');
+    authStore.redirectPath = null; // Nulstil efter brug
   } else {
     next();
   }

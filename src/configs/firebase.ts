@@ -1,7 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-
+import {
+  initializeAuth,
+  browserLocalPersistence,
+} from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBRTAlED9kPJuYQ_X-ZYbDZmKhTm1CM6yo',
@@ -13,7 +15,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app); // 👈 dette er nødvendigt
 
-export { db, auth }; // 👈 så du kan bruge auth i LogIn.vue
+// Initialiser Firestore
+const db = getFirestore(app);
+
+// Initialiser Auth med local persistence
+const auth = initializeAuth(app, {
+  persistence: browserLocalPersistence,
+});
+
+export { db, auth };

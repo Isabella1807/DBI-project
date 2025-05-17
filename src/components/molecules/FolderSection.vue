@@ -33,13 +33,12 @@ import type {DocumentData, QuerySnapshot} from 'firebase/firestore';
 import {db} from '@/configs/firebase';
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizard.ts';
+import { useAuthStore } from '@/stores/loginStore';
 
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
 
-const auth = getAuth();
-const currentUser = auth.currentUser;
-const userId = currentUser?.uid;
+const authStore = useAuthStore();
 
 interface Folder {
   id: string;
@@ -109,26 +108,35 @@ let unsubscribe = () => {
 };
 
 function fetchFolders() {
-  unsubscribe(); // Luk tidligere snapshot subscription
+  if (unsubscribe && typeof unsubscribe === 'function') {
+    unsubscribe();
+  }
 
-  const auth = getAuth();
-  const currentUser = auth.currentUser;
-  if (!currentUser) return;
+  if (!authStore.userId) {
+    folders.value = [];
+    return;
+  }
 
   const q = query(
     collection(db, 'folders'),
     where('parentId', '==', currentFolderId.value),
-    where('userId', '==', currentUser.uid), // 🔥 Tilføj denne linje!
+    where('userId', '==', authStore.userId),
   );
 
-  unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
-    folders.value = snap.docs.map(d => ({
-      id: d.id,
-      name: d.data().name as string,
-      selected: false,
-      type: 'folder',
-    }));
-  });
+  try {
+    unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
+      folders.value = snap.docs.map(d => ({
+        id: d.id,
+        name: d.data().name as string,
+        selected: false,
+        type: 'folder',
+      }));
+    }, (error) => {
+      console.error('Firestore error:', error);
+    });
+  } catch (error) {
+    console.error('Error setting up Firestore listener:', error);
+  }
 }
 
 interface ContentThingy {
@@ -156,7 +164,9 @@ const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length)
 const everythingIsSelected = computed(() => totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value);
 
 onMounted(() => {
-  fetchFolders();
+  if (authStore.isAuthenticated) {
+    fetchFolders();
+  }
 });
 
 watch(currentFolderId, () => {
@@ -164,7 +174,12 @@ watch(currentFolderId, () => {
   clearSelectedList();
 });
 
-onUnmounted(() => unsubscribe());
+onUnmounted(() => {
+  if (unsubscribe && typeof unsubscribe === 'function') {
+    unsubscribe();
+  }
+  // Ryd op i andre event listeners hvis nødvendigt
+});
 
 // Navigation handlers
 function enterItem(item: ContentThingy) {
@@ -190,7 +205,7 @@ async function onDialogSubmit(name: string) {
   await addDoc(collection(db, 'folders'), {
     name: name.trim(),
     parentId: currentFolderId.value,
-    userId: currentUser.uid, // 🔐 Gem brugerens ID
+    userId: currentUser.uid,
     createdAt: serverTimestamp(),
   });
 
@@ -219,7 +234,7 @@ async function deleteFolderAndChildren(id: string) {
 }
 
 async function deleteFolder(id: string) {
-  if (!confirm('Delete this folder and all its subfolders?')) return;
+  if (!confirm('Slet denne mappe og alle under mapper også?')) return;
   await deleteFolderAndChildren(id);
 }
 

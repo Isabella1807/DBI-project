@@ -1,19 +1,33 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
 import { useWizardStore } from '@/stores/wizard.ts';
+import { useAuthStore } from '@/stores/loginStore';
+import { onMounted } from 'vue';
 
 const wizardStore = useWizardStore();
+const authStore = useAuthStore();
 const route = useRoute();
+const router = useRouter();
+
+// Initialiser auth ved komponentoprettelse
+onMounted(async () => {
+  await authStore.initializeAuth();
+
+  // Hvis bruger ikke er logget ind og ikke er på auth-siden
+  if (!authStore.isAuthenticated && route.meta.layout !== 'auth') {
+    router.push('/login');
+  }
+});
 </script>
 
 <template>
   <div class="bodyContainer">
-    <!-- Hvis layout ikke er "auth", vis layoutet -->
-    <template v-if="route.meta.layout !== 'auth'">
+    <!-- Kun vis hvis bruger er logget ind -->
+    <template v-if="authStore.isAuthenticated && route.meta.layout !== 'auth'">
       <WaterMark :class="{ blur: wizardStore.isOpen }" />
       <div class="mainContainer" :class="{ blur: wizardStore.isOpen }">
         <main>
@@ -35,7 +49,7 @@ const route = useRoute();
       />
     </template>
 
-    <!-- Hvis layout er "auth", vis kun router-view -->
+    <!-- Vis login-siden for ikke-autentificerede brugere -->
     <template v-else>
       <RouterView />
     </template>

@@ -1,35 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import BasicButton from '@/components/atoms/BasicButton.vue';
-import { auth } from '@/configs/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useAuthStore } from '@/stores/loginStore';
 import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
-const errorMsg = ref('');
 const router = useRouter();
+const authStore = useAuthStore();
 
 async function handleLogin() {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
-    const user = userCredential.user;
-    console.log('Login lykkedes:', user);
-
-    // Gem i localStorage
-    localStorage.setItem('user', JSON.stringify({
-      uid: user.uid,
-      email: user.email,
-    }));
-
-    router.push('/test');
-  } catch (error: unknown) {
-    errorMsg.value = 'Forkert login. Prøv igen.';
-    console.error(error);
+    await authStore.login(email.value, password.value);
+    router.push('/test'); // Omdiriger efter succesfuld login
+  } catch (error) {
+    console.error('Login fejl:', error);
   }
 }
 </script>
-
 
 <template>
   <div class="loginWrapper">
@@ -50,8 +38,13 @@ async function handleLogin() {
 
         <div class="buttonGroup">
           <BasicButton type="secondary" label="OPRET KONTO" ariaLabel="Opret ny konto" />
-          <BasicButton type="default" label="LOG-IN" ariaLabel="Log ind" />
-          <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
+          <BasicButton
+            type="default"
+            label="LOG-IN"
+            ariaLabel="Log ind"
+            :loading="authStore.loading"
+          />
+          <p v-if="authStore.error" class="error">{{ authStore.error }}</p>
         </div>
       </form>
     </div>
