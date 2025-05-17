@@ -15,6 +15,7 @@ import {useFolderStore} from '@/stores/folderStore';
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import FolderMenu from '@/components/atoms/FolderMenu.vue';
 import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
+import { getAuth } from 'firebase/auth';
 
 import {
   collection,
@@ -35,6 +36,10 @@ import {useWizardStore} from '@/stores/wizard.ts';
 
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
+
+const auth = getAuth();
+const currentUser = auth.currentUser;
+const userId = currentUser?.uid;
 
 interface Folder {
   id: string;
@@ -104,11 +109,18 @@ let unsubscribe = () => {
 };
 
 function fetchFolders() {
-  unsubscribe();
+  unsubscribe(); // Luk tidligere snapshot subscription
+
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
+  if (!currentUser) return;
+
   const q = query(
     collection(db, 'folders'),
     where('parentId', '==', currentFolderId.value),
+    where('userId', '==', currentUser.uid), // 🔥 Tilføj denne linje!
   );
+
   unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
     folders.value = snap.docs.map(d => ({
       id: d.id,
@@ -171,14 +183,20 @@ function enterItem(item: ContentThingy) {
 
 // Create-folder dialog handlers
 async function onDialogSubmit(name: string) {
-  if (!name.trim()) return;
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
+  if (!name.trim() || !currentUser) return;
+
   await addDoc(collection(db, 'folders'), {
     name: name.trim(),
     parentId: currentFolderId.value,
+    userId: currentUser.uid, // 🔐 Gem brugerens ID
     createdAt: serverTimestamp(),
   });
+
   emit('update:showCreateDialog', false);
 }
+
 
 function onDialogCancel() {
   emit('update:showCreateDialog', false);
