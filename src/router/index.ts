@@ -5,7 +5,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'login',
       component: () => import('../views/LogIn.vue'),
       meta: { layout: 'auth' },
@@ -37,7 +37,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (requiresAuth && !isAuthenticated) {
     // Gem den oprindelige destination for senere omdirigering
-    if (to.path !== '/login') {
+    if (to.path !== '/login/') {
       authStore.redirectPath = to.fullPath;
     }
     next('/login');
