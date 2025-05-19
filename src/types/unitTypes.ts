@@ -3,6 +3,7 @@ export interface BaseUnitType {
   description: string;
   syncId: string;
   parentId: string | null;
+  userId: string;
 }
 
 export interface UnitTypeWithId extends BaseUnitType {
