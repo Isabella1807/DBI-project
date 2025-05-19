@@ -15,7 +15,6 @@ import {useFolderStore} from '@/stores/folderStore';
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import FolderMenu from '@/components/atoms/FolderMenu.vue';
 import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
-import { getAuth } from 'firebase/auth';
 
 import {
   collection,
@@ -29,15 +28,15 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
-import type {DocumentData, QuerySnapshot} from 'firebase/firestore';
 import {db} from '@/configs/firebase';
+import {getAuth} from 'firebase/auth';
+
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizard.ts';
-import { useAuthStore } from '@/stores/loginStore';
+import {useAuthStore} from '@/stores/loginStore';
 
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
-
 const authStore = useAuthStore();
 
 interface Folder {
@@ -54,10 +53,9 @@ const clearSelectedList = () => {
 };
 
 const toggleItemSelection = (id: string) => {
-  const index = itemSelectedList.value.indexOf(id);
-  if (index !== -1) {
-    //If index exists remove id from list
-    itemSelectedList.value.splice(index, 1);
+  const idx = itemSelectedList.value.indexOf(id);
+  if (idx !== -1) {
+    itemSelectedList.value.splice(idx, 1);
   } else {
     itemSelectedList.value.push(id);
   }
@@ -65,53 +63,45 @@ const toggleItemSelection = (id: string) => {
 
 const toggleAllItemsSelection = () => {
   if (everythingIsSelected.value) {
-    // All items are selected. De-select everything
     clearSelectedList();
   } else {
-    // Not all items are selected. Select the remaining items.
-    folders.value.forEach(({id}) => {
-      if (!itemSelectedList.value.includes(id)) itemSelectedList.value.push(id);
+    folders.value.forEach(f => {
+      if (!itemSelectedList.value.includes(f.id))
+        itemSelectedList.value.push(f.id);
     });
-    unitsOnScreen.value.forEach(({id}) => {
-      if (!itemSelectedList.value.includes(id)) itemSelectedList.value.push(id);
+    unitsOnScreen.value.forEach(u => {
+      if (!itemSelectedList.value.includes(u.id))
+        itemSelectedList.value.push(u.id);
     });
   }
 };
 
-// Props & emits
 const props = defineProps<{ showCreateDialog: boolean }>();
 const showCreateDialog = toRef(props, 'showCreateDialog');
 const emit = defineEmits<{
-  (e: 'update:showCreateDialog', v: boolean): void
-  (e: 'selectionChanged', count: number): void
+  (e: 'update:showCreateDialog', v: boolean): void;
+  (e: 'selectionChanged', count: number): void;
 }>();
 
-// Pinia store for navigation state
 const folderStore = useFolderStore();
 const currentFolderId = computed(() => folderStore.currentFolderId);
 const currentFolderName = computed(() => folderStore.currentFolderName);
 
-// Injected UI state
 const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!;
 const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!;
 
-// Folder data & selection
 const folders = ref<Folder[]>([]);
 const selectionCount = computed(() => folders.value.filter(f => f.selected).length);
 watch(selectionCount, cnt => emit('selectionChanged', cnt));
 watch(isAllSelected, all => {
   folders.value.forEach(f => (f.selected = all));
-}, {immediate: true});
+}, { immediate: true });
 
 // Firestore subscription
-let unsubscribe = () => {
-};
+let unsubscribe = () => {};
 
 function fetchFolders() {
-  if (unsubscribe && typeof unsubscribe === 'function') {
-    unsubscribe();
-  }
-
+  unsubscribe();
   if (!authStore.userId) {
     folders.value = [];
     return;
@@ -123,20 +113,16 @@ function fetchFolders() {
     where('userId', '==', authStore.userId),
   );
 
-  try {
-    unsubscribe = onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
-      folders.value = snap.docs.map(d => ({
-        id: d.id,
-        name: d.data().name as string,
-        selected: false,
-        type: 'folder',
-      }));
-    }, (error) => {
-      console.error('Firestore error:', error);
-    });
-  } catch (error) {
-    console.error('Error setting up Firestore listener:', error);
-  }
+  unsubscribe = onSnapshot(q, snap => {
+    folders.value = snap.docs.map(d => ({
+      id: d.id,
+      name: d.data().name as string,
+      selected: false,
+      type: 'folder',
+    }));
+  }, error => {
+    console.error('Firestore error:', error);
+  });
 }
 
 interface ContentThingy {
@@ -145,30 +131,24 @@ interface ContentThingy {
   type: 'folder' | 'unit';
 }
 
-const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() => {
-  return unitStore.visibleUnits.map(unit => ({
-    id: unit.id,
-    name: unit.name,
-    type: 'unit' as const,
-  }));
-});
+const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() =>
+  unitStore.visibleUnits.map(u => ({
+    id: u.id,
+    name: u.name,
+    type: 'unit',
+  }))
+);
 
-const content: ComputedRef<ContentThingy[]> = computed(() => {
-  return [
-    ...folders.value.map(folder => ({
-      id: folder.id,
-      name: folder.name,
-      type: 'folder' as const,
-    })),
-    ...unitsOnScreen.value,
-  ];
-});
+const content: ComputedRef<ContentThingy[]> = computed(() => [
+  ...folders.value.map(f => ({ id: f.id, name: f.name, type: 'folder' as const })),
+  ...unitsOnScreen.value,
+]);
 
 const totalAmountOfItemsOnScreen = computed(() => content.value.length);
-
 const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length);
-
-const everythingIsSelected = computed(() => totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value);
+const everythingIsSelected = computed(() =>
+  totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value
+);
 
 onMounted(() => {
   if (authStore.isAuthenticated) {
@@ -182,43 +162,31 @@ watch(currentFolderId, () => {
 });
 
 onUnmounted(() => {
-  if (unsubscribe && typeof unsubscribe === 'function') {
-    unsubscribe();
-  }
-  // Ryd op i andre event listeners hvis nødvendigt
+  unsubscribe();
 });
 
-// Navigation handlers
+// Navigation
 function enterItem(item: ContentThingy) {
   if (item.type === 'folder') {
     folderStore.enterFolder(item.id, item.name);
   }
 }
 
-/*function goBack() {
-  if (folderStore.ancestors.length) {
-    folderStore.goToAncestor(folderStore.ancestors.length - 1);
-  } else {
-    folderStore.resetToRoot();
-  }
-}*/
-
-// Create-folder dialog handlers
+// Create-folder dialog
 async function onDialogSubmit(name: string) {
   const auth = getAuth();
-  const currentUser = auth.currentUser;
-  if (!name.trim() || !currentUser) return;
+  const user = auth.currentUser;
+  if (!name.trim() || !user) return;
 
   await addDoc(collection(db, 'folders'), {
     name: name.trim(),
     parentId: currentFolderId.value,
-    userId: currentUser.uid,
+    userId: user.uid,
     createdAt: serverTimestamp(),
   });
 
   emit('update:showCreateDialog', false);
 }
-
 
 function onDialogCancel() {
   emit('update:showCreateDialog', false);
@@ -228,15 +196,33 @@ function onDialogCancel() {
 async function renameFolder(id: string, oldName: string) {
   const newName = window.prompt('New folder name:', oldName);
   if (!newName || newName.trim() === oldName) return;
-  await updateDoc(doc(db, 'folders', id), {name: newName.trim()});
+  await updateDoc(doc(db, 'folders', id), { name: newName.trim() });
 }
 
 async function deleteFolderAndChildren(id: string) {
-  const subQ = query(collection(db, 'folders'), where('parentId', '==', id));
-  const subSnap = await getDocs(subQ);
-  for (const c of subSnap.docs) {
-    await deleteFolderAndChildren(c.id);
+  // 1) Recurse into sub-folders owned by this user
+  const subFolderQ = query(
+    collection(db, 'folders'),
+    where('parentId', '==', id),
+    where('userId', '==', authStore.userId),
+  );
+  const subFolderSnap = await getDocs(subFolderQ);
+  for (const folderDoc of subFolderSnap.docs) {
+    await deleteFolderAndChildren(folderDoc.id);
   }
+
+  // 2) Delete any units in this folder
+  const unitQ = query(
+    collection(db, 'units'),
+    where('folderId', '==', id),
+    where('userId', '==', authStore.userId),
+  );
+  const unitSnap = await getDocs(unitQ);
+  for (const unitDoc of unitSnap.docs) {
+    await deleteDoc(doc(db, 'units', unitDoc.id));
+  }
+
+  // 3) Finally delete the folder itself
   await deleteDoc(doc(db, 'folders', id));
 }
 
@@ -245,32 +231,22 @@ async function deleteFolder(id: string) {
   await deleteFolderAndChildren(id);
 }
 
-// Handle menu actions
+// Menu actions
 function handleMenuAction(payload: { itemId: string; action: string }) {
-  const folder = folders.value.find(x => x.id === payload.itemId);
+  const folder = folders.value.find(f => f.id === payload.itemId);
   if (folder) {
-    // Item is a folder
     if (payload.action === 'edit') {
       renameFolder(payload.itemId, folder.name);
     } else if (payload.action === 'delete') {
       deleteFolder(payload.itemId);
     }
   } else {
-    // Item is a unit
-    switch (payload.action) {
-    case 'edit':
-      {
-        const foundUnit = unitStore.getUnitById(payload.itemId);
-        if (foundUnit){
-          wizardStore.open(foundUnit);
-        }
-      }
-      break;
-    case 'delete':
+    // It's a unit
+    if (payload.action === 'edit') {
+      const u = unitStore.getUnitById(payload.itemId);
+      if (u) wizardStore.open(u);
+    } else if (payload.action === 'delete') {
       unitStore.deleteById(payload.itemId);
-      break;
-    default:
-      break;
     }
   }
 }
@@ -280,8 +256,8 @@ defineExpose({
   totalAmountOfItemsOnScreen,
   totalAmountOfItemsSelected,
 });
-
 </script>
+
 
 <template>
   <div>
