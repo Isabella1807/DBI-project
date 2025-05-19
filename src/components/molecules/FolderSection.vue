@@ -120,8 +120,6 @@ function fetchFolders() {
       selected: false,
       type: 'folder',
     }));
-  }, error => {
-    console.error('Firestore error:', error);
   });
 }
 
@@ -136,7 +134,7 @@ const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() =>
     id: u.id,
     name: u.name,
     type: 'unit',
-  }))
+  })),
 );
 
 const content: ComputedRef<ContentThingy[]> = computed(() => [
@@ -147,7 +145,7 @@ const content: ComputedRef<ContentThingy[]> = computed(() => [
 const totalAmountOfItemsOnScreen = computed(() => content.value.length);
 const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length);
 const everythingIsSelected = computed(() =>
-  totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value
+  totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value,
 );
 
 onMounted(() => {
