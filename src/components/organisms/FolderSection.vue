@@ -152,6 +152,7 @@ onMounted(() => {
   if (authStore.isAuthenticated) {
     fetchFolders();
   }
+  unitStore.refreshVisibleUnits(currentFolderId.value);
 });
 
 watch(currentFolderId, () => {
@@ -254,19 +255,14 @@ defineExpose({
   totalAmountOfItemsOnScreen,
   totalAmountOfItemsSelected,
 });
+
 </script>
 
 
 <template>
   <div>
-    <!-- Navigation Header -->
-<!--    <div class="navigation-header">
-      <h3>Viewing: {{ currentFolderName }}</h3>
-      <button v-if="currentFolderId" @click="goBack">Back</button>
-    </div>-->
-
-    <!-- Folder Grid / List -->
     <div :class="['folderContainer', currentView]">
+      <p>{{authStore.userId}}</p>
       <div
         v-for="item in content"
         :key="item.id"
@@ -307,7 +303,6 @@ defineExpose({
       </div>
     </div>
 
-    <!-- Create-folder dialog -->
     <CreateFolderDialog
       :visible="showCreateDialog"
       :currentFolderName="currentFolderName"

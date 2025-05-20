@@ -118,7 +118,6 @@ onMounted(() => {
     </div>
   </div>
 
-  <!-- FolderSection med v-model og events -->
   <FolderSection
     ref="folderSection"
     :showCreateDialog="props.showCreateDialog"
