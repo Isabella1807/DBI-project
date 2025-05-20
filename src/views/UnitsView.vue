@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import UnderMenu from '@/components/organisms/UnderMenu.vue';
 import Breadcrumb from '@/components/molecules/BreadcrumbComp.vue';
-import BulkEditor from '@/components/molecules/BulkEditor.vue';
+import BulkEditor from '@/components/organisms/BulkEditor.vue';
 
 const showCreateDialog = ref(false);
 

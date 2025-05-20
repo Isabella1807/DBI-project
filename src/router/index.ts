@@ -13,7 +13,7 @@ const router = createRouter({
     {
       path: '/enheder',
       name: 'enheder',
-      component: () => import('@/views/UnitView.vue'),
+      component: () => import('@/views/UnitsView.vue'),
       meta: { requiresAuth: true },
     },
     {
