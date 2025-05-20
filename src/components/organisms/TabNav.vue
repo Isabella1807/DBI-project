@@ -6,13 +6,13 @@ import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
 <template>
   <div class="navContainer">
     <div class="tabsContainer">
-      <TabItem icon-name="Monitor" label="Dashboard" link="/test"/>
-      <TabItem icon-name="File_document" label="Rapporter" link="#"/>
-      <TabItem icon-name="Notebook" label="Skemaer" link="#"/>
-      <TabItem icon-name="Users_Group" label="Brugere" link="#"/>
-      <TabItem icon-name="Qr_Code" label="Enheder" link="#"/>
-      <TabItem icon-name="Files" label="Dokumenter" link="#"/>
-      <TabItem icon-name="Calendar_Days" label="Kalender" link="#"/>
+      <TabItem icon-name="Monitor" label="Dashboard" link="/dashboard"/>
+      <TabItem icon-name="File_document" label="Rapporter" link="rapporter"/>
+      <TabItem icon-name="Notebook" label="Skemaer" link="skemaer"/>
+      <TabItem icon-name="Users_Group" label="Brugere" link="Brugere"/>
+      <TabItem icon-name="Qr_Code" label="Enheder" link="enheder"/>
+      <TabItem icon-name="Files" label="Dokumenter" link="Dokumenter"/>
+      <TabItem icon-name="Calendar_Days" label="Kalender" link="Kalender"/>
     </div>
     <div class="userContainer">
       <AvatarIcon/>

@@ -19,7 +19,7 @@ onMounted(async () => {
 
   // Hvis bruger ikke er logget ind og ikke er på auth-siden
   if (!authStore.isAuthenticated && route.meta.layout !== 'auth') {
-    router.push('/login');
+    router.push('/');
   }
 });
 </script>
