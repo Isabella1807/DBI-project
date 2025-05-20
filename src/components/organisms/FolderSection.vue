@@ -95,10 +95,11 @@ const selectionCount = computed(() => folders.value.filter(f => f.selected).leng
 watch(selectionCount, cnt => emit('selectionChanged', cnt));
 watch(isAllSelected, all => {
   folders.value.forEach(f => (f.selected = all));
-}, { immediate: true });
+}, {immediate: true});
 
 // Firestore subscription
-let unsubscribe = () => {};
+let unsubscribe = () => {
+};
 
 function fetchFolders() {
   unsubscribe();
@@ -138,7 +139,7 @@ const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() =>
 );
 
 const content: ComputedRef<ContentThingy[]> = computed(() => [
-  ...folders.value.map(f => ({ id: f.id, name: f.name, type: 'folder' as const })),
+  ...folders.value.map(f => ({id: f.id, name: f.name, type: 'folder' as const})),
   ...unitsOnScreen.value,
 ]);
 
@@ -195,7 +196,7 @@ function onDialogCancel() {
 async function renameFolder(id: string, oldName: string) {
   const newName = window.prompt('New folder name:', oldName);
   if (!newName || newName.trim() === oldName) return;
-  await updateDoc(doc(db, 'folders', id), { name: newName.trim() });
+  await updateDoc(doc(db, 'folders', id), {name: newName.trim()});
 }
 
 async function deleteFolderAndChildren(id: string) {
@@ -256,14 +257,29 @@ defineExpose({
   totalAmountOfItemsSelected,
 });
 
+//DragnDrop handling
+const currentlyDraggedItem: Ref<ContentThingy | null> = ref(null);
+
+const setCurrentlyDraggedItem = (draggedItem: ContentThingy) => {
+  currentlyDraggedItem.value = draggedItem;
+};
+
+const handleDrop = (item: ContentThingy) => {
+  console.log(`Smed: ${currentlyDraggedItem.value?.name} på: ${item.name}`);
+};
+
+//removed dropped folder and/or unit from folders [] and unitstore, should be handled in unit store..
 </script>
 
 
 <template>
   <div>
     <div :class="['folderContainer', currentView]">
-      <p>{{authStore.userId}}</p>
       <div
+        draggable="true"
+        @dragstart="setCurrentlyDraggedItem(item)"
+        @dragover.prevent=""
+        @drop="handleDrop(item)"
         v-for="item in content"
         :key="item.id"
         :class="['folder', currentView]"
