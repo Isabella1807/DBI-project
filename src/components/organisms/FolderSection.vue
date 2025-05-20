@@ -274,12 +274,18 @@ const handleDrop = (itemDroppedOn: ContentThingy) => {
   //Make sure none of selected items are currentlyDraggedItem
   if (itemSelectedList.value.includes(itemDroppedOn.id)) return;
 
+  const uniquelyDroppedItemIds = new Set([...itemSelectedList.value, currentlyDraggedItem.value.id]);
 
-  console.log(`Smed: ${currentlyDraggedItem.value?.name} på: ${itemDroppedOn.name}`);
-  console.log(itemSelectedList.value);
+  uniquelyDroppedItemIds.forEach(itemId => {
+    const itemIsAUnit = unitStore.idBelongsToUnit(itemId);
+
+    if (itemIsAUnit) {
+      unitStore.changeParentId(itemId, itemDroppedOn.id);
+    } else {
+      //change parent on folder
+    }
+  });
 };
-
-//removed dropped folder and/or unit from folders [] and unitstore, should be handled in unit store..
 </script>
 
 

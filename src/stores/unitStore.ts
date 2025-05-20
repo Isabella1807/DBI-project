@@ -55,6 +55,20 @@ export const useUnitStore = defineStore('unitStore', () => {
     // then find the unit in the visibleUnits array and update its values
   };
 
+  const idBelongsToUnit = (unitId: string):boolean => {
+    return !!visibleUnits.value.find((item) => {
+      return item.id === unitId;
+    });
+  };
+
+  const changeParentId = (unitId:string, newParentId:string) => {
+    console.log('change parent id womp womp', unitId, newParentId);
+
+    // create service-function specifically to change parent of a unit. NOT IN UNIT STORE BUT IN SERVICE.
+      // call THAT service function, that is not in the store
+      // then on success, remove the unit in question from the visibleUnits array. It is reactive, so removing it from the array should automatically update the view to display the correct remaining units
+  };
+
   return {
     createNew,
     visibleUnits,
@@ -62,5 +76,7 @@ export const useUnitStore = defineStore('unitStore', () => {
     deleteById,
     updateUnit,
     refreshVisibleUnits,
+    idBelongsToUnit,
+    changeParentId,
   };
 });
