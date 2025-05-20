@@ -264,8 +264,19 @@ const setCurrentlyDraggedItem = (draggedItem: ContentThingy) => {
   currentlyDraggedItem.value = draggedItem;
 };
 
-const handleDrop = (item: ContentThingy) => {
-  console.log(`Smed: ${currentlyDraggedItem.value?.name} på: ${item.name}`);
+const handleDrop = (itemDroppedOn: ContentThingy) => {
+  //Make sure something is dragged
+  if (!currentlyDraggedItem.value) return;
+  //Dont drop items into units
+  if (itemDroppedOn.type === 'unit') return;
+  //Dont drop yourself on yourself
+  if (itemDroppedOn.id === currentlyDraggedItem.value.id) return;
+  //Make sure none of selected items are currentlyDraggedItem
+  if (itemSelectedList.value.includes(itemDroppedOn.id)) return;
+
+
+  console.log(`Smed: ${currentlyDraggedItem.value?.name} på: ${itemDroppedOn.name}`);
+  console.log(itemSelectedList.value);
 };
 
 //removed dropped folder and/or unit from folders [] and unitstore, should be handled in unit store..
