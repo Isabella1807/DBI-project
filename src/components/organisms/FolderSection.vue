@@ -10,10 +10,10 @@ import {
   defineExpose,
   type Ref, type ComputedRef,
 } from 'vue';
-import {useFolderStore} from '@/stores/folderStore';
+import {useFolderStore} from '@/stores/folderStore.ts';
 
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
-import FolderMenu from '@/components/atoms/FolderMenu.vue';
+import FolderMenu from '@/components/molecules/FolderMenu.vue';
 import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
 
 import {
@@ -28,12 +28,12 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
-import {db} from '@/configs/firebase';
+import {db} from '@/configs/firebase.ts';
 import {getAuth} from 'firebase/auth';
 
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizard.ts';
-import {useAuthStore} from '@/stores/loginStore';
+import {useAuthStore} from '@/stores/loginStore.ts';
 
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();

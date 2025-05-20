@@ -1,7 +1,7 @@
-<!-- src/components/molecules/MellemLedet.vue -->
+<!-- src/components/molecules/BulkEditor.vue -->
 <script setup lang="ts">
 import BasicIcon from '../atoms/BasicIcon.vue';
-import FolderSection from '@/components/molecules/FolderSection.vue';
+import FolderSection from '@/components/organisms/FolderSection.vue';
 import {ref, provide, onMounted, computed, type Ref} from 'vue';
 
 const props = defineProps({
