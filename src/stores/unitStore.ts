@@ -69,6 +69,8 @@ export const useUnitStore = defineStore('unitStore', () => {
   const changeParentId = (unitId: string, newParentId: string) => {
     changeUnitParentId(unitId, newParentId).then(() => {
       visibleUnits.value = visibleUnits.value.filter(unit => unit.id !== unitId);
+    }).catch(error => {
+      throw new Error('Kunne ikke opdatere parent id på enhed: ' + error);
     });
   };
 

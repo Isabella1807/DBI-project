@@ -257,6 +257,11 @@ defineExpose({
   totalAmountOfItemsSelected,
 });
 
+//Update folder parentID in DB..
+const changeFolderParentId = async (folderId: string, newParentId: string) => {
+  await updateDoc(doc(db, 'folders', folderId), {parentId: newParentId});
+};
+
 //DragnDrop handling
 const currentlyDraggedItem: Ref<ContentThingy | null> = ref(null);
 
@@ -282,7 +287,7 @@ const handleDrop = (itemDroppedOn: ContentThingy) => {
     if (itemIsAUnit) {
       unitStore.changeParentId(itemId, itemDroppedOn.id);
     } else {
-      //change parent on folder
+      changeFolderParentId(itemId, itemDroppedOn.id);
     }
   });
 };
