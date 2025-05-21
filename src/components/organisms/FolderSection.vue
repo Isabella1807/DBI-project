@@ -124,22 +124,22 @@ function fetchFolders() {
   });
 }
 
-interface ContentThingy {
+interface FolderUnitItem  {
   id: string;
   name: string;
   type: 'folder' | 'unit';
 }
 
-const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() =>
-  unitStore.visibleUnits.map(u => ({
-    id: u.id,
-    name: u.name,
+const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
+  unitStore.visibleUnits.map(unit => ({
+    id: unit.id,
+    name: unit.name,
     type: 'unit',
   })),
 );
 
-const content: ComputedRef<ContentThingy[]> = computed(() => [
-  ...folders.value.map(f => ({id: f.id, name: f.name, type: 'folder' as const})),
+const content: ComputedRef<FolderUnitItem[]> = computed(() => [
+  ...folders.value.map(folder => ({id: folder.id, name: folder.name, type: 'folder' as const})),
   ...unitsOnScreen.value,
 ]);
 
@@ -166,7 +166,7 @@ onUnmounted(() => {
 });
 
 // Navigation
-function enterItem(item: ContentThingy) {
+function enterItem(item: FolderUnitItem) {
   if (item.type === 'folder') {
     folderStore.enterFolder(item.id, item.name);
   }
@@ -263,13 +263,13 @@ const changeFolderParentId = async (folderId: string, newParentId: string) => {
 };
 
 //DragnDrop handling
-const currentlyDraggedItem: Ref<ContentThingy | null> = ref(null);
+const currentlyDraggedItem: Ref<FolderUnitItem | null> = ref(null);
 
-const setCurrentlyDraggedItem = (draggedItem: ContentThingy) => {
+const setCurrentlyDraggedItem = (draggedItem: FolderUnitItem) => {
   currentlyDraggedItem.value = draggedItem;
 };
 
-const handleDrop = (itemDroppedOn: ContentThingy) => {
+const handleDrop = (itemDroppedOn: FolderUnitItem) => {
   //Make sure something is dragged
   if (!currentlyDraggedItem.value) return;
   //Dont drop items into units

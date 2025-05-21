@@ -14,9 +14,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const isCurrentPage = computed(() => props.page === wizardStore.currentPage);
-
 const hasCancelButton = computed(() => props.page === 0);
 const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 1));
+
 </script>
 
 <template>
