@@ -64,3 +64,7 @@ export const deleteUnitById = async (unitId: string) => {
     throw new Error('Kunne ikke slette enhed: ' + (error as FirestoreError).message);
   }
 };
+
+export const changeParentId = (unitId: string, parentId: string) => {
+
+};
