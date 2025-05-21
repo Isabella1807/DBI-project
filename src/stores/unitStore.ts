@@ -1,7 +1,12 @@
 import {defineStore} from 'pinia';
 import type {unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 import {useFolderStore} from '@/stores/folderStore.ts';
-import {createUnit, deleteUnitById, getAllUnitsByFolderId} from '@/services/unitService.ts';
+import {
+  changeUnitParentId,
+  createUnit,
+  deleteUnitById,
+  getAllUnitsByFolderId,
+} from '@/services/unitService.ts';
 import {ref, type Ref, watch} from 'vue';
 
 export const useUnitStore = defineStore('unitStore', () => {
@@ -55,18 +60,16 @@ export const useUnitStore = defineStore('unitStore', () => {
     // then find the unit in the visibleUnits array and update its values
   };
 
-  const idBelongsToUnit = (unitId: string):boolean => {
+  const idBelongsToUnit = (unitId: string): boolean => {
     return !!visibleUnits.value.find((item) => {
       return item.id === unitId;
     });
   };
 
-  const changeParentId = (unitId:string, newParentId:string) => {
-    console.log('change parent id womp womp', unitId, newParentId);
-
-    // create service-function specifically to change parent of a unit. NOT IN UNIT STORE BUT IN SERVICE.
-    // call THAT service function, that is not in the store
-    // then on success, remove the unit in question from the visibleUnits array. It is reactive, so removing it from the array should automatically update the view to display the correct remaining units
+  const changeParentId = (unitId: string, newParentId: string) => {
+    changeUnitParentId(unitId, newParentId).then(() => {
+      visibleUnits.value = visibleUnits.value.filter(unit => unit.id !== unitId);
+    });
   };
 
   return {

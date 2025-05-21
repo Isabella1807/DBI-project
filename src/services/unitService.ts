@@ -1,7 +1,17 @@
 // services/unitservice.ts
 import {db} from '@/configs/firebase';
-import {collection, addDoc, FirestoreError, getDocs, query, where, deleteDoc, doc} from 'firebase/firestore';
-import type {BaseUnitType, UnitTypeWithId} from '@/types/unitTypes.ts';
+import {
+  collection,
+  addDoc,
+  FirestoreError,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
+import type {BaseUnitType, unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 import { useAuthStore } from '@/stores/loginStore';
 
 // create new unit
@@ -65,6 +75,12 @@ export const deleteUnitById = async (unitId: string) => {
   }
 };
 
-export const changeParentId = (unitId: string, parentId: string) => {
-
+export const changeUnitParentId = async (unitId: string, parentId: string) => {
+  try {
+    await updateDoc(doc(db, 'units', unitId), {parentId});
+  } catch (error) {
+    throw new Error('Kunne ikke opdatere parentId på enhed: ' + (error as FirestoreError).message);
+  }
 };
+
+
