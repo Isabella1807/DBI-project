@@ -81,18 +81,6 @@ npm run build
 npm run lint
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run test:e2e:dev
-```
-
 ## Deployment
 The project is run using **Firebase Hosting**. A GitHub Actions workflow is set up to automatically deploy the site when changes are pushed to the `main` branch.
 
