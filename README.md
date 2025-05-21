@@ -58,7 +58,15 @@ npm run dev
 ```
 
 ## Usage
-How to login, Environment variables? other things to know
+### Login
+To log in to the application, you can use one of the following test accounts:
+
+
+| User     | Username           | Password |
+|----------|--------------------|----------|
+| User 1   | `user1@mail.com`   | `123456` |
+| User 2   | `user2@mail.com`   | `123456` |
+
 
 ## Other useful commands
 ### Compile for production
