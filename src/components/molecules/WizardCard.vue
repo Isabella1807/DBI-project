@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useWizardStore} from '@/stores/wizard.ts';
+import {useWizardStore} from '@/stores/wizardStore.ts';
 import {computed} from 'vue';
 import BasicButton from '@/components/atoms/BasicButton.vue';
 
@@ -14,9 +14,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const isCurrentPage = computed(() => props.page === wizardStore.currentPage);
-
 const hasCancelButton = computed(() => props.page === 0);
 const hasSubmitButton = computed(() => props.page === (wizardStore.totalPages - 1));
+
 </script>
 
 <template>

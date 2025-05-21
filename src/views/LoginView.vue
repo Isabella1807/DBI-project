@@ -12,7 +12,7 @@ const authStore = useAuthStore();
 async function handleLogin() {
   try {
     await authStore.login(email.value, password.value);
-    router.push('/test'); // Omdiriger efter succesfuld login
+    router.push('/enheder'); // Omdiriger efter succesfuld login
   } catch (error) {
     console.error('Login fejl:', error);
   }
@@ -25,7 +25,7 @@ async function handleLogin() {
       <h1>Egenkontrollen</h1>
       <h2>Log in</h2>
 
-      <form class="loginForm" @submit.prevent="handleLogin">
+      <form class="loginForm" @submit.prevent="">
         <div class="formGroup">
           <label for="email" class="formLabel">E-mail</label>
           <input v-model="email" type="email" id="email" class="formInput" placeholder="E-mail" />
@@ -40,9 +40,10 @@ async function handleLogin() {
           <BasicButton type="secondary" label="OPRET KONTO" ariaLabel="Opret ny konto" />
           <BasicButton
             type="default"
-            label="LOG-IN"
+            label="LOG IND"
             ariaLabel="Log ind"
             :loading="authStore.loading"
+            @click="handleLogin"
           />
           <p v-if="authStore.error" class="error">{{ authStore.error }}</p>
         </div>

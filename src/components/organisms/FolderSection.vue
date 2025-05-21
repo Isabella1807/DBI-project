@@ -10,10 +10,10 @@ import {
   defineExpose,
   type Ref, type ComputedRef,
 } from 'vue';
-import {useFolderStore} from '@/stores/folderStore';
+import {useFolderStore} from '@/stores/folderStore.ts';
 
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
-import FolderMenu from '@/components/atoms/FolderMenu.vue';
+import FolderMenu from '@/components/molecules/FolderMenu.vue';
 import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
 
 import {
@@ -28,12 +28,12 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore';
-import {db} from '@/configs/firebase';
+import {db} from '@/configs/firebase.ts';
 import {getAuth} from 'firebase/auth';
 
 import {useUnitStore} from '@/stores/unitStore.ts';
-import {useWizardStore} from '@/stores/wizard.ts';
-import {useAuthStore} from '@/stores/loginStore';
+import {useWizardStore} from '@/stores/wizardStore.ts';
+import {useAuthStore} from '@/stores/loginStore.ts';
 
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
@@ -95,10 +95,11 @@ const selectionCount = computed(() => folders.value.filter(f => f.selected).leng
 watch(selectionCount, cnt => emit('selectionChanged', cnt));
 watch(isAllSelected, all => {
   folders.value.forEach(f => (f.selected = all));
-}, { immediate: true });
+}, {immediate: true});
 
 // Firestore subscription
-let unsubscribe = () => {};
+let unsubscribe = () => {
+};
 
 function fetchFolders() {
   unsubscribe();
@@ -123,22 +124,22 @@ function fetchFolders() {
   });
 }
 
-interface ContentThingy {
+interface FolderUnitItem  {
   id: string;
   name: string;
   type: 'folder' | 'unit';
 }
 
-const unitsOnScreen: ComputedRef<ContentThingy[]> = computed(() =>
-  unitStore.visibleUnits.map(u => ({
-    id: u.id,
-    name: u.name,
+const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
+  unitStore.visibleUnits.map(unit => ({
+    id: unit.id,
+    name: unit.name,
     type: 'unit',
   })),
 );
 
-const content: ComputedRef<ContentThingy[]> = computed(() => [
-  ...folders.value.map(f => ({ id: f.id, name: f.name, type: 'folder' as const })),
+const content: ComputedRef<FolderUnitItem[]> = computed(() => [
+  ...folders.value.map(folder => ({id: folder.id, name: folder.name, type: 'folder' as const})),
   ...unitsOnScreen.value,
 ]);
 
@@ -152,6 +153,7 @@ onMounted(() => {
   if (authStore.isAuthenticated) {
     fetchFolders();
   }
+  unitStore.refreshVisibleUnits(currentFolderId.value);
 });
 
 watch(currentFolderId, () => {
@@ -164,7 +166,7 @@ onUnmounted(() => {
 });
 
 // Navigation
-function enterItem(item: ContentThingy) {
+function enterItem(item: FolderUnitItem) {
   if (item.type === 'folder') {
     folderStore.enterFolder(item.id, item.name);
   }
@@ -194,7 +196,7 @@ function onDialogCancel() {
 async function renameFolder(id: string, oldName: string) {
   const newName = window.prompt('New folder name:', oldName);
   if (!newName || newName.trim() === oldName) return;
-  await updateDoc(doc(db, 'folders', id), { name: newName.trim() });
+  await updateDoc(doc(db, 'folders', id), {name: newName.trim()});
 }
 
 async function deleteFolderAndChildren(id: string) {
@@ -254,20 +256,52 @@ defineExpose({
   totalAmountOfItemsOnScreen,
   totalAmountOfItemsSelected,
 });
+
+//Update folder parentID in DB..
+const changeFolderParentId = async (folderId: string, newParentId: string) => {
+  await updateDoc(doc(db, 'folders', folderId), {parentId: newParentId});
+};
+
+//DragnDrop handling
+const currentlyDraggedItem: Ref<FolderUnitItem | null> = ref(null);
+
+const setCurrentlyDraggedItem = (draggedItem: FolderUnitItem) => {
+  currentlyDraggedItem.value = draggedItem;
+};
+
+const handleDrop = (itemDroppedOn: FolderUnitItem) => {
+  //Make sure something is dragged
+  if (!currentlyDraggedItem.value) return;
+  //Dont drop items into units
+  if (itemDroppedOn.type === 'unit') return;
+  //Dont drop yourself on yourself
+  if (itemDroppedOn.id === currentlyDraggedItem.value.id) return;
+  //Make sure none of selected items are currentlyDraggedItem
+  if (itemSelectedList.value.includes(itemDroppedOn.id)) return;
+
+  const uniquelyDroppedItemIds = new Set([...itemSelectedList.value, currentlyDraggedItem.value.id]);
+
+  uniquelyDroppedItemIds.forEach(itemId => {
+    const itemIsAUnit = unitStore.idBelongsToUnit(itemId);
+
+    if (itemIsAUnit) {
+      unitStore.changeParentId(itemId, itemDroppedOn.id);
+    } else {
+      changeFolderParentId(itemId, itemDroppedOn.id);
+    }
+  });
+};
 </script>
 
 
 <template>
   <div>
-    <!-- Navigation Header -->
-<!--    <div class="navigation-header">
-      <h3>Viewing: {{ currentFolderName }}</h3>
-      <button v-if="currentFolderId" @click="goBack">Back</button>
-    </div>-->
-
-    <!-- Folder Grid / List -->
     <div :class="['folderContainer', currentView]">
       <div
+        draggable="true"
+        @dragstart="setCurrentlyDraggedItem(item)"
+        @dragover.prevent=""
+        @drop="handleDrop(item)"
         v-for="item in content"
         :key="item.id"
         :class="['folder', currentView]"
@@ -307,7 +341,6 @@ defineExpose({
       </div>
     </div>
 
-    <!-- Create-folder dialog -->
     <CreateFolderDialog
       :visible="showCreateDialog"
       :currentFolderName="currentFolderName"

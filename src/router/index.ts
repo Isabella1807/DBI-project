@@ -7,19 +7,44 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: () => import('../views/LogIn.vue'),
+      component: () => import('@/views/LoginView.vue'),
       meta: { layout: 'auth' },
     },
     {
-      path: '/test',
-      name: 'test',
-      component: () => import('@/views/testView.vue'),
+      path: '/enheder',
+      name: 'enheder',
+      component: () => import('@/views/UnitsView.vue'),
       meta: { requiresAuth: true },
     },
     {
-      path: '/dummy',
-      name: 'dummy',
-      component: () => import('../views/dummyView.vue'),
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('@/views/DashboardView.vue'),
+    },
+    {
+      path: '/rapporter',
+      name: 'rapporter',
+      component: () => import('@/views/ReportsView.vue'),
+    },
+    {
+      path: '/skemaer',
+      name: 'skemaer',
+      component: () => import('@/views/SchemaView.vue'),
+    },
+    {
+      path: '/brugere',
+      name: 'brugere',
+      component: () => import('@/views/UsersView.vue'),
+    },
+    {
+      path: '/dokumenter',
+      name: 'dokumenter',
+      component: () => import('@/views/DocumentsView.vue'),
+    },
+    {
+      path: '/kalender',
+      name: 'kalender',
+      component: () => import('@/views/CalendarView.vue'),
     },
   ],
 });
@@ -43,7 +68,7 @@ router.beforeEach(async (to, from, next) => {
     next('/login');
   } else if ((to.path === '/login') && isAuthenticated) {
     // Omdiriger til den gemte path eller standard route
-    next(authStore.redirectPath || '/test');
+    next(authStore.redirectPath || '/enheder');
     authStore.redirectPath = null; // Nulstil efter brug
   } else {
     next();

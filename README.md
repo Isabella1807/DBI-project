@@ -13,7 +13,6 @@ During development, we focused on writing clean and consistent code, using reusa
 [![Sass][sass-badge]][sass-url]
 [![ESLint][eslint-badge]][eslint-url]
 [![Cypress][cypress-badge]][cypress-url]
-[![Vitest][vitest-badge]][vitest-url]
 [![Firebase][firebase-badge]][firebase-url]
 
 [vue-badge]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D
@@ -37,9 +36,6 @@ During development, we focused on writing clean and consistent code, using reusa
 [cypress-badge]: https://img.shields.io/badge/Cypress-17202C?style=for-the-badge&logo=cypress&logoColor=white
 [cypress-url]: https://www.cypress.io/
 
-[vitest-badge]: https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge
-[vitest-url]: https://vitest.dev/
-
 [firebase-badge]: https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black
 [firebase-url]: https://firebase.google.com/
 
@@ -58,8 +54,30 @@ npm run dev
 ```
 
 ## Usage
-How to login, Environment variables? other things to know
+### Login
+To log in to the application, you can use one of the following test accounts:
 
+
+| User     | Username           | Password |
+|----------|--------------------|----------|
+| User 1   | `user1@mail.com`   | `123456` |
+| User 2   | `user2@mail.com`   | `123456` |
+
+
+## Project Structure
+```
+src/
+├── assets/styles          # Global and main styling (SCSS)
+├── components/            # Reusable Vue components (Atomic Design)
+├── configs/               # Configuration files (e.g. Firebase)
+├── router/index.ts        # App routing configuration
+├── services/              # Firestore logic
+├── stores/                # Pinia stores for state management
+├── types/                 # Global TypeScript types and interfaces
+├── views/                 # Route-based page components
+├── App.vue                # Root component
+└── main.ts                # App entry point
+```
 ## Other useful commands
 ### Compile for production
 
@@ -71,18 +89,6 @@ npm run build
 
 ```sh
 npm run lint
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run test:e2e:dev
 ```
 
 ## Deployment

@@ -4,7 +4,7 @@ import TabNav from '@/components/organisms/TabNav.vue';
 import WaterMark from '@/components/atoms/WaterMark.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
-import { useWizardStore } from '@/stores/wizard.ts';
+import { useWizardStore } from '@/stores/wizardStore.ts';
 import { useAuthStore } from '@/stores/loginStore';
 import { onMounted } from 'vue';
 
@@ -19,7 +19,7 @@ onMounted(async () => {
 
   // Hvis bruger ikke er logget ind og ikke er på auth-siden
   if (!authStore.isAuthenticated && route.meta.layout !== 'auth') {
-    router.push('/login');
+    router.push('/');
   }
 });
 </script>

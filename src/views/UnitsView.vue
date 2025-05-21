@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import UnderMenu from '@/components/organisms/UnderMenu.vue';
 import Breadcrumb from '@/components/molecules/BreadcrumbComp.vue';
-import MellemLedet from '@/components/molecules/MellemLedet.vue';
+import BulkEditor from '@/components/organisms/BulkEditor.vue';
 
 const showCreateDialog = ref(false);
 
@@ -14,5 +14,5 @@ function onCreateOption(opt: string) {
 <template>
   <UnderMenu @option-selected="onCreateOption" />
   <Breadcrumb />
-  <MellemLedet v-model:showCreateDialog="showCreateDialog" />
+  <BulkEditor v-model:showCreateDialog="showCreateDialog" />
 </template>
