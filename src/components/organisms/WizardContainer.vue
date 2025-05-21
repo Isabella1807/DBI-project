@@ -3,7 +3,7 @@ import {computed, onMounted, ref} from 'vue';
 import WizardGhostCard from '@/components/molecules/WizardGhostCard.vue';
 import WizardCard from '@/components/molecules/WizardCard.vue';
 
-import {useWizardStore} from '@/stores/wizard.ts';
+import {useWizardStore} from '@/stores/wizardStore.ts';
 
 const wizardStore = useWizardStore();
 

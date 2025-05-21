@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useWizardStore} from '@/stores/wizard.ts';
+import {useWizardStore} from '@/stores/wizardStore.ts';
 import {computed} from 'vue';
 import BasicButton from '@/components/atoms/BasicButton.vue';
 

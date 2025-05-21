@@ -32,7 +32,7 @@ import {db} from '@/configs/firebase.ts';
 import {getAuth} from 'firebase/auth';
 
 import {useUnitStore} from '@/stores/unitStore.ts';
-import {useWizardStore} from '@/stores/wizard.ts';
+import {useWizardStore} from '@/stores/wizardStore.ts';
 import {useAuthStore} from '@/stores/loginStore.ts';
 
 const unitStore = useUnitStore();
