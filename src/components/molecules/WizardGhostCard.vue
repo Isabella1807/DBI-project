@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import WizardCard from '@/components/molecules/WizardCard.vue';
 </script>
 

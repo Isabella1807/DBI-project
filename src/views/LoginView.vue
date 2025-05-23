@@ -1,15 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import BasicButton from '@/components/atoms/BasicButton.vue';
+import { useAuthStore } from '@/stores/loginStore';
+import { useRouter } from 'vue-router';
 
-const handleLogin = () => {
-  // Logik for login
-  //console.log('Login clicked');
-};
+const email = ref('');
+const password = ref('');
+const router = useRouter();
+const authStore = useAuthStore();
 
-const handleCreateAccount = () => {
-  // Logik for oprettelse af konto
-  //console.log('Create account clicked');
-};
+async function handleLogin() {
+  try {
+    await authStore.login(email.value, password.value);
+    router.push('/enheder'); // Omdiriger efter succesfuld login
+  } catch (error) {
+    console.error('Login fejl:', error);
+  }
+}
 </script>
 
 <template>
@@ -18,20 +25,27 @@ const handleCreateAccount = () => {
       <h1>Egenkontrollen</h1>
       <h2>Log in</h2>
 
-      <form class="loginForm">
+      <form class="loginForm" @submit.prevent="">
         <div class="formGroup">
           <label for="email" class="formLabel">E-mail</label>
-          <input type="email" id="email" class="formInput" placeholder="E-mail" />
+          <input v-model="email" type="email" id="email" class="formInput" placeholder="E-mail" />
         </div>
 
         <div class="formGroup">
           <label for="password" class="formLabel">Adgangskode</label>
-          <input type="password" id="password" class="formInput" placeholder="Adgangskode" />
+          <input v-model="password" type="password" id="password" class="formInput" placeholder="Adgangskode" />
         </div>
 
         <div class="buttonGroup">
-          <BasicButton type="secondary" label="OPRET KONTO" ariaLabel="Opret ny konto" @click="handleCreateAccount" />
-          <BasicButton type="default" label="LOG-IN" ariaLabel="Log ind" @click="handleLogin" />
+          <BasicButton type="secondary" label="OPRET KONTO" ariaLabel="Opret ny konto" />
+          <BasicButton
+            type="default"
+            label="LOG IND"
+            ariaLabel="Log ind"
+            :loading="authStore.loading"
+            @click="handleLogin"
+          />
+          <p v-if="authStore.error" class="error">{{ authStore.error }}</p>
         </div>
       </form>
     </div>
@@ -72,6 +86,10 @@ const handleCreateAccount = () => {
     margin-bottom: 2rem;
     color: $black;
   }
+
+  .error {
+  color: $red;
+}
 }
 
 .loginForm {

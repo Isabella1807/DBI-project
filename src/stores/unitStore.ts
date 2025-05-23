@@ -1,7 +1,13 @@
 import {defineStore} from 'pinia';
 import type {unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 import {useFolderStore} from '@/stores/folderStore.ts';
-import {createUnit, deleteUnitById, getAllUnitsByFolderId} from '@/services/unitService.ts';
+import {
+  createUnit,
+  deleteUnitById,
+  getAllUnitsByFolderId,
+  updateUnitById,
+  changeUnitParentId,
+} from '@/services/unitService.ts';
 import {ref, type Ref, watch} from 'vue';
 
 export const useUnitStore = defineStore('unitStore', () => {
@@ -50,9 +56,32 @@ export const useUnitStore = defineStore('unitStore', () => {
   };
 
   const updateUnit = (unit: UnitTypeWithId) => {
-    // call service to update this unit
-    return unit;
-    // then find the unit in the visibleUnits array and update its values
+    updateUnitById(unit.id, {
+      name: unit.name,
+      description: unit.description,
+      syncId: unit.syncId,
+    }).then(() => {
+      const unitIndex = visibleUnits.value.findIndex(item => item.id === unit.id);
+      if (unitIndex >= 0) {
+        visibleUnits.value[unitIndex] = unit;
+      }
+    }).catch((error) => {
+      throw new Error(error);
+    });
+  };
+
+  const idBelongsToUnit = (unitId: string): boolean => {
+    return !!visibleUnits.value.find((item) => {
+      return item.id === unitId;
+    });
+  };
+
+  const changeParentId = (unitId: string, newParentId: string) => {
+    changeUnitParentId(unitId, newParentId).then(() => {
+      visibleUnits.value = visibleUnits.value.filter(unit => unit.id !== unitId);
+    }).catch(error => {
+      throw new Error('Kunne ikke opdatere parent id på enhed: ' + error);
+    });
   };
 
   return {
@@ -61,5 +90,8 @@ export const useUnitStore = defineStore('unitStore', () => {
     getUnitById,
     deleteById,
     updateUnit,
+    refreshVisibleUnits,
+    idBelongsToUnit,
+    changeParentId,
   };
 });

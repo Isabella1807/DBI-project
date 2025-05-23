@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import BasicButton from '../atoms/BasicButton.vue';
 import BasicIcon from '../atoms/BasicIcon.vue';
-import { useWizardStore } from '@/stores/wizard.ts';
+import { useWizardStore } from '@/stores/wizardStore.ts';
 
 const wizardStore = useWizardStore();
 

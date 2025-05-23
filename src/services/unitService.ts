@@ -1,19 +1,40 @@
 import {db} from '@/configs/firebase';
-import {collection, addDoc, FirestoreError, getDocs, query, where, deleteDoc, doc} from 'firebase/firestore';
-import type {BaseUnitType, UnitTypeWithId} from '@/types/unitTypes.ts';
+import {
+  collection,
+  addDoc,
+  FirestoreError,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
+import type {BaseUnitType, unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
+import { useAuthStore } from '@/stores/loginStore';
 
 // create new unit
-export const createUnit = async (unit: BaseUnitType): Promise<UnitTypeWithId> => {
-  //only checking name, because the other fields are optional
+export const createUnit = async (unit: Omit<BaseUnitType, 'userId'>): Promise<UnitTypeWithId> => {
+  const authStore = useAuthStore();
+
+  if (!authStore.userId) {
+    throw new Error('User not authenticated');
+  }
+
   if (unit.name.trim() === '') {
     throw new Error('Enhed mangler et navn');
   }
 
   try {
-    const res = await addDoc(collection(db, 'units'), unit);
+    const unitWithUserId = {
+      ...unit,
+      userId: authStore.userId,
+    };
+
+    const res = await addDoc(collection(db, 'units'), unitWithUserId);
 
     return {
-      ...unit,
+      ...unitWithUserId,
       id: res.id,
     } as UnitTypeWithId;
 
@@ -23,15 +44,24 @@ export const createUnit = async (unit: BaseUnitType): Promise<UnitTypeWithId> =>
 };
 
 export const getAllUnitsByFolderId = async (currentFolderId: string | null): Promise<UnitTypeWithId[]> => {
+  const authStore = useAuthStore();
+
+  if (!authStore.userId) {
+    throw new Error('User not authenticated');
+  }
+
   try {
-    const q = query(collection(db, 'units'), where('parentId', '==', currentFolderId));
+    const q = query(
+      collection(db, 'units'),
+      where('parentId', '==', currentFolderId),
+      where('userId', '==', authStore.userId),
+    );
     const querySnapshot = await getDocs(q);
 
-    const results = querySnapshot.docs.map((doc) => ({
-      id: doc.id, ...doc.data(),
-    }));
-    return results as UnitTypeWithId[];
-
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as UnitTypeWithId[];
   } catch (error) {
     throw new Error('Kunne ikke finde enhed(er): ' + (error as FirestoreError).message);
   }
@@ -44,3 +74,23 @@ export const deleteUnitById = async (unitId: string) => {
     throw new Error('Kunne ikke slette enhed: ' + (error as FirestoreError).message);
   }
 };
+
+export const updateUnitById = async (unitId: string, updatedUnitValues: unitInputType) => {
+  try {
+    await updateDoc(doc(db, 'units', unitId), {
+      ...updatedUnitValues,
+    });
+  } catch (error) {
+    throw new Error('Kunne ikke ændre enhed: ' + (error as FirestoreError).message);
+  }
+};
+
+export const changeUnitParentId = async (unitId: string, parentId: string) => {
+  try {
+    await updateDoc(doc(db, 'units', unitId), {parentId});
+  } catch (error) {
+    throw new Error('Kunne ikke opdatere parentId på enhed: ' + (error as FirestoreError).message);
+  }
+};
+
+
