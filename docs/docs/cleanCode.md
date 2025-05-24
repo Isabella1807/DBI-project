@@ -1,22 +1,29 @@
-# Clean Code
-
 ## Clean code og Statisk kodeanalyse
-Bag Clean Code har vi sikre os at kode er læsbar og struktureret. For at opnå dette har vi valgt at følge camelCase-navngivningskonventioner for vores variabler. Dette gør det lettere at forstå og navigere i koden, da alle navne følger en ensartet struktur og giver en naturlig læseflow.
+Der har været fokus på Clean Code principperne. For at mindske code smells har vi taget disse tiltag:
 
-For at kunne anvende Statisk kodeanalyse har vi gjort brug af ESLint, som har hjulpet med at sikre, at koden følger de nødvendige strukturelle retningslinjer. ESLint har været med til at rense koden og give dem den nødvendige struktur. 
+- camelCasing som naming convention
+- ESLINT til fælles håndhævede regler
+- SRP og DRY hvor koden opdeles efter ansvar og kan genbruges
+- Selvdokumenterende kode, hvor variabel- og funktionsnavne beskriver formålet
 
-**Et eksempel på, hvordan vi anvender dette, kan ses i følgende kode:**
+
+
+**Et eksempel på, hvordan vi tiltag i praksis, denne kan genbruges fordi den ligger i en store**
 
 ```
-onMounted(() => {
-  if (!['list', 'detailed'].includes(currentView.value)) {
-    currentView.value = 'detailed';
-    localStorage.setItem('currentView', 'detailed');
-  }
-});
+const changeParentId = (unitId: string, newParentId: string) => {
+    changeUnitParentId(unitId, newParentId).then(() => {
+      visibleUnits.value = visibleUnits.value.filter(unit => unit.id !== unitId);
+    }).catch(error => {
+      throw new Error('Kunne ikke opdatere parent id på enhed: ' + error);
+    });
+  };
 ```
 
-Vi har brugt en række ESLint-regler for at opretholde en ensartet stil og forbedre kvaliteten af koden. **Her er et udpluk af de vigtigste regler:**
+## Eslint 
+Vi har brugt en række ESLint-regler for at opretholde en ensartet stil og forbedre kvaliteten af koden. 
+
+**ESLINT-reglerne ses nedenstående:**
 
 ```
 rules: {
@@ -42,11 +49,32 @@ rules: {
 ```
 
 ## Refaktorering
-En central del af vores udviklingsproces har været refaktorering, som vi løbende har arbejdet med for at forbedre kodens struktur, samtidig med at funktionaliteten er bibeholdt. Et konkret eksempel på dette er brugen af tree shaking. Tree shaking hjælper med at fjerne ubrugte kodefunktioner under produktionen og reducerer dermed filstørrelsen. Dette gør frontenden både hurtigere og mere effektiv, hvilket er særligt godt, når vi arbejder med Vue 3.
+
+**Ikke selvdokumenterende navngivning**
+
+For at opretholde vores egne standarder bør der ikke anvendes enkelte bogstaver som navngivning, da det kan være svært at læse og forstå koden.
+
+- **"q"** kunne f.eks. kaldes **"query"**
+- **"d"** kunne f.eks. kaldes **"queryDocument"**
+```
+  const q = query(
+    collection(db, 'folders'),
+    where('parentId', '==', currentFolderId.value),
+    where('userId', '==', authStore.userId),
+  );
+
+  unsubscribe = onSnapshot(q, snap => {
+    folders.value = snap.docs.map(d => ({
+      id: d.id,
+      name: d.data().name as string,
+      selected: false,
+      type: 'folder',
+    }));
+  });
+```
 
 ## Navigation
 
-- [Start Projektet](startprojekt.md)
-- [Git](git.md)
 - [Start side](index.md)
+- [Git](git.md)
 - [Test](test.md)
