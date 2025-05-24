@@ -31,6 +31,15 @@ export default defineConfig([
       //'array-bracket-newline': ['error', 'consistent'],
       //'no-trailing-spaces': ['error'],
     }
+  },
+  {
+    files: ['**/*.test.{js,ts}', '**/*.spec.{js,ts}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+      },
+    },
   }
 ]);
 

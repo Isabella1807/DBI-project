@@ -4,7 +4,6 @@ import {useUnitStore} from '@/stores/unitStore.ts';
 import type {UnitTypeWithId} from '@/types/unitTypes.ts';
 
 export const useWizardStore = defineStore('wizardStore', () => {
-
   const unitStore = useUnitStore();
 
   // reset
@@ -41,7 +40,6 @@ export const useWizardStore = defineStore('wizardStore', () => {
       isReady.value = true;
     }, 50);
   };
-
   const close = () => {
     if (somethingIsChanged.value) {
       confirmModalIsOpen.value = true;
@@ -49,11 +47,9 @@ export const useWizardStore = defineStore('wizardStore', () => {
       isOpen.value = false;
     }
   };
-
   const cancelClose = () => {
     confirmModalIsOpen.value = false;
   };
-
   const confirmClose = () => {
     confirmModalIsOpen.value = false;
     isOpen.value = false;
@@ -67,13 +63,11 @@ export const useWizardStore = defineStore('wizardStore', () => {
       currentPage.value += 1;
     }
   };
-
   const previous = () => {
     if (currentPage.value > 0) {
       currentPage.value -= 1;
     }
   };
-
   const setLength = (amountOfPages: number) => {
     totalPages.value = amountOfPages;
   };
@@ -82,6 +76,7 @@ export const useWizardStore = defineStore('wizardStore', () => {
   const entityName = ref('');
   const entityDescription = ref('');
   const entitySyncId = ref('');
+
   // if editing
   const entityToEdit: Ref<UnitTypeWithId | null> = ref(null);
 
@@ -105,7 +100,6 @@ export const useWizardStore = defineStore('wizardStore', () => {
     // Something has changed since the wizard opened
     return true;
   });
-
   const submit = () => {
     confirmClose();
 
@@ -128,7 +122,6 @@ export const useWizardStore = defineStore('wizardStore', () => {
   //transition fix
   const isReady = ref(false);
 
-  // exports
   return {
     isOpen,
     confirmModalIsOpen,
