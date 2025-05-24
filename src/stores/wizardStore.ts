@@ -5,6 +5,8 @@ import type {UnitTypeWithId} from '@/types/unitTypes.ts';
 
 export const useWizardStore = defineStore('wizardStore', () => {
   const unitStore = useUnitStore();
+
+  // reset
   const reset = () => {
     entityName.value = '';
     entityDescription.value = '';
@@ -15,7 +17,11 @@ export const useWizardStore = defineStore('wizardStore', () => {
     currentPage.value = 0;
     isReady.value = false;
   };
+
+  //open close modal
   const confirmModalIsOpen = ref(false);
+
+  // open close
   const isOpen = ref(false);
   const open = (editUnit?: UnitTypeWithId) => {
     reset();
@@ -48,6 +54,8 @@ export const useWizardStore = defineStore('wizardStore', () => {
     confirmModalIsOpen.value = false;
     isOpen.value = false;
   };
+
+  // page handling
   const currentPage = ref(0);
   const totalPages = ref(0);
   const next = () => {
@@ -63,10 +71,16 @@ export const useWizardStore = defineStore('wizardStore', () => {
   const setLength = (amountOfPages: number) => {
     totalPages.value = amountOfPages;
   };
+
+  // form handling
   const entityName = ref('');
   const entityDescription = ref('');
   const entitySyncId = ref('');
+
+  // if editing
   const entityToEdit: Ref<UnitTypeWithId | null> = ref(null);
+
+  // handle confirm modal
   const somethingIsChanged = computed(() => {
     if (entityToEdit.value === null) {
       // Wizard is creating a new unit. Check if all values are empty
@@ -104,7 +118,10 @@ export const useWizardStore = defineStore('wizardStore', () => {
       });
     }
   };
+
+  //transition fix
   const isReady = ref(false);
+
   return {
     isOpen,
     confirmModalIsOpen,
