@@ -13,4 +13,4 @@ Vi har som gruppe valgt at anvende Vue 3 som vores frontend og det har vi været
 
 - [Git](git.md)
 - [Clean Code](cleanCode.md)
-- [Test](test.md)
+- [Tests](tests.md)
