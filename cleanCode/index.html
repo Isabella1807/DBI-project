@@ -16,7 +16,7 @@
         <link rel="prev" href="../git/">
       
       
-        <link rel="next" href="../test/">
+        <link rel="next" href="../tests/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#clean-code" class="md-skip">
+        <a href="#clean-code-og-statisk-kodeanalyse" class="md-skip">
           Skip to content
         </a>
       
@@ -220,28 +220,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../startprojekt/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Start Projekt
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../git/" class="md-nav__link">
         
   
@@ -269,8 +247,6 @@
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
-      
-        
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
@@ -304,8 +280,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -317,6 +291,15 @@
   <a href="#clean-code-og-statisk-kodeanalyse" class="md-nav__link">
     <span class="md-ellipsis">
       Clean code og Statisk kodeanalyse
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eslint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Eslint
     </span>
   </a>
   
@@ -355,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../test/" class="md-nav__link">
+      <a href="../tests/" class="md-nav__link">
         
   
   
@@ -387,8 +370,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -400,6 +381,15 @@
   <a href="#clean-code-og-statisk-kodeanalyse" class="md-nav__link">
     <span class="md-ellipsis">
       Clean code og Statisk kodeanalyse
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eslint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Eslint
     </span>
   </a>
   
@@ -439,19 +429,28 @@
 
 
 
-<h1 id="clean-code">Clean Code</h1>
+  <h1>Clean Code</h1>
+
 <h2 id="clean-code-og-statisk-kodeanalyse">Clean code og Statisk kodeanalyse</h2>
-<p>Bag Clean Code har vi sikre os at kode er læsbar og struktureret. For at opnå dette har vi valgt at følge camelCase-navngivningskonventioner for vores variabler. Dette gør det lettere at forstå og navigere i koden, da alle navne følger en ensartet struktur og giver en naturlig læseflow.</p>
-<p>For at kunne anvende Statisk kodeanalyse har vi gjort brug af ESLint, som har hjulpet med at sikre, at koden følger de nødvendige strukturelle retningslinjer. ESLint har været med til at rense koden og give dem den nødvendige struktur. </p>
-<p><strong>Et eksempel på, hvordan vi anvender dette, kan ses i følgende kode:</strong></p>
-<pre><code>onMounted(() =&gt; {
-  if (!['list', 'detailed'].includes(currentView.value)) {
-    currentView.value = 'detailed';
-    localStorage.setItem('currentView', 'detailed');
-  }
-});
+<p>Der har været fokus på Clean Code principperne. For at mindske code smells har vi taget disse tiltag:</p>
+<ul>
+<li>camelCasing som naming convention</li>
+<li>ESLINT til fælles håndhævede regler</li>
+<li>SRP og DRY hvor koden opdeles efter ansvar og kan genbruges</li>
+<li>Selvdokumenterende kode, hvor variabel- og funktionsnavne beskriver formålet</li>
+</ul>
+<p><strong>Et eksempel på, hvordan vi tiltag i praksis, denne kan genbruges fordi den ligger i en store</strong></p>
+<pre><code>const changeParentId = (unitId: string, newParentId: string) =&gt; {
+    changeUnitParentId(unitId, newParentId).then(() =&gt; {
+      visibleUnits.value = visibleUnits.value.filter(unit =&gt; unit.id !== unitId);
+    }).catch(error =&gt; {
+      throw new Error('Kunne ikke opdatere parent id på enhed: ' + error);
+    });
+  };
 </code></pre>
-<p>Vi har brugt en række ESLint-regler for at opretholde en ensartet stil og forbedre kvaliteten af koden. <strong>Her er et udpluk af de vigtigste regler:</strong></p>
+<h2 id="eslint">Eslint</h2>
+<p>Vi har brugt en række ESLint-regler for at opretholde en ensartet stil og forbedre kvaliteten af koden. </p>
+<p><strong>ESLINT-reglerne ses nedenstående:</strong></p>
 <pre><code>rules: {
         //'vue/component-tags-order': ['error', {
            // order: ['script', 'template', 'style']
@@ -474,13 +473,32 @@
     }
 </code></pre>
 <h2 id="refaktorering">Refaktorering</h2>
-<p>En central del af vores udviklingsproces har været refaktorering, som vi løbende har arbejdet med for at forbedre kodens struktur, samtidig med at funktionaliteten er bibeholdt. Et konkret eksempel på dette er brugen af tree shaking. Tree shaking hjælper med at fjerne ubrugte kodefunktioner under produktionen og reducerer dermed filstørrelsen. Dette gør frontenden både hurtigere og mere effektiv, hvilket er særligt godt, når vi arbejder med Vue 3.</p>
+<p><strong>Ikke selvdokumenterende navngivning</strong></p>
+<p>For at opretholde vores egne standarder bør der ikke anvendes enkelte bogstaver som navngivning, da det kan være svært at læse og forstå koden.</p>
+<ul>
+<li><strong>"q"</strong> kunne f.eks. kaldes <strong>"query"</strong></li>
+<li><strong>"d"</strong> kunne f.eks. kaldes <strong>"queryDocument"</strong></li>
+</ul>
+<pre><code>  const q = query(
+    collection(db, 'folders'),
+    where('parentId', '==', currentFolderId.value),
+    where('userId', '==', authStore.userId),
+  );
+
+  unsubscribe = onSnapshot(q, snap =&gt; {
+    folders.value = snap.docs.map(d =&gt; ({
+      id: d.id,
+      name: d.data().name as string,
+      selected: false,
+      type: 'folder',
+    }));
+  });
+</code></pre>
 <h2 id="navigation">Navigation</h2>
 <ul>
-<li><a href="../startprojekt/">Start Projektet</a></li>
-<li><a href="../git/">Git</a></li>
 <li><a href="../">Start side</a></li>
-<li><a href="../test/">Test</a></li>
+<li><a href="../git/">Git</a></li>
+<li><a href="test.md">Test</a></li>
 </ul>
 
 
