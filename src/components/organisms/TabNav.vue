@@ -7,7 +7,7 @@ import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
   <div class="navContainer">
     <div class="tabsContainer">
       <TabItem icon-name="Monitor" label="Dashboard" link="/dashboard"/>
-      <TabItem icon-name="File_document" label="Rapporter" link="rapporter"/>
+      <TabItem icon-name="File_Document" label="Rapporter" link="rapporter"/>
       <TabItem icon-name="Notebook" label="Skemaer" link="skemaer"/>
       <TabItem icon-name="Users_Group" label="Brugere" link="Brugere"/>
       <TabItem icon-name="Qr_Code" label="Enheder" link="enheder"/>
