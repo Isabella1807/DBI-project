@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import TabItem from '@/components/molecules/TabItem.vue';
 import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
+import { useAuthStore } from '@/stores/loginStore';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+async function handleLogout() {
+  await authStore.logout();
+  router.push('/');
+}
 </script>
 
 <template>
@@ -15,7 +25,7 @@ import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
       <TabItem icon-name="Calendar_Days" label="Kalender" link="Kalender"/>
     </div>
     <div class="userContainer">
-      <AvatarIcon/>
+      <AvatarIcon @click="handleLogout"/>
     </div>
   </div>
 </template>
@@ -40,6 +50,12 @@ import AvatarIcon from '@/components/atoms/AvatarIcon.vue';
     display: flex;
     align-items: center;
     right: 0;
+    cursor: pointer;
+
+    :hover {
+      color: $white;
+      background-color: $mediumGreen;
+    }
   }
 }
 </style>

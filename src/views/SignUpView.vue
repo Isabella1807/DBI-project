@@ -1,36 +1,41 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import BasicButton from '@/components/atoms/BasicButton.vue';
-import { useAuthStore } from '@/stores/loginStore';
+import { useRegisterStore } from '@/stores/opretStore';
 import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
+const confirmPassword = ref('');
+const registerStore = useRegisterStore();
 const router = useRouter();
-const authStore = useAuthStore();
 
-async function handleLogin() {
+async function handleRegister() {
+  if (password.value !== confirmPassword.value) {
+    registerStore.error = 'Adgangskoderne matcher ikke';
+    return;
+  }
+
   try {
-    await authStore.login(email.value, password.value);
-    router.push('/enheder'); // Omdiriger efter succesfuld login
+    await registerStore.register(email.value, password.value);
+    router.push('/enheder'); // Gå til siden efter succes
   } catch (error) {
-    console.error('Login fejl:', error);
+    console.error('Registrering fejlede:', error);
   }
 }
 
-function handleCreate() {
-  router.push('/opret');
+function handleCancel() {
+  router.push('/');
 }
-
 </script>
 
 <template>
-  <div class="loginWrapper">
-    <div class="loginContainer">
+  <div class="OpretWrapper">
+    <div class="OpretContainer">
       <h1>Egenkontrollen</h1>
-      <h2>Log in</h2>
+      <h2>Opret din konto</h2>
 
-      <form class="loginForm" @submit.prevent="">
+      <form class="loginForm" @submit.prevent="handleRegister">
         <div class="formGroup">
           <label for="email" class="formLabel">E-mail</label>
           <input v-model="email" type="email" id="email" class="formInput" placeholder="E-mail" />
@@ -41,24 +46,26 @@ function handleCreate() {
           <input v-model="password" type="password" id="password" class="formInput" placeholder="Adgangskode" />
         </div>
 
+        <div class="formGroup">
+          <label for="confirmPassword" class="formLabel">Gentag Adgangskode</label>
+          <input v-model="confirmPassword" type="password" id="confirmPassword" class="formInput"
+            placeholder="Gentag adgangskode" />
+        </div>
+
         <div class="buttonGroup">
-          <BasicButton type="secondary" label="OPRET KONTO" ariaLabel="Opret ny konto" @click="handleCreate"  />
-          <BasicButton
-            type="default"
-            label="LOG IND"
-            ariaLabel="Log ind"
-            :loading="authStore.loading"
-            @click="handleLogin"
-          />
-          <p v-if="authStore.error" class="error">{{ authStore.error }}</p>
+          <BasicButton type="secondary" label="ANNULLER" ariaLabel="Annuller oprettelse" @click="handleCancel" />
+          <BasicButton type="default" label="OPRET KONTO" ariaLabel="Opret konto" :loading="registerStore.loading"
+            @click="handleRegister" />
+          <p v-if="registerStore.error" class="error">{{ registerStore.error }}</p>
         </div>
       </form>
+
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.loginWrapper {
+.OpretWrapper {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -66,7 +73,7 @@ function handleCreate() {
   padding: 2rem;
 }
 
-.loginContainer {
+.OpretContainer {
   width: 500px;
   min-height: 500px;
   background-color: $white;
@@ -93,8 +100,8 @@ function handleCreate() {
   }
 
   .error {
-  color: $red;
-}
+    color: $red;
+  }
 }
 
 .loginForm {
@@ -137,7 +144,7 @@ function handleCreate() {
   gap: 1rem;
   margin-top: 3rem;
 
-  & > * {
+  &>* {
     flex: 1;
 
     :deep(button) {

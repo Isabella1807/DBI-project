@@ -10,6 +10,12 @@ const router = createRouter({
       component: () => import('@/views/LoginView.vue'),
       meta: { layout: 'auth' },
     },
+        {
+      path: '/opret',
+      name: 'opret',
+      component: () => import('@/views/SignUpView.vue'),
+      meta: { layout: 'auth' },
+    },
     {
       path: '/enheder',
       name: 'enheder',
@@ -46,6 +52,7 @@ const router = createRouter({
       name: 'kalender',
       component: () => import('@/views/CalendarView.vue'),
     },
+
   ],
 });
 
