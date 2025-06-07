@@ -31,7 +31,7 @@ import {db} from '@/configs/firebase.ts';
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizardStore.ts';
 import {useAuthStore} from '@/stores/loginStore.ts';
-import {createFolder} from '@/services/folderService.ts';
+import {createFolder, updateFolderName} from '@/services/folderService.ts';
 import type {Folder, FolderUnitItem} from '@/types/folderTypes.ts';
 
 const unitStore = useUnitStore();
@@ -175,7 +175,7 @@ function onDialogCancel() {
 async function renameFolder(id: string, oldName: string) {
   const newName = window.prompt('New folder name:', oldName);
   if (!newName || newName.trim() === oldName) return;
-  await updateDoc(doc(db, 'folders', id), {name: newName.trim()});
+  await updateFolderName(newName, id);
 }
 
 async function deleteFolderAndChildren(id: string) {
