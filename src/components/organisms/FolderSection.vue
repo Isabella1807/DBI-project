@@ -21,30 +21,22 @@ import {
   query,
   where,
   onSnapshot,
-  addDoc,
-  serverTimestamp,
   getDocs,
   updateDoc,
   deleteDoc,
   doc,
 } from 'firebase/firestore';
 import {db} from '@/configs/firebase.ts';
-import {getAuth} from 'firebase/auth';
 
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizardStore.ts';
 import {useAuthStore} from '@/stores/loginStore.ts';
+import {createFolder} from '@/services/folderService.ts';
+import type {Folder, FolderUnitItem} from '@/types/folderTypes.ts';
 
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
 const authStore = useAuthStore();
-
-interface Folder {
-  id: string;
-  name: string;
-  selected: boolean;
-  type: 'folder';
-}
 
 const itemSelectedList: Ref<string[]> = ref([]);
 
@@ -124,12 +116,6 @@ function fetchFolders() {
   });
 }
 
-interface FolderUnitItem  {
-  id: string;
-  name: string;
-  type: 'folder' | 'unit';
-}
-
 const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
   unitStore.visibleUnits.map(unit => ({
     id: unit.id,
@@ -174,18 +160,11 @@ function enterItem(item: FolderUnitItem) {
 
 // Create-folder dialog
 async function onDialogSubmit(name: string) {
-  const auth = getAuth();
-  const user = auth.currentUser;
-  if (!name.trim() || !user) return;
+  if (!name.trim()) return;
 
-  await addDoc(collection(db, 'folders'), {
-    name: name.trim(),
-    parentId: currentFolderId.value,
-    userId: user.uid,
-    createdAt: serverTimestamp(),
+  await createFolder(name, currentFolderId.value, authStore.userId).then(() => {
+    emit('update:showCreateDialog', false);
   });
-
-  emit('update:showCreateDialog', false);
 }
 
 function onDialogCancel() {
@@ -272,10 +251,13 @@ const setCurrentlyDraggedItem = (draggedItem: FolderUnitItem) => {
 const handleDrop = (itemDroppedOn: FolderUnitItem) => {
   //Make sure something is dragged
   if (!currentlyDraggedItem.value) return;
+
   //Dont drop items into units
   if (itemDroppedOn.type === 'unit') return;
+
   //Dont drop yourself on yourself
   if (itemDroppedOn.id === currentlyDraggedItem.value.id) return;
+
   //Make sure none of selected items are currentlyDraggedItem
   if (itemSelectedList.value.includes(itemDroppedOn.id)) return;
 
