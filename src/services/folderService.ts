@@ -2,10 +2,14 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   FirestoreError,
+  getDocs,
+  query,
   serverTimestamp,
   updateDoc,
+  where,
 } from 'firebase/firestore';
 import {db} from '@/configs/firebase.ts';
 import {useAuthStore} from '@/stores/loginStore.ts';
@@ -30,7 +34,33 @@ export const createFolder = async (folderName: string, parentId: string | null, 
 
 
 //DELETE FOLDER
+export const deleteFolderAndChildren = async (id: string) => {
+  const authStore = useAuthStore();
+  // 1) Recurse into sub-folders owned by this user
+  const subFolderQ = query(
+    collection(db, 'folders'),
+    where('parentId', '==', id),
+    where('userId', '==', authStore.userId),
+  );
+  const subFolderSnap = await getDocs(subFolderQ);
+  for (const folderDoc of subFolderSnap.docs) {
+    await deleteFolderAndChildren(folderDoc.id);
+  }
 
+  // 2) Delete any units in this folder
+  const unitQ = query(
+    collection(db, 'units'),
+    where('folderId', '==', id),
+    where('userId', '==', authStore.userId),
+  );
+  const unitSnap = await getDocs(unitQ);
+  for (const unitDoc of unitSnap.docs) {
+    await deleteDoc(doc(db, 'units', unitDoc.id));
+  }
+
+  // 3) Finally delete the folder itself
+  await deleteDoc(doc(db, 'folders', id));
+};
 
 //RENAME FOLDER
 export const updateFolderName = async (newFolderName: string, folderIdToChange: string) => {
@@ -41,3 +71,11 @@ export const updateFolderName = async (newFolderName: string, folderIdToChange: 
   }
 };
 
+//UPDATE FOLDER PARENTID
+export const updateFolderParentId = async (folderId: string, newParentId: string) => {
+  try {
+    await updateDoc(doc(db, 'folders', folderId), {parentId: newParentId});
+  } catch (error) {
+    throw new Error('Kunne ikke ændre folder parent id' + (error as FirestoreError).message);
+  }
+};

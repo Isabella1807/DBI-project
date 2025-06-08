@@ -21,17 +21,18 @@ import {
   query,
   where,
   onSnapshot,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc,
 } from 'firebase/firestore';
 import {db} from '@/configs/firebase.ts';
 
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizardStore.ts';
 import {useAuthStore} from '@/stores/loginStore.ts';
-import {createFolder, updateFolderName} from '@/services/folderService.ts';
+import {
+  createFolder,
+  deleteFolderAndChildren,
+  updateFolderName,
+  updateFolderParentId,
+} from '@/services/folderService.ts';
 import type {Folder, FolderUnitItem} from '@/types/folderTypes.ts';
 
 const unitStore = useUnitStore();
@@ -71,8 +72,8 @@ const toggleAllItemsSelection = () => {
 const props = defineProps<{ showCreateDialog: boolean }>();
 const showCreateDialog = toRef(props, 'showCreateDialog');
 const emit = defineEmits<{
-  (e: 'update:showCreateDialog', v: boolean): void;
-  (e: 'selectionChanged', count: number): void;
+  (event: 'update:showCreateDialog', isVisible: boolean): void;
+  (event: 'selectionChanged', count: number): void;
 }>();
 
 const folderStore = useFolderStore();
@@ -84,10 +85,13 @@ const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!;
 
 const folders = ref<Folder[]>([]);
 const selectionCount = computed(() => folders.value.filter(f => f.selected).length);
-watch(selectionCount, cnt => emit('selectionChanged', cnt));
+watch(selectionCount, count => emit('selectionChanged', count));
 watch(isAllSelected, all => {
   folders.value.forEach(f => (f.selected = all));
 }, {immediate: true});
+
+
+
 
 // Firestore subscription
 let unsubscribe = () => {
@@ -115,6 +119,10 @@ function fetchFolders() {
     }));
   });
 }
+
+
+
+
 
 const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
   unitStore.visibleUnits.map(unit => ({
@@ -178,33 +186,6 @@ async function renameFolder(id: string, oldName: string) {
   await updateFolderName(newName, id);
 }
 
-async function deleteFolderAndChildren(id: string) {
-  // 1) Recurse into sub-folders owned by this user
-  const subFolderQ = query(
-    collection(db, 'folders'),
-    where('parentId', '==', id),
-    where('userId', '==', authStore.userId),
-  );
-  const subFolderSnap = await getDocs(subFolderQ);
-  for (const folderDoc of subFolderSnap.docs) {
-    await deleteFolderAndChildren(folderDoc.id);
-  }
-
-  // 2) Delete any units in this folder
-  const unitQ = query(
-    collection(db, 'units'),
-    where('folderId', '==', id),
-    where('userId', '==', authStore.userId),
-  );
-  const unitSnap = await getDocs(unitQ);
-  for (const unitDoc of unitSnap.docs) {
-    await deleteDoc(doc(db, 'units', unitDoc.id));
-  }
-
-  // 3) Finally delete the folder itself
-  await deleteDoc(doc(db, 'folders', id));
-}
-
 async function deleteFolder(id: string) {
   if (!confirm('Slet denne mappe og alle under mapper også?')) return;
   await deleteFolderAndChildren(id);
@@ -238,7 +219,7 @@ defineExpose({
 
 //Update folder parentID in DB..
 const changeFolderParentId = async (folderId: string, newParentId: string) => {
-  await updateDoc(doc(db, 'folders', folderId), {parentId: newParentId});
+  await updateFolderParentId(folderId, newParentId);
 };
 
 //DragnDrop handling
