@@ -5,7 +5,7 @@ import {
   deleteDoc,
   doc,
   FirestoreError,
-  getDocs,
+  getDocs, onSnapshot,
   query,
   serverTimestamp,
   updateDoc,
@@ -13,6 +13,8 @@ import {
 } from 'firebase/firestore';
 import {db} from '@/configs/firebase.ts';
 import {useAuthStore} from '@/stores/loginStore.ts';
+import type {Folder} from '@/types/folderTypes.ts';
+import type {Ref} from 'vue';
 
 export const createFolder = async (folderName: string, parentId: string | null, userId: string | null): Promise<void> => {
   const authStore = useAuthStore();
@@ -78,4 +80,32 @@ export const updateFolderParentId = async (folderId: string, newParentId: string
   } catch (error) {
     throw new Error('Kunne ikke ændre folder parent id' + (error as FirestoreError).message);
   }
+};
+
+let firebaseFolderUnsubscribeFunction = () => {};
+
+//SUBSCRIBE TO FOLDER
+export const subscribeToFolder = (folderToSubscribeId: string | null, folderArray: Ref<Folder[]>) => {
+  unsubscribeFromFolder();
+
+  const authStore = useAuthStore();
+
+  const queryParentId = query(
+    collection(db, 'folders'),
+    where('parentId', '==', folderToSubscribeId),
+    where('userId', '==', authStore.userId),
+  );
+
+  firebaseFolderUnsubscribeFunction = onSnapshot(queryParentId, snap => {
+    folderArray.value = snap.docs.map(result => ({
+      id: result.id,
+      name: result.data().name as string,
+      selected: false,
+      type: 'folder',
+    }));
+  });
+};
+
+export const unsubscribeFromFolder = () => {
+  firebaseFolderUnsubscribeFunction();
 };

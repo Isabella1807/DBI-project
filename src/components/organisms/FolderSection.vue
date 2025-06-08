@@ -29,7 +29,7 @@ import {useWizardStore} from '@/stores/wizardStore.ts';
 import {useAuthStore} from '@/stores/loginStore.ts';
 import {
   createFolder,
-  deleteFolderAndChildren,
+  deleteFolderAndChildren, subscribeToFolder, unsubscribeFromFolder,
   updateFolderName,
   updateFolderParentId,
 } from '@/services/folderService.ts';
@@ -94,30 +94,15 @@ watch(isAllSelected, all => {
 
 
 // Firestore subscription
-let unsubscribe = () => {
-};
+
 
 function fetchFolders() {
-  unsubscribe();
   if (!authStore.userId) {
     folders.value = [];
     return;
   }
 
-  const q = query(
-    collection(db, 'folders'),
-    where('parentId', '==', currentFolderId.value),
-    where('userId', '==', authStore.userId),
-  );
-
-  unsubscribe = onSnapshot(q, snap => {
-    folders.value = snap.docs.map(d => ({
-      id: d.id,
-      name: d.data().name as string,
-      selected: false,
-      type: 'folder',
-    }));
-  });
+  subscribeToFolder(currentFolderId.value, folders);
 }
 
 
@@ -156,7 +141,7 @@ watch(currentFolderId, () => {
 });
 
 onUnmounted(() => {
-  unsubscribe();
+  unsubscribeFromFolder();
 });
 
 // Navigation
