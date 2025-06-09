@@ -1,193 +1,105 @@
-<script setup lang="ts">
-import {
-  inject,
-  ref,
-  computed,
-  watch,
-  onUnmounted,
-  toRef,
-  defineExpose,
-  type Ref, type ComputedRef,
-} from 'vue';
-
-import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
-import {unsubscribeFromFolder, updateFolderParentId} from '@/services/folderService.ts';
-import type {FolderUnitItem} from '@/types/folderTypes.ts';
-import FolderOrUnitCard from '@/components/molecules/FolderOrUnitCard.vue';
+<script lang="ts" setup>
+import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
-import {useFolderStore} from '@/stores/folderStore.ts';
 import {useUnitStore} from '@/stores/unitStore.ts';
+import {useWizardStore} from '@/stores/wizardStore.ts';
+import {deleteFolderAndChildren, updateFolderName} from '@/services/folderService.ts';
 
-const unitStore = useUnitStore();
 const breadcrumbStore = useBreadcrumbStore();
-const folderStore = useFolderStore();
+const unitStore = useUnitStore();
+const wizardStore = useWizardStore();
 
-const itemSelectedList: Ref<string[]> = ref([]);
-
-const clearSelectedList = () => {
-  itemSelectedList.value = [];
-};
-
-const toggleItemSelection = (id: string) => {
-  const idx = itemSelectedList.value.indexOf(id);
-  if (idx !== -1) {
-    itemSelectedList.value.splice(idx, 1);
-  } else {
-    itemSelectedList.value.push(id);
-  }
-};
-
-const toggleAllItemsSelection = () => {
-  if (everythingIsSelected.value) {
-    clearSelectedList();
-  } else {
-    folderStore.visibleFolders.forEach(f => {
-      if (!itemSelectedList.value.includes(f.id))
-        itemSelectedList.value.push(f.id);
-    });
-    unitsOnScreen.value.forEach(u => {
-      if (!itemSelectedList.value.includes(u.id))
-        itemSelectedList.value.push(u.id);
-    });
-  }
-};
-
-const props = defineProps<{ showCreateDialog: boolean }>();
-const showCreateDialog = toRef(props, 'showCreateDialog');
-const emit = defineEmits<{
-  (event: 'update:showCreateDialog', isVisible: boolean): void;
-  (event: 'selectionChanged', count: number): void;
-}>();
-
-
-const currentFolderId = computed(() => breadcrumbStore.currentFolderId);
-const currentFolderName = computed(() => breadcrumbStore.currentFolderName);
-
-const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!;
-const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!;
-
-const selectionCount = computed(() => folderStore.visibleFolders.filter(f => f.selected).length);
-watch(selectionCount, count => emit('selectionChanged', count));
-watch(isAllSelected, all => {
-  folderStore.visibleFolders.forEach(f => (f.selected = all));
-}, {immediate: true});
-
-const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
-  unitStore.visibleUnits.map(unit => ({
-    id: unit.id,
-    name: unit.name,
-    type: 'unit',
-  })),
-);
-
-const content: ComputedRef<FolderUnitItem[]> = computed(() => [
-  ...folderStore.visibleFolders.map(folder => ({
-    id: folder.id,
-    name: folder.name,
-    type: 'folder' as const,
-  })),
-  ...unitsOnScreen.value,
-]);
-
-const totalAmountOfItemsOnScreen = computed(() => content.value.length);
-const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length);
-const everythingIsSelected = computed(() =>
-  totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value,
-);
-
-watch(currentFolderId, () => {
-  clearSelectedList();
-});
-
-onUnmounted(() => {
-  unsubscribeFromFolder();
-});
-
-// Create folder
-async function onDialogSubmit(name: string) {
-  await folderStore.create(name).then(() => {
-    emit('update:showCreateDialog', false);
-  });
+interface Props {
+  name: string;
+  isUnit?: boolean;
+  id: string;
+  isSelected: boolean;
+  currentView: 'detailed' | 'list';
 }
 
-function onDialogCancel() {
-  emit('update:showCreateDialog', false);
+const props = defineProps<Props>();
+const emit = defineEmits(['onSelect']);
+
+const handleSelect = () => {
+  emit('onSelect');
+};
+// Rename & recursive delete
+async function renameFolder(id: string, oldName: string) {
+  const newName = window.prompt('New folder name:', oldName);
+  if (!newName || newName.trim() === oldName) return;
+  await updateFolderName(newName, id);
 }
 
-defineExpose({
-  toggleAllItemsSelection,
-  totalAmountOfItemsOnScreen,
-  totalAmountOfItemsSelected,
-});
+async function deleteFolder(id: string) {
+  if (!confirm('Slet denne mappe og alle under mapper også?')) return;
+  await deleteFolderAndChildren(id);
+}
 
-//Update folder parentID in DB..
-const changeFolderParentId = async (folderId: string, newParentId: string) => {
-  await updateFolderParentId(folderId, newParentId);
-};
-
-//DragnDrop handling
-const currentlyDraggedItem: Ref<FolderUnitItem | null> = ref(null);
-
-const setCurrentlyDraggedItem = (draggedItem: FolderUnitItem) => {
-  currentlyDraggedItem.value = draggedItem;
-};
-
-const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
-  //Make sure something is dragged
-  if (!currentlyDraggedItem.value) return;
-
-  //Dont drop items into units
-  if (itemDroppedOn.isUnit) return;
-
-  //Dont drop yourself on yourself
-  if (itemDroppedOn.id === currentlyDraggedItem.value.id) return;
-
-  //Make sure none of selected items are currentlyDraggedItem
-  if (itemSelectedList.value.includes(itemDroppedOn.id)) return;
-
-  const uniquelyDroppedItemIds = new Set([...itemSelectedList.value, currentlyDraggedItem.value.id]);
-
-  uniquelyDroppedItemIds.forEach(itemId => {
-    const itemIsAUnit = unitStore.idBelongsToUnit(itemId);
-
-    if (itemIsAUnit) {
-      unitStore.changeParentId(itemId, itemDroppedOn.id);
-    } else {
-      changeFolderParentId(itemId, itemDroppedOn.id);
+// Menu actions
+function handleMenuAction(action: string) {
+  if (props.isUnit) {
+    if (action === 'edit') {
+      const unit = unitStore.getUnitById(props.id);
+      if (unit) wizardStore.open(unit);
+    } else if (action === 'delete') {
+      unitStore.deleteById(props.id);
     }
-  });
-};
+  } else {
+    //folders
+    if (action === 'edit') {
+      renameFolder(props.id, props.name);
+    } else if (action === 'delete') {
+      deleteFolder(props.id);
+    }
+  }
+}
+
+// Navigation
+function enterItem() {
+  if (!props.isUnit) {
+    breadcrumbStore.enterFolder(props.id, props.name);
+  }
+}
+
 </script>
 
-
 <template>
-  <div>
-    <div :class="['folderContainer', currentView]">
-      <FolderOrUnitCard
-        v-for="item in content"
-        :key="item.id"
-        :name="item.name"
-        :id="item.id"
-        :isUnit="item.type === 'unit'"
-        :isSelected="itemSelectedList.includes(item.id)"
-        :currentView="currentView"
-        @onSelect="toggleItemSelection(item.id)"
-        draggable="true"
-        @dragstart="setCurrentlyDraggedItem(item)"
-        @dragover.prevent=""
-        @drop="handleDrop({isUnit: item.type === 'unit', id: item.id})"
+  <div
+    :class="['folder', props.currentView]"
+  >
+    <div
+      class="folderContent"
+      :class="{ selected: props.isSelected, 'unit-style': props.isUnit}"
+      @click="handleSelect"
+      @dblclick.stop="enterItem()"
+    >
+      <BasicIcon
+        v-if="props.currentView === 'list'"
+        name="ChevronRight"
+        class="arrow"
+        @click.stop="enterItem()"
+      />
+
+      <input
+        type="checkbox"
+        class="folderCheckbox"
+        :checked="props.isSelected"
+        @click.stop="handleSelect"
+      />
+
+      <BasicIcon
+        :name="props.isUnit ? 'Unit' : 'Folder'"
+        class="folderIcon"
+      />
+      <p>{{ props.name }}</p>
+
+      <FolderMenu
+        @option-selected="handleMenuAction"
+        @click.stop
       />
     </div>
-
-    <CreateFolderDialog
-      :visible="showCreateDialog"
-      :currentFolderName="currentFolderName"
-      @submit="onDialogSubmit"
-      @cancel="onDialogCancel"
-    />
   </div>
 </template>
-
 <style lang="scss" scoped>
 .navigation-header {
   display: flex;

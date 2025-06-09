@@ -2,13 +2,6 @@
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
 
-const props = defineProps({
-  folderId: {
-    type: String,
-    required: true,
-  },
-});
-
 const emit = defineEmits(['optionSelected']);
 
 const showDropdown = ref(false);
@@ -27,7 +20,7 @@ const toggleDropdown = (event: Event) => {
 };
 
 const handleOptionClick = (option: string) => {
-  emit('optionSelected', { itemId: props.folderId, action: option });
+  emit('optionSelected', option);
   showDropdown.value = false;
 };
 
