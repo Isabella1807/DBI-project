@@ -11,6 +11,7 @@ import {
   type Ref, type ComputedRef,
 } from 'vue';
 import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
+import {useFolderStore} from '@/stores/folderStore.ts';
 
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import FolderMenu from '@/components/molecules/FolderMenu.vue';
@@ -30,6 +31,8 @@ import type {Folder, FolderUnitItem} from '@/types/folderTypes.ts';
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
 const authStore = useAuthStore();
+const breadcrumbStore = useBreadcrumbStore();
+const folderStore = useFolderStore();
 
 const itemSelectedList: Ref<string[]> = ref([]);
 
@@ -68,7 +71,7 @@ const emit = defineEmits<{
   (event: 'selectionChanged', count: number): void;
 }>();
 
-const breadcrumbStore = useBreadcrumbStore();
+
 const currentFolderId = computed(() => breadcrumbStore.currentFolderId);
 const currentFolderName = computed(() => breadcrumbStore.currentFolderName);
 
@@ -135,11 +138,9 @@ function enterItem(item: FolderUnitItem) {
   }
 }
 
-// Create-folder dialog
+// Create folder
 async function onDialogSubmit(name: string) {
-  if (!name.trim()) return;
-
-  await createFolder(name, currentFolderId.value, authStore.userId).then(() => {
+  await folderStore.create(name).then(() => {
     emit('update:showCreateDialog', false);
   });
 }

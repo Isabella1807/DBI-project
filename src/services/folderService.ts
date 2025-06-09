@@ -16,7 +16,7 @@ import {useAuthStore} from '@/stores/loginStore.ts';
 import type {Folder} from '@/types/folderTypes.ts';
 import type {Ref} from 'vue';
 
-export const createFolder = async (folderName: string, parentId: string | null, userId: string | null): Promise<void> => {
+export const createFolder = async (folderName: string, parentId: string | null): Promise<void> => {
   const authStore = useAuthStore();
   if (!authStore.isAuthenticated) {
     throw new Error('User not authenticated');
@@ -26,7 +26,7 @@ export const createFolder = async (folderName: string, parentId: string | null, 
     await addDoc(collection(db, 'folders'), {
       name: folderName.trim(),
       parentId,
-      userId,
+      userId: authStore.userId,
       createdAt: serverTimestamp(),
     });
   } catch (error) {
