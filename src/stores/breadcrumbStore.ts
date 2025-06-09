@@ -6,8 +6,8 @@ interface Ancestor {
   name: string;
 }
 
-export const useFolderStore = defineStore('folder', () => {
-  // A fixed label for your “top‐level” view:
+export const useBreadcrumbStore = defineStore('breadcrumbStore', () => {
+  // A fixed label for “top‐level” view:
   const rootLabel = 'All files';
 
   // These track where you are:

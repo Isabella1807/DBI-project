@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import type {unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
-import {useFolderStore} from '@/stores/folderStore.ts';
+import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
 import {
   createUnit,
   deleteUnitById,
@@ -11,13 +11,13 @@ import {
 import {ref, type Ref, watch} from 'vue';
 
 export const useUnitStore = defineStore('unitStore', () => {
-  const folderStore = useFolderStore();
+  const breadcrumbStore = useBreadcrumbStore();
   const visibleUnits: Ref<UnitTypeWithId[]> = ref([]);
 
   const createNew = (unit: unitInputType) => {
     createUnit({
       ...unit,
-      parentId: folderStore.currentFolderId,
+      parentId: breadcrumbStore.currentFolderId,
     }).then(createdUnit => {
       // Success!
       visibleUnits.value.push(createdUnit);
@@ -32,7 +32,7 @@ export const useUnitStore = defineStore('unitStore', () => {
     visibleUnits.value = await getAllUnitsByFolderId(newFolderId);
   };
 
-  watch(() => folderStore.currentFolderId, async (newFolderId) => {
+  watch(() => breadcrumbStore.currentFolderId, async (newFolderId) => {
     await refreshVisibleUnits(newFolderId);
   }, {immediate: true});
 

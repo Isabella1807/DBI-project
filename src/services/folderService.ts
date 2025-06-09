@@ -38,6 +38,7 @@ export const createFolder = async (folderName: string, parentId: string | null, 
 //DELETE FOLDER
 export const deleteFolderAndChildren = async (id: string) => {
   const authStore = useAuthStore();
+
   // 1) Recurse into sub-folders owned by this user
   const subFolderQ = query(
     collection(db, 'folders'),
@@ -45,6 +46,7 @@ export const deleteFolderAndChildren = async (id: string) => {
     where('userId', '==', authStore.userId),
   );
   const subFolderSnap = await getDocs(subFolderQ);
+
   for (const folderDoc of subFolderSnap.docs) {
     await deleteFolderAndChildren(folderDoc.id);
   }

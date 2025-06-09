@@ -10,19 +10,11 @@ import {
   defineExpose,
   type Ref, type ComputedRef,
 } from 'vue';
-import {useFolderStore} from '@/stores/folderStore.ts';
+import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
 
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
 import FolderMenu from '@/components/molecules/FolderMenu.vue';
 import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
-
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-} from 'firebase/firestore';
-import {db} from '@/configs/firebase.ts';
 
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizardStore.ts';
@@ -76,9 +68,9 @@ const emit = defineEmits<{
   (event: 'selectionChanged', count: number): void;
 }>();
 
-const folderStore = useFolderStore();
-const currentFolderId = computed(() => folderStore.currentFolderId);
-const currentFolderName = computed(() => folderStore.currentFolderName);
+const breadcrumbStore = useBreadcrumbStore();
+const currentFolderId = computed(() => breadcrumbStore.currentFolderId);
+const currentFolderName = computed(() => breadcrumbStore.currentFolderName);
 
 const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!;
 const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!;
@@ -91,11 +83,7 @@ watch(isAllSelected, all => {
 }, {immediate: true});
 
 
-
-
 // Firestore subscription
-
-
 function fetchFolders() {
   if (!authStore.userId) {
     folders.value = [];
@@ -104,10 +92,6 @@ function fetchFolders() {
 
   subscribeToFolder(currentFolderId.value, folders);
 }
-
-
-
-
 
 const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
   unitStore.visibleUnits.map(unit => ({
@@ -147,7 +131,7 @@ onUnmounted(() => {
 // Navigation
 function enterItem(item: FolderUnitItem) {
   if (item.type === 'folder') {
-    folderStore.enterFolder(item.id, item.name);
+    breadcrumbStore.enterFolder(item.id, item.name);
   }
 }
 

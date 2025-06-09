@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useFolderStore } from '@/stores/folderStore';
+import { useBreadcrumbStore } from '@/stores/breadcrumbStore.ts';
 import BasicIcon from '../atoms/BasicIcon.vue';
 
-const store = useFolderStore();
+const breadcrumbStore = useBreadcrumbStore();
 
-const rootLabel = computed(() => store.rootLabel);
-const ancestors = computed(() => store.ancestors);
-const currentFolderName = computed(() => store.currentFolderName);
-const isAtRoot = computed(() => store.currentFolderId === null);
+const rootLabel = computed(() => breadcrumbStore.rootLabel);
+const ancestors = computed(() => breadcrumbStore.ancestors);
+const currentFolderName = computed(() => breadcrumbStore.currentFolderName);
+const isAtRoot = computed(() => breadcrumbStore.currentFolderId === null);
 
 function goRoot() {
-  store.resetToRoot();
+  breadcrumbStore.resetToRoot();
 }
 function goTo(index: number) {
-  store.goToAncestor(index);
+  breadcrumbStore.goToAncestor(index);
 }
 </script>
 
