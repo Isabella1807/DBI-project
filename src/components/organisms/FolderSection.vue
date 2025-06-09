@@ -4,7 +4,6 @@ import {
   ref,
   computed,
   watch,
-  onMounted,
   onUnmounted,
   toRef,
   defineExpose,
@@ -19,18 +18,15 @@ import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
 
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizardStore.ts';
-import {useAuthStore} from '@/stores/loginStore.ts';
 import {
-  createFolder,
-  deleteFolderAndChildren, subscribeToFolder, unsubscribeFromFolder,
+  deleteFolderAndChildren, unsubscribeFromFolder,
   updateFolderName,
   updateFolderParentId,
 } from '@/services/folderService.ts';
-import type {Folder, FolderUnitItem} from '@/types/folderTypes.ts';
+import type {FolderUnitItem} from '@/types/folderTypes.ts';
 
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
-const authStore = useAuthStore();
 const breadcrumbStore = useBreadcrumbStore();
 const folderStore = useFolderStore();
 
@@ -53,7 +49,7 @@ const toggleAllItemsSelection = () => {
   if (everythingIsSelected.value) {
     clearSelectedList();
   } else {
-    folders.value.forEach(f => {
+    folderStore.visibleFolders.forEach(f => {
       if (!itemSelectedList.value.includes(f.id))
         itemSelectedList.value.push(f.id);
     });
@@ -78,23 +74,11 @@ const currentFolderName = computed(() => breadcrumbStore.currentFolderName);
 const currentView = inject<Ref<'detailed' | 'list'>>('currentView', ref('detailed'))!;
 const isAllSelected = inject<Ref<boolean>>('isAllSelected', ref(false))!;
 
-const folders = ref<Folder[]>([]);
-const selectionCount = computed(() => folders.value.filter(f => f.selected).length);
+const selectionCount = computed(() => folderStore.visibleFolders.filter(f => f.selected).length);
 watch(selectionCount, count => emit('selectionChanged', count));
 watch(isAllSelected, all => {
-  folders.value.forEach(f => (f.selected = all));
+  folderStore.visibleFolders.forEach(f => (f.selected = all));
 }, {immediate: true});
-
-
-// Firestore subscription
-function fetchFolders() {
-  if (!authStore.userId) {
-    folders.value = [];
-    return;
-  }
-
-  subscribeToFolder(currentFolderId.value, folders);
-}
 
 const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
   unitStore.visibleUnits.map(unit => ({
@@ -105,7 +89,7 @@ const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
 );
 
 const content: ComputedRef<FolderUnitItem[]> = computed(() => [
-  ...folders.value.map(folder => ({id: folder.id, name: folder.name, type: 'folder' as const})),
+  ...folderStore.visibleFolders.map(folder => ({id: folder.id, name: folder.name, type: 'folder' as const})),
   ...unitsOnScreen.value,
 ]);
 
@@ -115,15 +99,7 @@ const everythingIsSelected = computed(() =>
   totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value,
 );
 
-onMounted(() => {
-  if (authStore.isAuthenticated) {
-    fetchFolders();
-  }
-  unitStore.refreshVisibleUnits(currentFolderId.value);
-});
-
 watch(currentFolderId, () => {
-  fetchFolders();
   clearSelectedList();
 });
 
@@ -163,7 +139,7 @@ async function deleteFolder(id: string) {
 
 // Menu actions
 function handleMenuAction(payload: { itemId: string; action: string }) {
-  const folder = folders.value.find(f => f.id === payload.itemId);
+  const folder = folderStore.visibleFolders.find(f => f.id === payload.itemId);
   if (folder) {
     if (payload.action === 'edit') {
       renameFolder(payload.itemId, folder.name);

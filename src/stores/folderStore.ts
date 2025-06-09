@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia';
-import {type Ref, ref} from 'vue';
+import {type Ref, ref, watch} from 'vue';
 import type {Folder} from '@/types/folderTypes.ts';
 import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
-import {createFolder} from '@/services/folderService.ts';
+import {createFolder, subscribeToFolder} from '@/services/folderService.ts';
 
 export const useFolderStore = defineStore('folderStore', () => {
   const breadcrumbStore = useBreadcrumbStore();
@@ -16,8 +16,17 @@ export const useFolderStore = defineStore('folderStore', () => {
     await createFolder(newFolderName, breadcrumbStore.currentFolderId);
   };
 
+  const fetch = () => {
+    subscribeToFolder(breadcrumbStore.currentFolderId, visibleFolders);
+  };
+
+  watch(() => breadcrumbStore.currentFolderId, () => {
+    fetch();
+  }, {immediate: true});
+
   return {
     visibleFolders,
     create,
+    fetch,
   };
 });

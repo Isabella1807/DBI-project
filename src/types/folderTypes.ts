@@ -10,3 +10,8 @@ export interface FolderUnitItem {
   name: string;
   type: 'folder' | 'unit';
 }
+
+export interface Ancestor {
+  id: string | null;
+  name: string;
+}

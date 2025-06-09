@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-
-interface Ancestor {
-  id: string | null;
-  name: string;
-}
+import type {Ancestor} from '@/types/folderTypes.ts';
 
 export const useBreadcrumbStore = defineStore('breadcrumbStore', () => {
   // A fixed label for “top‐level” view:
