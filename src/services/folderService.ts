@@ -1,4 +1,3 @@
-//CREATE FOLDER
 import {
   addDoc,
   collection,
@@ -16,6 +15,7 @@ import {useAuthStore} from '@/stores/loginStore.ts';
 import type {Folder} from '@/types/folderTypes.ts';
 import type {Ref} from 'vue';
 
+//CREATE FOLDER
 export const createFolder = async (folderName: string, parentId: string | null): Promise<void> => {
   const authStore = useAuthStore();
   if (!authStore.isAuthenticated) {

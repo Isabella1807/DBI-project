@@ -4,14 +4,11 @@ import {
   ref,
   computed,
   watch,
-  onUnmounted,
   toRef,
   defineExpose,
   type Ref, type ComputedRef,
 } from 'vue';
-
 import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
-import {unsubscribeFromFolder, updateFolderParentId} from '@/services/folderService.ts';
 import type {FolderUnitItem} from '@/types/folderTypes.ts';
 import FolderOrUnitCard from '@/components/molecules/FolderOrUnitCard.vue';
 import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
@@ -99,10 +96,6 @@ watch(currentFolderId, () => {
   clearSelectedList();
 });
 
-onUnmounted(() => {
-  unsubscribeFromFolder();
-});
-
 // Create folder
 async function onDialogSubmit(name: string) {
   await folderStore.create(name).then(() => {
@@ -119,11 +112,6 @@ defineExpose({
   totalAmountOfItemsOnScreen,
   totalAmountOfItemsSelected,
 });
-
-//Update folder parentID in DB..
-const changeFolderParentId = async (folderId: string, newParentId: string) => {
-  await updateFolderParentId(folderId, newParentId);
-};
 
 //DragnDrop handling
 const currentlyDraggedItem: Ref<FolderUnitItem | null> = ref(null);
@@ -153,7 +141,7 @@ const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
     if (itemIsAUnit) {
       unitStore.changeParentId(itemId, itemDroppedOn.id);
     } else {
-      changeFolderParentId(itemId, itemDroppedOn.id);
+      folderStore.move(itemId, itemDroppedOn.id);
     }
   });
 };
@@ -224,7 +212,7 @@ const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
       height: 200px;
       border-radius: 16px;
       background: $white;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       display: flex;
       padding: 16px;
       flex-direction: column;
@@ -327,7 +315,7 @@ const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
     background: $white;
     border-radius: 8px;
     padding: 1rem;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-top: 1.5rem;
 
     .folder:nth-child(odd) .folderContent {

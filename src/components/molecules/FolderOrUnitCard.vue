@@ -4,7 +4,7 @@ import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizardStore.ts';
 import {deleteFolderAndChildren, updateFolderName} from '@/services/folderService.ts';
-
+import FolderMenu from '@/components/molecules/FolderMenu.vue';
 const breadcrumbStore = useBreadcrumbStore();
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
