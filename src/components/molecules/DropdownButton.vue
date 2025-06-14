@@ -2,20 +2,16 @@
 import { ref } from 'vue';
 import BasicButton from '../atoms/BasicButton.vue';
 import BasicIcon from '../atoms/BasicIcon.vue';
-import { useWizardStore } from '@/stores/wizardStore.ts';
 
-const wizardStore = useWizardStore();
+interface Props {
+  label: string,
+  type: string,
+  iconName: string,
+  ariaLabel: string,
+  options: {label: string, icon: string}[],
+}
 
-const props = defineProps({
-  label:      { type: String, required: true },
-  type:       { type: String, required: true },
-  iconName:   { type: String, required: true },
-  ariaLabel:  { type: String, required: true },
-  options:    {
-    type: Array as () => { label: string; icon: string }[],
-    required: true,
-  },
-});
+const props = defineProps<Props>();
 
 // ← emit option-selected(label: string)
 const emit = defineEmits<{
@@ -33,11 +29,6 @@ function handleOptionClick(optionLabel: string) {
 
   // emit up to parent
   emit('option-selected', optionLabel);
-
-  // your existing wizard logic
-  if (optionLabel === 'Enhed') {
-    wizardStore.open();
-  }
 }
 </script>
 
@@ -54,12 +45,12 @@ function handleOptionClick(optionLabel: string) {
 
     <ul v-if="showDropdown" class="dropdown-menu">
       <li
-        v-for="(opt, idx) in options"
-        :key="idx"
-        @click="handleOptionClick(opt.label)"
+        v-for="(option, index) in options"
+        :key="index"
+        @click="handleOptionClick(option.label)"
       >
-        <BasicIcon :name="opt.icon" class="dropdown-icon"/>
-        {{ opt.label }}
+        <BasicIcon :name="option.icon" class="dropdown-icon"/>
+        {{ option.label }}
       </li>
     </ul>
   </div>

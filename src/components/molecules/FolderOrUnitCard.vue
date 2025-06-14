@@ -4,7 +4,7 @@ import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
 import {useUnitStore} from '@/stores/unitStore.ts';
 import {useWizardStore} from '@/stores/wizardStore.ts';
 import {deleteFolderAndChildren, updateFolderName} from '@/services/folderService.ts';
-import FolderMenu from '@/components/molecules/FolderMenu.vue';
+import FilesMenu from '@/components/molecules/FilesMenu.vue';
 const breadcrumbStore = useBreadcrumbStore();
 const unitStore = useUnitStore();
 const wizardStore = useWizardStore();
@@ -93,7 +93,7 @@ function enterItem() {
       />
       <p>{{ props.name }}</p>
 
-      <FolderMenu
+      <FilesMenu
         @option-selected="handleMenuAction"
         @click.stop
       />
@@ -101,36 +101,8 @@ function enterItem() {
   </div>
 </template>
 <style lang="scss" scoped>
-.navigation-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 1rem auto 0;
-  max-width: 600px;
-
-  h3 {
-    margin: 0;
-    font-weight: 500;
-  }
-
-  button {
-    padding: 0.25rem 0.5rem;
-    border: 1px solid #888;
-    border-radius: 4px;
-    background: none;
-    cursor: pointer;
-  }
-}
-
 .folderContainer {
   &.detailed {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, calc(20% - 26px)));
-    gap: 32px;
-    max-width: 100%;
-    margin-top: 1.5rem;
-    padding: 0;
-
     .folderContent {
       width: 100%;
       height: 200px;
@@ -261,11 +233,11 @@ function enterItem() {
       border-bottom: 1px solid $mediumGrey;
 
       &:hover {
-        background-color: $lightGreen !important;
+        background-color: $lightGreen
       }
 
       &.selected {
-        background-color: $mediumGreen !important;
+        background-color: $mediumGreen
       }
 
       &:last-child {

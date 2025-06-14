@@ -1,7 +1,7 @@
 <!-- src/components/molecules/BulkEditor.vue -->
 <script setup lang="ts">
 import BasicIcon from '../atoms/BasicIcon.vue';
-import FolderSection from '@/components/organisms/FolderSection.vue';
+import FilesSection from '@/components/organisms/FilesSection.vue';
 import {ref, provide, onMounted, computed, type Ref} from 'vue';
 
 const props = defineProps({
@@ -118,7 +118,7 @@ onMounted(() => {
     </div>
   </div>
 
-  <FolderSection
+  <FilesSection
     ref="folderSection"
     :showCreateDialog="props.showCreateDialog"
     @update:showCreateDialog="update"

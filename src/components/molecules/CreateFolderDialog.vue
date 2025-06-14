@@ -17,9 +17,9 @@ const name = ref('');
 const dialogRef = ref<HTMLDialogElement>();
 
 // Når `visible` skifter, åbn/luk dialogen
-watch(() => props.visible, v => {
+watch(() => props.visible, showDialog => {
   if (!dialogRef.value) return;
-  if (v) {
+  if (showDialog) {
     dialogRef.value.showModal();
     name.value = '';
   } else {

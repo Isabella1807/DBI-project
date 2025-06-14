@@ -19,6 +19,8 @@ const unitStore = useUnitStore();
 const breadcrumbStore = useBreadcrumbStore();
 const folderStore = useFolderStore();
 
+const props = defineProps<{ showCreateDialog: boolean }>();
+
 const itemSelectedList: Ref<string[]> = ref([]);
 
 const clearSelectedList = () => {
@@ -49,8 +51,8 @@ const toggleAllItemsSelection = () => {
   }
 };
 
-const props = defineProps<{ showCreateDialog: boolean }>();
 const showCreateDialog = toRef(props, 'showCreateDialog');
+
 const emit = defineEmits<{
   (event: 'update:showCreateDialog', isVisible: boolean): void;
   (event: 'selectionChanged', count: number): void;
@@ -177,27 +179,6 @@ const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
 </template>
 
 <style lang="scss" scoped>
-.navigation-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 1rem auto 0;
-  max-width: 600px;
-
-  h3 {
-    margin: 0;
-    font-weight: 500;
-  }
-
-  button {
-    padding: 0.25rem 0.5rem;
-    border: 1px solid #888;
-    border-radius: 4px;
-    background: none;
-    cursor: pointer;
-  }
-}
-
 .folderContainer {
   &.detailed {
     display: grid;
@@ -206,107 +187,6 @@ const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
     max-width: 100%;
     margin-top: 1.5rem;
     padding: 0;
-
-    .folderContent {
-      width: 100%;
-      height: 200px;
-      border-radius: 16px;
-      background: $white;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      display: flex;
-      padding: 16px;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      position: relative;
-
-      &:hover {
-        background-color: $lightGreen;
-      }
-
-      &.selected {
-        background-color: $mediumGreen;
-      }
-
-      .folderIcon {
-        width: 80px;
-        height: auto;
-        color: $darkGrey;
-      }
-
-      p {
-        @include bodyText;
-        text-align: center;
-        margin: 0;
-        color: $black;
-        font-weight: 500;
-      }
-
-      .folderCheckbox {
-        position: absolute;
-        top: 18px;
-        left: 25px;
-        width: 16px;
-        height: 16px;
-        border: 2px solid $darkGrey;
-        border-radius: 4px;
-        appearance: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        opacity: 0;
-        pointer-events: none;
-
-        &:checked {
-          border-color: $darkGreen;
-          background-color: $darkGreen;
-          opacity: 1;
-          pointer-events: auto;
-
-          &::after {
-            content: "";
-            position: absolute;
-            left: 3.2px;
-            top: 0;
-            width: 4px;
-            height: 8px;
-            border: solid $white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-          }
-        }
-
-        &:hover {
-          border-color: $darkGreen;
-        }
-      }
-
-      :deep(.menuDotsContainer) {
-        position: absolute;
-        top: 18px;
-        right: 25px;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s ease;
-      }
-
-      &:hover,
-      &.selected {
-        .folder
-        Checkbox,
-        :deep(.menuDotsContainer) {
-          opacity: 1;
-          pointer-events: auto;
-        }
-      }
-
-      .folderCheckbox:checked {
-        opacity: 1;
-        pointer-events: auto;
-      }
-    }
   }
 
   &.list {
@@ -327,21 +207,12 @@ const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
     }
 
     .folderContent {
-      display: flex;
-      width: 100%;
-      height: 40px;
-      padding: 0 20px;
-      align-items: center;
-      gap: 16px;
-      transition: background-color 0.2s ease;
-      border-bottom: 1px solid $mediumGrey;
-
       &:hover {
-        background-color: $lightGreen !important;
+        background-color: $lightGreen
       }
 
       &.selected {
-        background-color: $mediumGreen !important;
+        background-color: $mediumGreen
       }
 
       &:last-child {
