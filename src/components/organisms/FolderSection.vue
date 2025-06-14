@@ -231,25 +231,129 @@ async function deleteFolder(id: string) {
   await deleteFolderAndChildren(id);
 }
 
-// Menu actions
-function handleMenuAction(payload: { itemId: string; action: string }) {
+/**
+ * Windows-style copy namer:
+ *  • strips any existing “ - Copy” or “ - Copy (n)”
+ *  • finds the highest copy-index among existingNames
+ *  • returns either “BaseName - Copy” (if none yet) or “BaseName - Copy (k+1)”
+ */
+function generateCopyName(existingNames: string[], sourceName: string): string {
+  // 1) Peel off any “ - Copy” or “ - Copy (n)” from the end to get the true base
+  const stripRe = /^(.*) - Copy(?: \(\d+\))?$/;
+  const match = sourceName.match(stripRe);
+  const base = match ? match[1] : sourceName;
+
+  // 2) Build a regex to match either “Base - Copy” or “Base - Copy (num)”
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const copyRe = new RegExp(`^${esc(base)} - Copy(?: \\((\\d+)\\))?$`);
+
+  // 3) Scan existingNames for the highest index
+  let max = 0;
+  existingNames.forEach(name => {
+    const m = name.match(copyRe);
+    if (!m) return;
+    // m[1] is the digit if it exists
+    const idx = m[1] ? parseInt(m[1], 10) : 1;
+    if (idx > max) max = idx;
+  });
+
+  // 4) If max is 0 → no copies yet, so do “Base - Copy”
+  //    else → bump to “Base - Copy (max+1)”
+  return max === 0
+    ? `${base} - Copy`
+    : `${base} - Copy (${max + 1})`;
+}
+
+async function copyFolderRecursive(
+  originalFolderId: string,
+  newParentId: string | null,
+  newName: string
+) {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return;
+
+  // a) Copy the folder itself
+  const newRef = await addDoc(collection(db, 'folders'), {
+    name: newName,
+    parentId: newParentId,
+    userId: user.uid,
+    createdAt: serverTimestamp(),
+  });
+  const newFolderId = newRef.id;
+
+  // b) Copy all *units* in this folder — use `parentId`, not `folderId`
+  const unitSnap = await getDocs(
+    query(
+      collection(db, 'units'),
+      where('parentId', '==', originalFolderId),
+      where('userId', '==', user.uid)
+    )
+  );
+  for (const u of unitSnap.docs) {
+    await addDoc(collection(db, 'units'), {
+      ...u.data(),
+      parentId: newFolderId,      // ← mirror your createUnit service
+      userId: user.uid,
+      createdAt: serverTimestamp(),
+    });
+  }
+
+  // c) Recurse into sub-folders (this was already correct)
+  const subSnap = await getDocs(
+    query(
+      collection(db, 'folders'),
+      where('parentId', '==', originalFolderId),
+      where('userId', '==', user.uid)
+    )
+  );
+  for (const f of subSnap.docs) {
+    await copyFolderRecursive(
+      f.id,
+      newFolderId,
+      f.data().name as string
+    );
+  }
+}
+
+
+
+// ——— 3) Hook into the “copy” menu action ———
+async function handleMenuAction(payload: { itemId: string; action: string }) {
   const folder = folders.value.find(f => f.id === payload.itemId);
   if (folder) {
     if (payload.action === 'edit') {
-      renameFolder(payload.itemId, folder.name);
+      await renameFolder(payload.itemId, folder.name);
     } else if (payload.action === 'delete') {
-      deleteFolder(payload.itemId);
+      await deleteFolder(payload.itemId);
+    } else if (payload.action === 'copy') {
+      // generate a unique “- Copy (n)” name…
+      const existing = folders.value.map(f => f.name);
+      const newName = generateCopyName(existing, folder.name);
+      // …then copy recursively into the current folder
+      await copyFolderRecursive(
+        payload.itemId,
+        currentFolderId.value,
+        newName
+      );
     }
   } else {
-    // It's a unit
+    // Unit copy
     if (payload.action === 'edit') {
       const u = unitStore.getUnitById(payload.itemId);
       if (u) wizardStore.open(u);
     } else if (payload.action === 'delete') {
       unitStore.deleteById(payload.itemId);
+    } else if (payload.action === 'copy') {
+      const u = unitStore.getUnitById(payload.itemId);
+      if (u) {
+        const newName = `${u.name} - Copy`;
+        await unitStore.copyUnit(u, newName, currentFolderId.value);
+      }
     }
   }
 }
+
 
 defineExpose({
   toggleAllItemsSelection,

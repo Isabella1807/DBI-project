@@ -1,3 +1,12 @@
+import { getAuth } from 'firebase/auth';
+import {
+  addDoc,
+  collection,
+  serverTimestamp
+} from 'firebase/firestore';
+import { db } from '@/configs/firebase';
+
+
 import {defineStore} from 'pinia';
 import type {unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 import {useFolderStore} from '@/stores/folderStore.ts';
@@ -84,6 +93,28 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
+async function copyUnit(
+  originalUnit: UnitTypeWithId,
+  newName: string,
+  newParentId: string | null
+) {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const payload = {
+    ...originalUnit,
+    name: newName,
+    parentId: newParentId,      // ← use parentId
+    userId: user.uid,
+    createdAt: serverTimestamp(),
+  };
+  delete (payload as any).id;
+
+  await addDoc(collection(db, 'units'), payload);
+}
+
+
   return {
     createNew,
     visibleUnits,
@@ -93,5 +124,6 @@ export const useUnitStore = defineStore('unitStore', () => {
     refreshVisibleUnits,
     idBelongsToUnit,
     changeParentId,
+    copyUnit,
   };
 });
