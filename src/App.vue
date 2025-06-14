@@ -5,20 +5,20 @@ import WaterMark from '@/components/atoms/WaterMark.vue';
 import CreateEntityWizard from '@/components/organisms/CreateEntityWizard.vue';
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue';
 import { useWizardStore } from '@/stores/wizardStore.ts';
-import { useAuthStore } from '@/stores/loginStore';
+import { useLoginStore } from '@/stores/loginStore.ts';
 import { onMounted } from 'vue';
 
 const wizardStore = useWizardStore();
-const authStore = useAuthStore();
+const loginStore = useLoginStore();
 const route = useRoute();
 const router = useRouter();
 
 // Initialiser auth ved komponentoprettelse
 onMounted(async () => {
-  await authStore.initializeAuth();
+  await loginStore.initializeAuth();
 
   // Hvis bruger ikke er logget ind og ikke er på auth-siden
-  if (!authStore.isAuthenticated && route.meta.layout !== 'auth') {
+  if (!loginStore.isAuthenticated && route.meta.layout !== 'auth') {
     router.push('/');
   }
 });
@@ -27,7 +27,7 @@ onMounted(async () => {
 <template>
   <div class="bodyContainer">
     <!-- Kun vis hvis bruger er logget ind -->
-    <template v-if="authStore.isAuthenticated && route.meta.layout !== 'auth'">
+    <template v-if="loginStore.isAuthenticated && route.meta.layout !== 'auth'">
       <WaterMark :class="{ blur: wizardStore.isOpen }" />
       <div class="mainContainer" :class="{ blur: wizardStore.isOpen }">
         <main>

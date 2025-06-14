@@ -11,13 +11,13 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import type {BaseUnitType, unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
-import { useAuthStore } from '@/stores/loginStore';
+import { useLoginStore } from '@/stores/loginStore.ts';
 
 // create new unit
 export const createUnit = async (unit: Omit<BaseUnitType, 'userId'>): Promise<UnitTypeWithId> => {
-  const authStore = useAuthStore();
+  const loginStore = useLoginStore();
 
-  if (!authStore.userId) {
+  if (!loginStore.userId) {
     throw new Error('User not authenticated');
   }
 
@@ -28,7 +28,7 @@ export const createUnit = async (unit: Omit<BaseUnitType, 'userId'>): Promise<Un
   try {
     const unitWithUserId = {
       ...unit,
-      userId: authStore.userId,
+      userId: loginStore.userId,
     };
 
     const res = await addDoc(collection(db, 'units'), unitWithUserId);
@@ -44,9 +44,9 @@ export const createUnit = async (unit: Omit<BaseUnitType, 'userId'>): Promise<Un
 };
 
 export const getAllUnitsByFolderId = async (currentFolderId: string | null): Promise<UnitTypeWithId[]> => {
-  const authStore = useAuthStore();
+  const loginStore = useLoginStore();
 
-  if (!authStore.userId) {
+  if (!loginStore.userId) {
     throw new Error('User not authenticated');
   }
 
@@ -54,7 +54,7 @@ export const getAllUnitsByFolderId = async (currentFolderId: string | null): Pro
     const q = query(
       collection(db, 'units'),
       where('parentId', '==', currentFolderId),
-      where('userId', '==', authStore.userId),
+      where('userId', '==', loginStore.userId),
     );
     const querySnapshot = await getDocs(q);
 

@@ -11,14 +11,14 @@ import {
   where,
 } from 'firebase/firestore';
 import {db} from '@/configs/firebase.ts';
-import {useAuthStore} from '@/stores/loginStore.ts';
+import {useLoginStore} from '@/stores/loginStore.ts';
 import type {Folder} from '@/types/folderTypes.ts';
 import type {Ref} from 'vue';
 
 //CREATE FOLDER
 export const createFolder = async (folderName: string, parentId: string | null): Promise<void> => {
-  const authStore = useAuthStore();
-  if (!authStore.isAuthenticated) {
+  const loginStore = useLoginStore();
+  if (!loginStore.isAuthenticated) {
     throw new Error('User not authenticated');
   }
 
@@ -26,7 +26,7 @@ export const createFolder = async (folderName: string, parentId: string | null):
     await addDoc(collection(db, 'folders'), {
       name: folderName.trim(),
       parentId,
-      userId: authStore.userId,
+      userId: loginStore.userId,
       createdAt: serverTimestamp(),
     });
   } catch (error) {
@@ -37,13 +37,13 @@ export const createFolder = async (folderName: string, parentId: string | null):
 
 //DELETE FOLDER
 export const deleteFolderAndChildren = async (id: string) => {
-  const authStore = useAuthStore();
+  const loginStore = useLoginStore();
 
   // 1) Recurse into sub-folders owned by this user
   const subFolderQ = query(
     collection(db, 'folders'),
     where('parentId', '==', id),
-    where('userId', '==', authStore.userId),
+    where('userId', '==', loginStore.userId),
   );
   const subFolderSnap = await getDocs(subFolderQ);
 
@@ -55,7 +55,7 @@ export const deleteFolderAndChildren = async (id: string) => {
   const unitQ = query(
     collection(db, 'units'),
     where('folderId', '==', id),
-    where('userId', '==', authStore.userId),
+    where('userId', '==', loginStore.userId),
   );
   const unitSnap = await getDocs(unitQ);
   for (const unitDoc of unitSnap.docs) {
@@ -84,18 +84,24 @@ export const updateFolderParentId = async (folderId: string, newParentId: string
   }
 };
 
-let firebaseFolderUnsubscribeFunction = () => {};
+let firebaseFolderUnsubscribeFunction = () => {
+};
 
 //SUBSCRIBE TO FOLDER
 export const subscribeToFolder = (folderToSubscribeId: string | null, folderArray: Ref<Folder[]>) => {
   unsubscribeFromFolder();
 
-  const authStore = useAuthStore();
+  const loginStore = useLoginStore();
+
+  if (!loginStore.isAuthenticated) {
+    console.log('SUBSCRBING BEFORE LOGGED IND!?');
+  }
+
 
   const queryParentId = query(
     collection(db, 'folders'),
     where('parentId', '==', folderToSubscribeId),
-    where('userId', '==', authStore.userId),
+    where('userId', '==', loginStore.userId),
   );
 
   firebaseFolderUnsubscribeFunction = onSnapshot(queryParentId, snap => {

@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import BasicButton from '@/components/atoms/BasicButton.vue';
-import { useAuthStore } from '@/stores/loginStore';
+import { useLoginStore } from '@/stores/loginStore.ts';
 import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
 const router = useRouter();
-const authStore = useAuthStore();
+const loginStore = useLoginStore();
 
 async function handleLogin() {
   try {
-    await authStore.login(email.value, password.value);
+    await loginStore.login(email.value, password.value);
     router.push('/enheder'); // Omdiriger efter succesfuld login
   } catch (error) {
     console.error('Login fejl:', error);
@@ -42,10 +42,10 @@ async function handleLogin() {
             type="default"
             label="LOG IND"
             ariaLabel="Log ind"
-            :loading="authStore.loading"
+            :loading="loginStore.loading"
             @click="handleLogin"
           />
-          <p v-if="authStore.error" class="error">{{ authStore.error }}</p>
+          <p v-if="loginStore.errorMessage" class="error">{{ loginStore.errorMessage }}</p>
         </div>
       </form>
     </div>

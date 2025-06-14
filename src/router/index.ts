@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '@/stores/loginStore';
+import { useLoginStore } from '@/stores/loginStore.ts';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,26 +50,26 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore();
+  const loginStore = useLoginStore();
 
   // Hvis auth ikke er initialiseret endnu
-  if (authStore.loading) {
-    await authStore.initializeAuth();
+  if (loginStore.loading) {
+    await loginStore.initializeAuth();
   }
 
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = authStore.isAuthenticated;
+  const isAuthenticated = loginStore.isAuthenticated;
 
   if (requiresAuth && !isAuthenticated) {
     // Gem den oprindelige destination for senere omdirigering
     if (to.path !== '/login/') {
-      authStore.redirectPath = to.fullPath;
+      loginStore.redirectPath = to.fullPath;
     }
     next('/login');
   } else if ((to.path === '/login') && isAuthenticated) {
     // Omdiriger til den gemte path eller standard route
-    next(authStore.redirectPath || '/enheder');
-    authStore.redirectPath = null; // Nulstil efter brug
+    next(loginStore.redirectPath || '/enheder');
+    loginStore.redirectPath = null; // Nulstil efter brug
   } else {
     next();
   }

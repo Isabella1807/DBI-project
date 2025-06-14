@@ -1,4 +1,3 @@
-// stores/auth.ts
 import { defineStore } from 'pinia';
 import { auth } from '@/configs/firebase';
 import {
@@ -9,56 +8,68 @@ import {
   browserLocalPersistence,
   type User,
 } from 'firebase/auth';
+import {computed, type Ref, ref} from 'vue';
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null as User | null,
-    loading: true,
-    error: null as string | null,
-    redirectPath: null as string | null, // Tilføjet redirectPath
-  }),
+export const useLoginStore = defineStore('loginStore', () => {
+  const user: Ref<User | null> = ref(null);
+  const loading: Ref<boolean> = ref(true);
+  const errorMessage: Ref<string | null> = ref(null);
+  const redirectPath: Ref<string | null> = ref(null);
 
-  actions: {
-    async initializeAuth() {
-      return new Promise<void>((resolve) => {
-        onAuthStateChanged(auth, (user) => {
-          this.user = user;
-          this.loading = false;
-          resolve();
-        });
+  const initializeAuth = async () => {
+    return new Promise<void>((resolve) => {
+      onAuthStateChanged(auth, (loggedInUser) => {
+        user.value = loggedInUser;
+        loading.value = false;
+        resolve();
       });
-    },
+    });
+  };
 
-    async login(email: string, password: string) {
-      try {
-        this.loading = true;
-        this.error = null;
+  const login = async (email: string, password: string) => {
+    try {
+      loading.value = true;
+      errorMessage.value = null;
 
-        await setPersistence(auth, browserLocalPersistence);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        this.user = userCredential.user;
-      } catch (error: unknown) { // Fjernet any type
-        this.error = error instanceof Error ? error.message : 'Login fejlede';
-        throw error;
-      } finally {
-        this.loading = false;
-      }
-    },
+      await setPersistence(auth, browserLocalPersistence);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-    async logout() {
-      try {
-        await signOut(auth);
-        this.user = null;
-        this.redirectPath = null; // Nulstil redirectPath ved logout
-      } catch (error) {
-        console.error('Logout fejl:', error);
-        throw error;
-      }
-    },
-  },
+      user.value = userCredential.user;
+    } catch (error) {
+      errorMessage.value = error instanceof Error ? error.message : 'Login fejlede';
+      throw error;
+    } finally {
+      loading.value = false;
+    }
+  };
 
-  getters: {
-    isAuthenticated: (state) => !!state.user,
-    userId: (state) => state.user?.uid || null,
-  },
+  const logout = async() => {
+    try {
+      await signOut(auth);
+      user.value = null;
+      redirectPath.value = null; // Nulstil redirectPath ved logout
+    } catch (error) {
+      console.error('Logout fejl:', error);
+      throw error;
+    }
+  };
+
+  const isAuthenticated = computed(() => {
+    return !!user.value; //authenticated if user.value is not null
+  });
+
+  const userId = computed(() => {
+    return user.value?.uid || null;
+  });
+
+  return {
+    loading,
+    errorMessage,
+    redirectPath,
+    initializeAuth,
+    login,
+    logout,
+    isAuthenticated,
+    userId,
+  };
 });
