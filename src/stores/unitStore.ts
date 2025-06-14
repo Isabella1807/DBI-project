@@ -1,6 +1,7 @@
 import { getAuth } from 'firebase/auth';
 import {
   addDoc,
+  getDoc,
   collection,
   serverTimestamp
 } from 'firebase/firestore';
@@ -93,26 +94,40 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
-async function copyUnit(
-  originalUnit: UnitTypeWithId,
-  newName: string,
-  newParentId: string | null
-) {
-  const auth = getAuth();
-  const user = auth.currentUser;
-  if (!user) return;
+  /** Copy a single unit and update visibleUnits */
+  async function copyUnit(
+    originalUnit: UnitTypeWithId,
+    newName: string,
+    newParentId: string | null
+  ): Promise<void> {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) return;
 
-  const payload = {
-    ...originalUnit,
-    name: newName,
-    parentId: newParentId,      // ← use parentId
-    userId: user.uid,
-    createdAt: serverTimestamp(),
-  };
-  delete (payload as any).id;
+    // build the new document payload
+    const payload = {
+      ...originalUnit,
+      name: newName,
+      parentId: newParentId,    // ← important: use parentId
+      userId: user.uid,
+      createdAt: serverTimestamp(),
+    };
+    delete (payload as any).id;
 
-  await addDoc(collection(db, 'units'), payload);
-}
+    // write it
+    const newRef = await addDoc(collection(db, 'units'), payload);
+
+    // fetch the created doc so we know its fields / id
+    const snap = await getDoc(newRef);
+    if (snap.exists()) {
+      const newUnit: UnitTypeWithId = {
+        id: snap.id,
+        ...(snap.data() as Omit<UnitTypeWithId, 'id'>),
+      };
+      // push into your UI list
+      visibleUnits.value.push(newUnit);
+    }
+  }
 
 
   return {

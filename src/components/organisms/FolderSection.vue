@@ -321,35 +321,42 @@ async function copyFolderRecursive(
 // ——— 3) Hook into the “copy” menu action ———
 async function handleMenuAction(payload: { itemId: string; action: string }) {
   const folder = folders.value.find(f => f.id === payload.itemId);
+
   if (folder) {
+    // Folder actions
     if (payload.action === 'edit') {
       await renameFolder(payload.itemId, folder.name);
     } else if (payload.action === 'delete') {
       await deleteFolder(payload.itemId);
     } else if (payload.action === 'copy') {
-      // generate a unique “- Copy (n)” name…
-      const existing = folders.value.map(f => f.name);
-      const newName = generateCopyName(existing, folder.name);
-      // …then copy recursively into the current folder
+      // generate a unique “- Copy (n)” name for folders
+      const existingFolderNames = folders.value.map(f => f.name);
+      const newFolderName = generateCopyName(existingFolderNames, folder.name);
+      // then copy recursively into the current folder
       await copyFolderRecursive(
         payload.itemId,
         currentFolderId.value,
-        newName
+        newFolderName
       );
     }
+
   } else {
-    // Unit copy
+    // Unit actions
+    const u = unitStore.getUnitById(payload.itemId);
+    if (!u) return;
+
     if (payload.action === 'edit') {
-      const u = unitStore.getUnitById(payload.itemId);
-      if (u) wizardStore.open(u);
+      wizardStore.open(u);
+
     } else if (payload.action === 'delete') {
       unitStore.deleteById(payload.itemId);
+
     } else if (payload.action === 'copy') {
-      const u = unitStore.getUnitById(payload.itemId);
-      if (u) {
-        const newName = `${u.name} - Copy`;
-        await unitStore.copyUnit(u, newName, currentFolderId.value);
-      }
+      // generate a unique “- Copy (n)” name for units
+      const existingUnitNames = unitStore.visibleUnits.map(unit => unit.name);
+      const newUnitName = generateCopyName(existingUnitNames, u.name);
+      // then copy into the current folder
+      await unitStore.copyUnit(u, newUnitName, currentFolderId.value);
     }
   }
 }
