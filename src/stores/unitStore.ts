@@ -4,49 +4,37 @@ import {useBreadcrumbStore} from '@/stores/breadcrumbStore.ts';
 import {
   createUnit,
   deleteUnitById,
-  getAllUnitsByFolderId,
   updateUnitById,
   changeUnitParentId,
+  subscribeToUnitParent, unsubscribeFromUnitParent,
 } from '@/services/unitService.ts';
-import {ref, type Ref, watch} from 'vue';
+import {onUnmounted, ref, type Ref, watch} from 'vue';
 
 export const useUnitStore = defineStore('unitStore', () => {
   const breadcrumbStore = useBreadcrumbStore();
   const visibleUnits: Ref<UnitTypeWithId[]> = ref([]);
 
-  const createNew = (unit: unitInputType) => {
-    createUnit({
+  const createNew = async (unit: unitInputType) => {
+    await createUnit({
       ...unit,
       parentId: breadcrumbStore.currentFolderId,
-    }).then(createdUnit => {
-      // Success!
-      visibleUnits.value.push(createdUnit);
-    }).catch(error => {
-      // Handle error
-      throw new Error(error);
     });
   };
 
-  const refreshVisibleUnits = async (newFolderId: string | null) => {
-    visibleUnits.value = [];
-    visibleUnits.value = await getAllUnitsByFolderId(newFolderId);
+  const fetchVisibleUnits = () => {
+    subscribeToUnitParent(breadcrumbStore.currentFolderId, visibleUnits);
   };
 
-  watch(() => breadcrumbStore.currentFolderId, async (newFolderId) => {
-    await refreshVisibleUnits(newFolderId);
+  watch(() => breadcrumbStore.currentFolderId, async () => {
+    fetchVisibleUnits();
   }, {immediate: true});
 
-  const deleteById = (unitId: string) => {
-    deleteUnitById(unitId).then(() => {
-      const deletedUnitIndex = visibleUnits.value.findIndex((item) => {
-        return item.id === unitId;
-      });
-      if (deletedUnitIndex > -1) {
-        visibleUnits.value.splice(deletedUnitIndex, 1);
-      }
-    }).catch(error => {
-      throw new Error(error);
-    });
+  onUnmounted(() => {
+    unsubscribeFromUnitParent();
+  });
+
+  const deleteById = async (unitId: string) => {
+    await deleteUnitById(unitId);
   };
 
   const getUnitById = (unitId: string): UnitTypeWithId | undefined => {
@@ -55,18 +43,11 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
-  const updateUnit = (unit: UnitTypeWithId) => {
-    updateUnitById(unit.id, {
+  const updateUnit = async (unit: UnitTypeWithId) => {
+    await updateUnitById(unit.id, {
       name: unit.name,
       description: unit.description,
       syncId: unit.syncId,
-    }).then(() => {
-      const unitIndex = visibleUnits.value.findIndex(item => item.id === unit.id);
-      if (unitIndex >= 0) {
-        visibleUnits.value[unitIndex] = unit;
-      }
-    }).catch((error) => {
-      throw new Error(error);
     });
   };
 
@@ -76,12 +57,8 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
-  const changeParentId = (unitId: string, newParentId: string) => {
-    changeUnitParentId(unitId, newParentId).then(() => {
-      visibleUnits.value = visibleUnits.value.filter(unit => unit.id !== unitId);
-    }).catch(error => {
-      throw new Error('Kunne ikke opdatere parent id på enhed: ' + error);
-    });
+  const changeParentId = async (unitId: string, newParentId: string) => {
+    await changeUnitParentId(unitId, newParentId);
   };
 
   return {
@@ -90,7 +67,6 @@ export const useUnitStore = defineStore('unitStore', () => {
     getUnitById,
     deleteById,
     updateUnit,
-    refreshVisibleUnits,
     idBelongsToUnit,
     changeParentId,
   };

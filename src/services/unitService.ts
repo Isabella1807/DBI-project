@@ -4,6 +4,7 @@ import {
   addDoc,
   FirestoreError,
   getDocs,
+  onSnapshot,
   query,
   where,
   deleteDoc,
@@ -12,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import type {BaseUnitType, unitInputType, UnitTypeWithId} from '@/types/unitTypes.ts';
 import { useLoginStore } from '@/stores/loginStore.ts';
+import type {Ref} from 'vue';
 
 // create new unit
 export const createUnit = async (unit: Omit<BaseUnitType, 'userId'>): Promise<UnitTypeWithId> => {
@@ -43,30 +45,6 @@ export const createUnit = async (unit: Omit<BaseUnitType, 'userId'>): Promise<Un
   }
 };
 
-export const getAllUnitsByFolderId = async (currentFolderId: string | null): Promise<UnitTypeWithId[]> => {
-  const loginStore = useLoginStore();
-
-  if (!loginStore.userId) {
-    throw new Error('User not authenticated');
-  }
-
-  try {
-    const q = query(
-      collection(db, 'units'),
-      where('parentId', '==', currentFolderId),
-      where('userId', '==', loginStore.userId),
-    );
-    const querySnapshot = await getDocs(q);
-
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as UnitTypeWithId[];
-  } catch (error) {
-    throw new Error('Kunne ikke finde enhed(er): ' + (error as FirestoreError).message);
-  }
-};
-
 export const deleteUnitById = async (unitId: string) => {
   try {
     await deleteDoc(doc(db, 'units', unitId));
@@ -94,3 +72,32 @@ export const changeUnitParentId = async (unitId: string, parentId: string) => {
 };
 
 
+let firebaseUnitUnsubscribeFunction = () => {
+};
+
+export const subscribeToUnitParent = (currentFolderId: string | null, unitArray: Ref<UnitTypeWithId[]>) => {
+  unsubscribeFromUnitParent();
+
+  const loginStore = useLoginStore();
+
+  if (!loginStore.userId) {
+    throw new Error('User not authenticated');
+  }
+
+  const queryParentId = query(
+    collection(db, 'units'),
+    where('parentId', '==', currentFolderId),
+    where('userId', '==', loginStore.userId),
+  );
+
+  firebaseUnitUnsubscribeFunction = onSnapshot(queryParentId, snap => {
+    unitArray.value = snap.docs.map(result => ({
+      id: result.id,
+      ...result.data(),
+    })) as UnitTypeWithId[];
+  });
+};
+
+export const unsubscribeFromUnitParent = () => {
+  firebaseUnitUnsubscribeFunction();
+};
