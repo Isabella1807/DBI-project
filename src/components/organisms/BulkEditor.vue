@@ -116,7 +116,9 @@ function onSortToggle() {
     <div class="rightSection">
       <div class="tableNavIcon"><BasicIcon name="Filter" /></div>
       <div class="tableNavIcon" @click.stop="onSortToggle" :class="{ active: sortDirection !== 'none' }">
-        <BasicIcon name="SortAscending" /></div>
+        <BasicIcon 
+        :name="sortDirection === 'desc' ? 'SortDescending' : 'SortAscending'"
+        /></div>
       <div
         class="tableNavIcon"
         :class="{ active: currentView === 'list' }"
