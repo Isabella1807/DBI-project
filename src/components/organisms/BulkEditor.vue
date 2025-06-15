@@ -64,6 +64,21 @@ onMounted(() => {
     localStorage.setItem('currentView','detailed');
   }
 });
+
+
+// tri‐state: none, asc, desc
+const sortDirection = ref<'none' | 'asc' | 'desc'>('none')
+
+function onSortToggle() {
+  sortDirection.value =
+    sortDirection.value === 'none'
+      ? 'asc'
+      : sortDirection.value === 'asc'
+      ? 'desc'
+      : 'none'
+}
+
+
 </script>
 
 <template>
@@ -100,7 +115,8 @@ onMounted(() => {
     <!-- Højre side: filtrer, sorter, skift visning -->
     <div class="rightSection">
       <div class="tableNavIcon"><BasicIcon name="Filter" /></div>
-      <div class="tableNavIcon"><BasicIcon name="SortAscending" /></div>
+      <div class="tableNavIcon" @click.stop="onSortToggle" :class="{ active: sortDirection !== 'none' }">
+        <BasicIcon name="SortAscending" /></div>
       <div
         class="tableNavIcon"
         :class="{ active: currentView === 'list' }"
@@ -121,6 +137,7 @@ onMounted(() => {
   <FolderSection
     ref="folderSection"
     :showCreateDialog="props.showCreateDialog"
+    :sort-direction="sortDirection"
     @update:showCreateDialog="update"
     @selection-changed="handleSelectionChanged"
   />

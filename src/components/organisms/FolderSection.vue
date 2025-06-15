@@ -76,7 +76,10 @@ const toggleAllItemsSelection = () => {
   }
 };
 
-const props = defineProps<{ showCreateDialog: boolean }>();
+const props = defineProps<{ 
+  showCreateDialog: boolean; 
+  sortDirection: 'none' | 'asc' | 'desc';
+}>();
 const showCreateDialog = toRef(props, 'showCreateDialog');
 const emit = defineEmits<{
   (e: 'update:showCreateDialog', v: boolean): void;
@@ -138,12 +141,13 @@ const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
   })),
 );
 
-const content: ComputedRef<FolderUnitItem[]> = computed(() => [
+/* const content: ComputedRef<FolderUnitItem[]> = computed(() => [
   ...folders.value.map(folder => ({id: folder.id, name: folder.name, type: 'folder' as const})),
   ...unitsOnScreen.value,
-]);
+]); */
 
-const totalAmountOfItemsOnScreen = computed(() => content.value.length);
+/* const totalAmountOfItemsOnScreen = computed(() => content.value.length); */
+const totalAmountOfItemsOnScreen = computed(() => sortedContent.value.length);
 const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length);
 const everythingIsSelected = computed(() =>
   totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value,
@@ -282,7 +286,7 @@ async function copyFolderRecursive(
   });
   const newFolderId = newRef.id;
 
-  // b) Copy all *units* in this folder — use `parentId`, not `folderId`
+  // b) Copy all *units* in this folder
   const unitSnap = await getDocs(
     query(
       collection(db, 'units'),
@@ -315,7 +319,6 @@ async function copyFolderRecursive(
     );
   }
 }
-
 
 
 // ——— 3) Hook into the “copy” menu action ———
@@ -360,6 +363,28 @@ async function handleMenuAction(payload: { itemId: string; action: string }) {
     }
   }
 }
+
+// Sort function
+const sortedContent = computed<FolderUnitItem[]>(() => {
+  // merge folders + units
+  const all: FolderUnitItem[] = [
+    ...folders.value.map(f => ({ id: f.id, name: f.name, type: 'folder' as const })),
+    ...unitStore.visibleUnits.map(u => ({ id: u.id, name: u.name, type: 'unit' as const }))
+  ]
+
+  if (props.sortDirection === 'none') {
+    return all
+  }
+
+  const cmp = (a: FolderUnitItem, b: FolderUnitItem) =>
+    a.name.localeCompare(b.name, undefined, { numeric: true })
+
+  // shallow‐copy then sort
+  return [...all].sort((a, b) =>
+    props.sortDirection === 'asc' ? cmp(a, b) : cmp(b, a)
+  )
+})
+
 
 
 defineExpose({
@@ -413,7 +438,7 @@ const handleDrop = (itemDroppedOn: FolderUnitItem) => {
         @dragstart="setCurrentlyDraggedItem(item)"
         @dragover.prevent=""
         @drop="handleDrop(item)"
-        v-for="item in content"
+        v-for="item in sortedContent"
         :key="item.id"
         :class="['folder', currentView]"
       >
