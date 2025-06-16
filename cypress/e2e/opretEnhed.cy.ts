@@ -32,6 +32,16 @@ describe('Folder creation flow', () => {
     cy.get('button[aria-label="Udfør"]').should('be.visible').click();
     cy.get('.folderContainer').contains('testenhed').should('exist');
 
+    /*cy.contains('.folderContainer', 'testenhed')
+      .within(() => {
+        // spring visibility-check over og klik alligevel
+        cy.get('button.menuDots')
+          .click({force: true});
+
+        cy.contains('li', 'Slet')
+          .click({force: true});
+      });*/
+
     cy.contains('testenhed').parentsUntil('.folderContainer').last()
       .within(() => {
         cy.get('button.menuDots')
