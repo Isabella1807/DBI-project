@@ -1,4 +1,3 @@
-// stores/registerStore.ts
 import { defineStore } from 'pinia';
 import { auth } from '@/configs/firebase';
 import {
