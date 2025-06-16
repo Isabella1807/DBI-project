@@ -19,14 +19,14 @@ describe('Folder creation flow', () => {
     cy.get('.folderContainer').contains('testmappe').should('exist');
 
     cy.contains('.folderContainer', 'testmappe')
-    .within(() => {
-    // spring visibility-check over og klik alligevel
-    cy.get('button.menuDots')
-      .click({ force: true });
+      .within(() => {
+        // spring visibility-check over og klik alligevel
+        cy.get('button.menuDots')
+          .click({force: true});
 
-    cy.contains('li', 'Slet')
-      .click({ force: true });
-  });
+        cy.contains('li', 'Slet')
+          .click({force: true});
+      });
 
     // evt. en assertion på at mappen er væk
     cy.get('.folderContainer').contains('testmappe').should('not.exist');

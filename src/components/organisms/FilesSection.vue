@@ -6,7 +6,7 @@ import {
   watch,
   toRef,
   defineExpose,
-  type Ref, type ComputedRef,
+  type Ref, type ComputedRef, onMounted,
 } from 'vue';
 import CreateFolderDialog from '@/components/molecules/CreateFolderDialog.vue';
 import type {FolderUnitItem} from '@/types/folderTypes.ts';
@@ -147,6 +147,11 @@ const handleDrop = (itemDroppedOn: { isUnit: boolean, id: string }) => {
     }
   });
 };
+
+onMounted(() => {
+  folderStore.fetch();
+  unitStore.fetchVisibleUnits();
+});
 </script>
 
 

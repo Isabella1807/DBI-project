@@ -16,31 +16,29 @@ describe('Folder creation flow', () => {
     cy.contains('li', 'Enhed').click();
     cy.get('#Name').should('be.visible').type('testenhed');
     cy.get('.card')
-        .first()
-       .within(() => {
+      .first()
+      .within(() => {
         cy.get('button[aria-label="Videre til næste trin"]')
-        .click({ force: true });
-  });
+          .click({force: true});
+      });
     cy.get('#description').should('be.visible').type('en test enhed');
-        cy.get('.card')
-        .first()
-       .within(() => {
+    cy.get('.card')
+      .first()
+      .within(() => {
         cy.get('button[aria-label="Videre til næste trin"]')
-        .click({ force: true });
-  });
+          .click({force: true});
+      });
     cy.get('#sync').should('be.visible').type('12');
     cy.get('button[aria-label="Udfør"]').should('be.visible').click();
     cy.get('.folderContainer').contains('testenhed').should('exist');
 
-    cy.contains('.folderContainer', 'testenhed')
-    .within(() => {
-    // spring visibility-check over og klik alligevel
-    cy.get('button.menuDots')
-      .click({ force: true });
-
-    cy.contains('li', 'Slet')
-      .click({ force: true });
-  });
+    cy.contains('testenhed').parentsUntil('.folderContainer').last()
+      .within(() => {
+        cy.get('button.menuDots')
+          .click({force: true});
+        cy.contains('li', 'Slet')
+          .click({force: true});
+      });
 
     // evt. en assertion på at mappen er væk
     cy.get('.folderContainer').contains('testenhed').should('not.exist');

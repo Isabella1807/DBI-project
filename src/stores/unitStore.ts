@@ -9,6 +9,7 @@ import {
   subscribeToUnitParent, unsubscribeFromUnitParent,
 } from '@/services/unitService.ts';
 import {onUnmounted, ref, type Ref, watch} from 'vue';
+import {useLoginStore} from '@/stores/loginStore.ts';
 
 export const useUnitStore = defineStore('unitStore', () => {
   const breadcrumbStore = useBreadcrumbStore();
@@ -25,9 +26,10 @@ export const useUnitStore = defineStore('unitStore', () => {
     subscribeToUnitParent(breadcrumbStore.currentFolderId, visibleUnits);
   };
 
+
   watch(() => breadcrumbStore.currentFolderId, async () => {
     fetchVisibleUnits();
-  }, {immediate: true});
+  });
 
   onUnmounted(() => {
     unsubscribeFromUnitParent();
@@ -69,5 +71,6 @@ export const useUnitStore = defineStore('unitStore', () => {
     updateUnit,
     idBelongsToUnit,
     changeParentId,
+    fetchVisibleUnits,
   };
 });

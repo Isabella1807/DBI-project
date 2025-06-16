@@ -27,7 +27,7 @@ export const useFolderStore = defineStore('folderStore', () => {
 
   watch(() => breadcrumbStore.currentFolderId, () => {
     fetch();
-  }, {immediate: true});
+  });
 
   onUnmounted(() => {
     unsubscribeFromFolder();
@@ -41,5 +41,6 @@ export const useFolderStore = defineStore('folderStore', () => {
     visibleFolders,
     create,
     move,
+    fetch,
   };
 });
