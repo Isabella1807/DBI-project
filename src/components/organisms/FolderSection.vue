@@ -297,13 +297,13 @@ async function copyFolderRecursive(
   for (const u of unitSnap.docs) {
     await addDoc(collection(db, 'units'), {
       ...u.data(),
-      parentId: newFolderId,      // ← mirror your createUnit service
+      parentId: newFolderId,      
       userId: user.uid,
       createdAt: serverTimestamp(),
     });
   }
 
-  // c) Recurse into sub-folders (this was already correct)
+  // c) Recurse into sub-folders
   const subSnap = await getDocs(
     query(
       collection(db, 'folders'),

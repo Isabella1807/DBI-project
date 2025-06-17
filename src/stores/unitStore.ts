@@ -94,40 +94,42 @@ export const useUnitStore = defineStore('unitStore', () => {
     });
   };
 
-  /** Copy a single unit and update visibleUnits */
-  async function copyUnit(
-    originalUnit: UnitTypeWithId,
-    newName: string,
-    newParentId: string | null
-  ): Promise<void> {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (!user) return;
+async function copyUnit(
+  originalUnit: UnitTypeWithId,
+  newName: string,
+  newParentId: string | null
+): Promise<void> {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return;
 
-    // build the new document payload
-    const payload = {
-      ...originalUnit,
-      name: newName,
-      parentId: newParentId,    // ← important: use parentId
-      userId: user.uid,
-      createdAt: serverTimestamp(),
-    };
-    delete (payload as any).id;
+  // 1) Opret det nye dokument (payload må fjerne `id` så Firestore tildeler et nyt)
+  const payload = {
+    ...originalUnit,
+    name: newName,
+    parentId: newParentId,
+    userId: user.uid,
+    createdAt: serverTimestamp(),
+  };
+  delete (payload as any).id;
 
-    // write it
-    const newRef = await addDoc(collection(db, 'units'), payload);
+  const newRef = await addDoc(collection(db, 'units'), payload);
 
-    // fetch the created doc so we know its fields / id
-    const snap = await getDoc(newRef);
-    if (snap.exists()) {
-      const newUnit: UnitTypeWithId = {
-        id: snap.id,
-        ...(snap.data() as Omit<UnitTypeWithId, 'id'>),
-      };
-      // push into your UI list
-      visibleUnits.value.push(newUnit);
-    }
+  // 2) Hent det tilbage og byg newUnit med én samlet type assertion
+  const snap = await getDoc(newRef);
+  if (snap.exists()) {
+    // Hent alle felter (uden id) og tving dem til 'any'
+    const raw = snap.data() as any;
+
+    // Byg objektet med id + alle rå felter, og kast det til UnitTypeWithId
+    const newUnit = {
+      id: snap.id,
+      ...raw,
+    } as UnitTypeWithId;
+
+    visibleUnits.value.push(newUnit);
   }
+}
 
 
   return {
