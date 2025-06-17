@@ -8,7 +8,6 @@ export interface Folder {
 export interface FolderUnitItem {
   id: string;
   name: string;
-  type: 'folder' | 'unit';
 }
 
 export interface Ancestor {

@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import BasicIcon from '@/components/atoms/BasicIcon.vue';
+
+const myVar = 5;
+const my_Var = 6;
+
+console.log(myVar + my_Var);
 </script>
 
 <template>

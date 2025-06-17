@@ -40,13 +40,13 @@ const toggleAllItemsSelection = () => {
   if (everythingIsSelected.value) {
     clearSelectedList();
   } else {
-    folderStore.visibleFolders.forEach(f => {
-      if (!itemSelectedList.value.includes(f.id))
-        itemSelectedList.value.push(f.id);
+    folderStore.visibleFolders.forEach(folder => {
+      if (!itemSelectedList.value.includes(folder.id))
+        itemSelectedList.value.push(folder.id);
     });
-    unitsOnScreen.value.forEach(u => {
-      if (!itemSelectedList.value.includes(u.id))
-        itemSelectedList.value.push(u.id);
+    unitsOnScreen.value.forEach(unit => {
+      if (!itemSelectedList.value.includes(unit.id))
+        itemSelectedList.value.push(unit.id);
     });
   }
 };
@@ -75,20 +75,10 @@ const unitsOnScreen: ComputedRef<FolderUnitItem[]> = computed(() =>
   unitStore.visibleUnits.map(unit => ({
     id: unit.id,
     name: unit.name,
-    type: 'unit',
   })),
 );
 
-const content: ComputedRef<FolderUnitItem[]> = computed(() => [
-  ...folderStore.visibleFolders.map(folder => ({
-    id: folder.id,
-    name: folder.name,
-    type: 'folder' as const,
-  })),
-  ...unitsOnScreen.value,
-]);
-
-const totalAmountOfItemsOnScreen = computed(() => content.value.length);
+const totalAmountOfItemsOnScreen = computed(() => folderStore.visibleFolders.length + unitStore.visibleUnits.length);
 const totalAmountOfItemsSelected = computed(() => itemSelectedList.value.length);
 const everythingIsSelected = computed(() =>
   totalAmountOfItemsOnScreen.value === totalAmountOfItemsSelected.value,
@@ -152,6 +142,22 @@ onMounted(() => {
   folderStore.fetch();
   unitStore.fetchVisibleUnits();
 });
+
+watch(() => unitStore.visibleUnits, () => {
+  cleanupItemSelectedListOnItemsMoved();
+});
+
+watch(() => folderStore.visibleFolders, () => {
+  cleanupItemSelectedListOnItemsMoved();
+});
+
+const cleanupItemSelectedListOnItemsMoved = () => {
+  itemSelectedList.value = itemSelectedList.value.filter((selectedId) => {
+    const unitIsStillOnThisPage = unitStore.visibleUnits.find((unit) => selectedId === unit.id);
+    const folderIsStillOnThisPage = folderStore.visibleFolders.find((folder) => selectedId === folder.id);
+    return unitIsStillOnThisPage || folderIsStillOnThisPage;
+  });
+};
 </script>
 
 
@@ -159,18 +165,32 @@ onMounted(() => {
   <div>
     <div :class="['folderContainer', currentView]">
       <FolderOrUnitCard
-        v-for="item in content"
+        v-for="item in folderStore.visibleFolders"
         :key="item.id"
         :name="item.name"
         :id="item.id"
-        :isUnit="item.type === 'unit'"
+        :isUnit="false"
         :isSelected="itemSelectedList.includes(item.id)"
         :currentView="currentView"
         @onSelect="toggleItemSelection(item.id)"
         draggable="true"
         @dragstart="setCurrentlyDraggedItem(item)"
         @dragover.prevent=""
-        @drop="handleDrop({isUnit: item.type === 'unit', id: item.id})"
+        @drop="handleDrop({isUnit: false, id: item.id})"
+      />
+      <FolderOrUnitCard
+        v-for="item in unitStore.visibleUnits"
+        :key="item.id"
+        :name="item.name"
+        :id="item.id"
+        :isUnit="true"
+        :isSelected="itemSelectedList.includes(item.id)"
+        :currentView="currentView"
+        @onSelect="toggleItemSelection(item.id)"
+        draggable="true"
+        @dragstart="setCurrentlyDraggedItem(item)"
+        @dragover.prevent=""
+        @drop="handleDrop({isUnit: true, id: item.id})"
       />
     </div>
 

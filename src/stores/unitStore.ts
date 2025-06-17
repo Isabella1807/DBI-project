@@ -9,7 +9,6 @@ import {
   subscribeToUnitParent, unsubscribeFromUnitParent,
 } from '@/services/unitService.ts';
 import {onUnmounted, ref, type Ref, watch} from 'vue';
-import {useLoginStore} from '@/stores/loginStore.ts';
 
 export const useUnitStore = defineStore('unitStore', () => {
   const breadcrumbStore = useBreadcrumbStore();
